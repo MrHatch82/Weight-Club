@@ -10,5 +10,9 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 quote_type = single
 
+[*.vue]
+quote_type = single
+
+
 [*.md]
 trim_trailing_whitespace = false
