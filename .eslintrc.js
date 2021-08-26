@@ -13,6 +13,7 @@ module.exports = {
   // add your custom rules here
   rules: {
     'space-before-function-paren': 'off',
-    'vue/no-v-html': 'off'
+    'vue/no-v-html': 'off',
+    'vue/html-self-closing': 'off'
   }
 }

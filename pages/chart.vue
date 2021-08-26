@@ -1,11 +1,15 @@
 <template>
   <div class="container text-center pt-5">
-    <div>
-      <p>
-        <span class="fat">{{ total }} kg</span><br />
-        of fat collectively<br />
-        eradicated this month!
-      </p>
+    <div class="chart-wrapper mb-5">
+      <client-only>
+        <chart-line
+          class="chart"
+          :data="chart"
+          :options="options"
+          :width="800"
+          :height="500"
+        />
+      </client-only>
     </div>
   </div>
 </template>
@@ -42,36 +46,27 @@ export default {
             tension: 0.2
           }
         ]
+      },
+      options: {
+        legend: {
+          position: 'bottom'
+        }
       }
-    }
-  },
-  computed: {
-    total() {
-      let total = 0
-
-      this.chart.datasets.forEach((dataset) => {
-        let lastWeight = null
-        let difference = 0
-
-        dataset.data.forEach((weight, index) => {
-          if (weight !== null && index > 0) {
-            difference += lastWeight - weight
-          }
-          lastWeight = weight || lastWeight
-        })
-
-        total += difference
-      })
-
-      return total
     }
   }
 }
 </script>
 
 <style lang='scss'>
-.fat {
-  font-size: 24px;
-  font-weight: 600;
+.chart-wrapper {
+  padding-bottom: 62.5%;
+  width: 100%;
+  position: relative;
+}
+
+.chart {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 </style>

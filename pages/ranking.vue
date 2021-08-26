@@ -1,12 +1,11 @@
 <template>
-  <div class="container text-center pt-5">
-    <div>
-      <p>
-        <span class="fat">{{ total }} kg</span><br />
-        of fat collectively<br />
-        eradicated this month!
-      </p>
-    </div>
+  <div class="page-ranking container text-center pt-5">
+    <h1>RANKING</h1>
+    <ul>
+      <li v-for="(rank, index) in ranks" :key="index">
+        {{ index }} lost {{ rank > 0 ? rank : 0 }} kg.
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -42,12 +41,17 @@ export default {
             tension: 0.2
           }
         ]
+      },
+      options: {
+        legend: {
+          position: 'bottom'
+        }
       }
     }
   },
   computed: {
-    total() {
-      let total = 0
+    ranks() {
+      const ranks = {}
 
       this.chart.datasets.forEach((dataset) => {
         let lastWeight = null
@@ -60,18 +64,19 @@ export default {
           lastWeight = weight || lastWeight
         })
 
-        total += difference
+        ranks[dataset.label] = difference
       })
 
-      return total
+      return ranks
     }
   }
 }
 </script>
 
 <style lang='scss'>
-.fat {
-  font-size: 24px;
-  font-weight: 600;
+.page-ranking {
+  ul {
+    list-style: decimal;
+  }
 }
 </style>
