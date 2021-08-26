@@ -84,8 +84,30 @@ export default {
         const user = await this.$parse.User.logIn('MrHatch', 'fatchance')
         // Do stuff after successful login
         console.log('Logged in user', user)
+        this.getWeights()
       } catch (error) {
         console.error('Error while logging in user', error)
+      }
+    },
+    async getWeights() {
+      const Weights = this.$parse.Object.extend('Weights')
+      const query = new this.$parse.Query(Weights)
+      // You can also query by using a parameter of an object
+      // query.equalTo('objectId', 'xKue915KBG');
+      // const results = await query.find()
+      try {
+        const results = await query.find()
+        for (const object of results) {
+          // Access the Parse Object attributes using the .GET method
+          const date = object.get('date')
+          const weight = object.get('weight')
+          const userID = object.get('userID')
+          console.log(date)
+          console.log(weight)
+          console.log(userID)
+        }
+      } catch (error) {
+        console.error('Error while fetching Weights', error)
       }
     }
   }
