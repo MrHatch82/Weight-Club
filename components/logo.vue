@@ -19,7 +19,10 @@ export default {
         "Wouldn't it be nice to see those toes again?",
         'With us you have to lose to win!',
         'Our motto: <b>LTG</b> - Lower Thy Groceries!',
-        'Burn it, baby!'
+        'Burn it, baby!',
+        'What have you got to lose?',
+        'Lose & schmoose',
+        'Your loss!'
       ]
     }
   },
