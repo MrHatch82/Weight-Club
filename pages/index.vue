@@ -65,6 +65,29 @@ export default {
 
       return total
     }
+  },
+  mounted() {
+    this.$parse.initialize()
+    this.$parse.serverURL = 'https://parseapi.back4app.com' // This is your Server URL
+    // Remember to inform BOTH the Back4App Application ID AND the JavaScript KEY
+    this.$parse.initialize(
+      'gkNock8bO0VYjSlEhS2gmsOqyr9eSq35GcOWBrGU', // This is your Application ID
+      'ArOZ0ctTLLaLhhshVjueU4eG5QW8QrBxnWvr9Ua1', // This is your Javascript key
+      '8dkxqdjHShlVAabpAJDBbAO3h9cGmst0s5Yk4H5s' // This is your Master key (never use it in the frontend)
+    )
+    this.login()
+  },
+  methods: {
+    async login() {
+      try {
+        // Pass the username and password to logIn function
+        const user = await this.$parse.User.logIn('MrHatch', 'fatchance')
+        // Do stuff after successful login
+        console.log('Logged in user', user)
+      } catch (error) {
+        console.error('Error while logging in user', error)
+      }
+    }
   }
 }
 </script>
