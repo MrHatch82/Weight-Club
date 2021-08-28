@@ -6,6 +6,13 @@
         {{ index }} lost {{ rank > 0 ? rank : 0 }} kg.
       </li>
     </ul>
+    <div>
+      <p>
+        <span class="fat">{{ total }} kg</span><br />
+        of fat collectively<br />
+        eradicated this month!
+      </p>
+    </div>
   </div>
 </template>
 
@@ -22,7 +29,7 @@ export default {
             borderColor: 'rgb(255, 0, 255)',
             fill: false,
             spanGaps: true,
-            tension: 0.2
+            tension: 0.2,
           },
           {
             label: 'Paul',
@@ -30,7 +37,7 @@ export default {
             borderColor: 'rgb(255, 255, 0)',
             fill: false,
             spanGaps: true,
-            tension: 0.2
+            tension: 0.2,
           },
           {
             label: 'Mary',
@@ -38,39 +45,92 @@ export default {
             borderColor: 'rgb(0, 255, 255)',
             fill: false,
             spanGaps: true,
-            tension: 0.2
-          }
-        ]
+            tension: 0.2,
+          },
+        ],
       },
       options: {
         legend: {
-          position: 'bottom'
-        }
-      }
-    }
+          position: 'bottom',
+        },
+      },
+    };
   },
   computed: {
     ranks() {
-      const ranks = {}
+      const ranks = {};
 
       this.chart.datasets.forEach((dataset) => {
-        let lastWeight = null
-        let difference = 0
+        let lastWeight = null;
+        let difference = 0;
 
         dataset.data.forEach((weight, index) => {
           if (weight !== null && index > 0) {
-            difference += lastWeight - weight
+            difference += lastWeight - weight;
           }
-          lastWeight = weight || lastWeight
-        })
+          lastWeight = weight || lastWeight;
+        });
 
-        ranks[dataset.label] = difference
-      })
+        ranks[dataset.label] = difference;
+      });
 
-      return ranks
-    }
-  }
-}
+      return ranks;
+    },
+    total() {
+      let total = 0;
+
+      this.chart.datasets.forEach((dataset) => {
+        let lastWeight = null;
+        let difference = 0;
+
+        dataset.data.forEach((weight, index) => {
+          if (weight !== null && index > 0) {
+            difference += lastWeight - weight;
+          }
+          lastWeight = weight || lastWeight;
+        });
+
+        total += difference;
+      });
+
+      return total;
+    },
+  },
+  mounted() {
+    this.getWeights();
+  },
+  methods: {
+    async getWeights() {
+      const Weights = this.$parse.Object.extend('Weights');
+      const query = new this.$parse.Query(Weights);
+      // You can also query by using a parameter of an object
+      query.equalTo('userID', this.$store.state.loggedInUserId);
+      // const results = await query.find()
+      try {
+        const results = await query.find();
+
+        const weights = [];
+
+        for (const object of results) {
+          // Access the Parse Object attributes using the .GET method
+          const userID = object.get('userID');
+          const date = object.get('date');
+          const weight = object.get('weight');
+
+          weights.push({
+            userID,
+            date,
+            weight,
+          });
+        }
+
+        console.log(weights);
+      } catch (error) {
+        console.error('Error while fetching Weights', error);
+      }
+    },
+  },
+};
 </script>
 
 <style lang='scss'>
