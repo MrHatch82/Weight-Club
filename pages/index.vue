@@ -1,16 +1,18 @@
 <template>
-  <div class="home container text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
-    <div v-if="loading" class="spinner" />
-    <div v-else>
-      <p :class="{ 'text-danger' : error}" v-html="error || 'Please log in'" />
-      <b-form class="mb-2" @submit.prevent="login">
-        <b-form-input v-model="name" placeholder="Name"></b-form-input>
-        <b-form-input v-model="password" type="password" placeholder="Password"></b-form-input>
-        <b-button type="submit" variant="primary">
-          Submit
-        </b-button>
-      </b-form>
-    </div>
+  <div class="home container text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center position: relative;">
+    <transition name="fade">
+      <div v-if="loading" key="spinner" class="spinner" />
+      <div v-else key="login">
+        <p :class="{ 'text-danger' : error}" v-html="error || 'Please log in'" />
+        <b-form class="mb-2" @submit.prevent="login">
+          <b-form-input v-model="name" placeholder="Name"></b-form-input>
+          <b-form-input v-model="password" type="password" placeholder="Password"></b-form-input>
+          <b-button type="submit" variant="primary">
+            Submit
+          </b-button>
+        </b-form>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -63,6 +65,9 @@ export default {
   }
 
   .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
     width: 50px;
     height: 50px;
     border: 4px solid $primary;
@@ -73,8 +78,8 @@ export default {
   }
 
   @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
   }
 }
 </style>

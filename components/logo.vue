@@ -1,5 +1,5 @@
 <template>
-  <div id="logo" class="text-center py-5">
+  <div id="logo" class="text-center py-4">
     <h1 class="text-primary">
       FAT FRIENDS
     </h1>
