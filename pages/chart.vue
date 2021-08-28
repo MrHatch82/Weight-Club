@@ -1,5 +1,5 @@
 <template>
-  <div class="container text-center pt-5">
+  <div class="page container text-center">
     <div class="chart-wrapper mb-5">
       <client-only>
         <chart-line

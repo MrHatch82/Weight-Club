@@ -1,18 +1,21 @@
 <template>
-  <div class="home container text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center position: relative;">
-    <transition name="fade">
-      <div v-if="loading" key="spinner" class="spinner" />
-      <div v-else key="login">
-        <p :class="{ 'text-danger' : error}" v-html="error || 'Please log in'" />
-        <b-form class="mb-2" @submit.prevent="login">
-          <b-form-input v-model="name" placeholder="Name"></b-form-input>
-          <b-form-input v-model="password" type="password" placeholder="Password"></b-form-input>
-          <b-button type="submit" variant="primary">
-            Submit
-          </b-button>
-        </b-form>
-      </div>
-    </transition>
+  <div class="home container text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
+    <logo :show-subtitle="true" class="logo mb-5" />
+    <div ref="loginWrapper" class="position-relative mb-5">
+      <transition name="fade">
+        <div v-if="loading" key="spinner" class="spinner" />
+        <div v-else key="login">
+          <p :class="{ 'text-danger' : error}" v-html="error || 'Please log in to get started.'" />
+          <b-form class="mb-2" @submit.prevent="login">
+            <b-form-input v-model="name" placeholder="Name"></b-form-input>
+            <b-form-input v-model="password" type="password" placeholder="Password"></b-form-input>
+            <b-button type="submit" variant="primary">
+              Submit
+            </b-button>
+          </b-form>
+        </div>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -33,6 +36,10 @@ export default {
       // this.$config.masterKey, // This is your Master key (never use it in the frontend)
     );
     this.$parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
+
+    this.$nextTick(() => {
+      this.$refs.loginWrapper.style.height = `${this.$refs.loginWrapper.clientHeight}px`;
+    });
   },
   methods: {
     async login() {
@@ -54,9 +61,12 @@ export default {
 
 <style lang="scss">
 .home {
-  .fat {
-    font-size: 24px;
-    font-weight: 600;
+  .logo {
+    width: 250px;
+
+    img {
+      margin-bottom: 0.25rem;
+    }
   }
 
   input {

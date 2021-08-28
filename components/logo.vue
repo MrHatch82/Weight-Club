@@ -1,17 +1,20 @@
 <template>
-  <div id="logo" class="text-center py-4">
-    <h1 class="text-primary">
-      FAT FRIENDS
-    </h1>
-    <div class="subtitle" v-html="subtitle" />
+  <div id="logo" class="text-center">
+    <img src="/images/logo.png" alt="Fat Friends Logo">
+    <div v-if="showSubtitle" class="subtitle" v-html="subtitle" />
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    showSubtitle: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
-      rando: false,
       subtitles: [
         'Get off your bum!',
         'Competitive weight loss made easy!',
@@ -23,34 +26,27 @@ export default {
         'Our motto: <b>LTG</b> - Lower Thy Groceries!',
         'Burn it, baby!',
         'What have you got to lose?',
-        'Lose & schmoose',
+        'Striving to be fit friends!',
         'Your loss!',
       ],
     };
   },
   computed: {
     subtitle() {
-      if (this.rando) {
-        return this.subtitles[this.rando];
-      }
-      return '...';
+      return this.subtitles[Math.floor(Math.random() * this.subtitles.length)];
     },
-  },
-  mounted() {
-    this.rando = Math.floor(Math.random() * this.subtitles.length);
   },
 };
 </script>
 
 <style lang='scss'>
 #logo {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-
   .subtitle {
     color: #aaa;
+  }
+
+  img {
+    width: 100%;
   }
 }
 </style>

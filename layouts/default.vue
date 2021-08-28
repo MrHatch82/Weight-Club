@@ -1,6 +1,6 @@
 <template>
   <div class="layout-default d-flex flex-column">
-    <logo />
+    <topnav />
     <Nuxt />
   </div>
 </template>

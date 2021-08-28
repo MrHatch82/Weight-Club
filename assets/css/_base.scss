@@ -11,3 +11,7 @@ html {
 .layout-default {
   min-height: 100vh;
 }
+
+.page {
+  padding-top: calc(#{$topnavHeight} + 4rem);
+}
