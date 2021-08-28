@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="layout-default d-flex flex-column">
     <logo />
     <Nuxt />
   </div>

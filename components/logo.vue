@@ -1,5 +1,5 @@
 <template>
-  <div class="container text-center my-5">
+  <div id="logo" class="text-center py-5">
     <h1>FAT FRIENDS</h1>
     <div class="subtitle" v-html="subtitle" />
   </div>
@@ -22,26 +22,33 @@ export default {
         'Burn it, baby!',
         'What have you got to lose?',
         'Lose & schmoose',
-        'Your loss!'
-      ]
-    }
+        'Your loss!',
+      ],
+    };
   },
   computed: {
     subtitle() {
       if (this.rando) {
-        return this.subtitles[this.rando]
+        return this.subtitles[this.rando];
       }
-      return '...'
-    }
+      return '...';
+    },
   },
   mounted() {
-    this.rando = Math.floor(Math.random() * this.subtitles.length)
-  }
-}
+    this.rando = Math.floor(Math.random() * this.subtitles.length);
+  },
+};
 </script>
 
 <style lang='scss'>
-.subtitle {
-  color: #aaa;
+#logo {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+
+  .subtitle {
+    color: #aaa;
+  }
 }
 </style>

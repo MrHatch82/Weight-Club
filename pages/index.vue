@@ -1,7 +1,7 @@
 <template>
-  <div class="home container text-center pt-5">
+  <div class="home container text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
     <p>Please log in</p>
-    <b-form @submit.prevent="login">
+    <b-form class="mb-2" @submit.prevent="login">
       <b-form-input v-model="name" placeholder="Name"></b-form-input>
       <b-form-input v-model="password" placeholder="Password"></b-form-input>
       <b-button type="submit" variant="primary">
@@ -20,7 +20,6 @@ export default {
 
     };
   },
-
   mounted() {
     this.$parse.initialize(
       this.$config.appId, // This is your Application ID
