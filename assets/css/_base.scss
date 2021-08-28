@@ -15,3 +15,8 @@ html {
 .page {
   padding-top: calc(#{$topnavHeight} + 4rem);
 }
+
+.btn {
+  text-transform: uppercase;
+  font-weight: 600;
+}
