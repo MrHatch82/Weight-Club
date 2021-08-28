@@ -1,0 +1,13 @@
+body,
+html {
+  min-height: 100%;
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+#__nuxt,
+#__layout,
+.layout-default {
+  min-height: 100vh;
+}

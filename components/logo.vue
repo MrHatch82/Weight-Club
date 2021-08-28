@@ -1,6 +1,8 @@
 <template>
   <div id="logo" class="text-center py-5">
-    <h1>FAT FRIENDS</h1>
+    <h1 class="text-primary">
+      FAT FRIENDS
+    </h1>
     <div class="subtitle" v-html="subtitle" />
   </div>
 </template>

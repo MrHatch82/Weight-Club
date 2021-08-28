@@ -27,7 +27,7 @@ export default {
             borderColor: 'rgb(255, 0, 255)',
             fill: false,
             spanGaps: true,
-            tension: 0.2
+            tension: 0.2,
           },
           {
             label: 'Paul',
@@ -35,7 +35,7 @@ export default {
             borderColor: 'rgb(255, 255, 0)',
             fill: false,
             spanGaps: true,
-            tension: 0.2
+            tension: 0.2,
           },
           {
             label: 'Mary',
@@ -43,18 +43,18 @@ export default {
             borderColor: 'rgb(0, 255, 255)',
             fill: false,
             spanGaps: true,
-            tension: 0.2
-          }
-        ]
+            tension: 0.2,
+          },
+        ],
       },
       options: {
         legend: {
-          position: 'bottom'
-        }
-      }
-    }
-  }
-}
+          position: 'bottom',
+        },
+      },
+    };
+  },
+};
 </script>
 
 <style lang='scss'>

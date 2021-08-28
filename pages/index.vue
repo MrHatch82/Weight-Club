@@ -1,13 +1,16 @@
 <template>
   <div class="home container text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
-    <p>Please log in</p>
-    <b-form class="mb-2" @submit.prevent="login">
-      <b-form-input v-model="name" placeholder="Name"></b-form-input>
-      <b-form-input v-model="password" placeholder="Password"></b-form-input>
-      <b-button type="submit" variant="primary">
-        Submit
-      </b-button>
-    </b-form>
+    <div v-if="loading" class="spinner" />
+    <div v-else>
+      <p>Please log in</p>
+      <b-form class="mb-2" @submit.prevent="login">
+        <b-form-input v-model="name" placeholder="Name"></b-form-input>
+        <b-form-input v-model="password" placeholder="Password"></b-form-input>
+        <b-button type="submit" variant="primary">
+          Submit
+        </b-button>
+      </b-form>
+    </div>
   </div>
 </template>
 
@@ -17,7 +20,7 @@ export default {
     return {
       name: '',
       password: '',
-
+      loading: false,
     };
   },
   mounted() {
