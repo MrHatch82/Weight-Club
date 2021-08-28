@@ -34,6 +34,7 @@ export default {
   plugins: [
     { src: '~/plugins/chart.js', mode: 'client' },
     { src: '~/plugins/parse.js', mode: 'client' },
+    '~/plugins/moment.js',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components

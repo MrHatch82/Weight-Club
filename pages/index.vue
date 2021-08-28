@@ -10,7 +10,7 @@
       <transition name="fade">
         <div v-if="loading" key="spinner" class="spinner" />
         <div v-else key="login">
-          <p :class="{ 'text-danger' : error}" v-html="error || 'Please log in to get started.'" />
+          <p class="text-secondary" :class="{ 'text-danger' : error}" v-html="error || 'Please log in to get started.'" />
           <b-form class="mb-2" @submit.prevent="login">
             <b-form-input v-model="name" placeholder="Name"></b-form-input>
             <b-form-input v-model="password" type="password" placeholder="Password"></b-form-input>

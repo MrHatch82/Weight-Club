@@ -42,7 +42,7 @@ export default {
 <style lang='scss'>
 #logo {
   .subtitle {
-    color: #aaa;
+    color: $tertiary;
   }
 
   img {
