@@ -2,10 +2,10 @@
   <div class="home container text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
     <div v-if="loading" class="spinner" />
     <div v-else>
-      <p>Please log in</p>
+      <p :class="{ 'text-danger' : error}" v-html="error || 'Please log in'" />
       <b-form class="mb-2" @submit.prevent="login">
         <b-form-input v-model="name" placeholder="Name"></b-form-input>
-        <b-form-input v-model="password" placeholder="Password"></b-form-input>
+        <b-form-input v-model="password" type="password" placeholder="Password"></b-form-input>
         <b-button type="submit" variant="primary">
           Submit
         </b-button>
@@ -21,6 +21,7 @@ export default {
       name: '',
       password: '',
       loading: false,
+      error: null,
     };
   },
   mounted() {
@@ -33,13 +34,16 @@ export default {
   },
   methods: {
     async login() {
+      this.loading = true;
+
       try {
         const user = await this.$parse.User.logIn(this.name, this.password);
         this.$store.commit('userLoggedIn', user.id);
 
-        this.$router.push('/ranking');
+        this.$router.push('/chart');
       } catch (error) {
-        console.error('Error while logging in user', error);
+        this.loading = false;
+        this.error = error;
       }
     },
   },
@@ -56,6 +60,21 @@ export default {
   input {
     width: 300px;
     margin: 0 auto 1rem;
+  }
+
+  .spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid $primary;
+    border-bottom: 4px solid $secondary;
+    border-top: 4px solid $secondary;
+    border-radius: 50%;
+    animation: spin 1s linear infinite ;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
   }
 }
 </style>
