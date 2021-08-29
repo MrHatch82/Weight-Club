@@ -4,6 +4,7 @@
       <client-only>
         <chart-line
           v-if="dataReady"
+          ref="chart"
           class="chart"
           :data="chart"
           :options="options"
@@ -21,7 +22,7 @@
         <button class="btn btn-primary" @click="showPopup">
           Cancel
         </button>
-        <button class="btn btn-primary" @click="showPopup">
+        <button class="btn btn-primary" @click="publishWeight">
           Submit
         </button>
       </div>
@@ -67,6 +68,19 @@ export default {
     this.createLabels();
   },
   methods: {
+    async publishWeight() {
+      const myNewObject = new this.$parse.Object('Weights');
+      myNewObject.set('date', parseInt(this.$moment().format('YYMMDD'), 10));
+      myNewObject.set('weight', parseInt(this.newWeight, 10));
+      myNewObject.set('userID', this.$store.state.loggedInUserId);
+      try {
+        await myNewObject.save();
+        this.getWeights();
+        this.showPopup();
+      } catch (error) {
+        console.error('Error while creating Weights: ', error);
+      }
+    },
     showPopup() {
       if (this.$refs && this.$refs.popup) {
         this.$refs.popup.toggle();
@@ -91,6 +105,10 @@ export default {
         data.push(kg);
       });
       this.chart.datasets[0].data = data;
+
+      if (this.$refs && this.$refs.chart) {
+        this.$refs.chart.update();
+      }
     },
     async getWeights() {
       const Weights = this.$parse.Object.extend('Weights');
