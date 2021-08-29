@@ -5,7 +5,7 @@
       <p class="mb-5">
         Fat Friends is a communal weight loss platform.<br>
         <b>It is not a weight loss program.</b>
-        Its sole purpose is to bring people together in their weight loss endeavour, to ensure no falling off the wagon, to have fun and maybe get some tips along the way.
+        Its sole purpose is to bring people together in their weight loss endeavour, to prevent falling off the wagon, to have fun and maybe get some tips along the way.
       </p>
       <transition name="fade">
         <div v-if="loading" key="spinner" class="spinner" />
@@ -83,8 +83,8 @@ export default {
     width: 50px;
     height: 50px;
     border: 4px solid $primary;
-    border-bottom: 4px solid $secondary;
-    border-top: 4px solid $secondary;
+    border-bottom: 4px solid $tertiary;
+    border-top: 4px solid $tertiary;
     border-radius: 50%;
     animation: spin 1s linear infinite ;
   }
