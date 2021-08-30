@@ -10,8 +10,8 @@
             class="chart"
             :data="chart"
             :options="options"
-            :width="800"
-            :height="500"
+            :width="1110"
+            :height="475"
           />
           <div v-else class="spinner" />
         </transition>
@@ -35,7 +35,7 @@ export default {
         labels: null,
         datasets: [
           {
-            label: 'Weight',
+            label: 'Weight in kg',
             data: null,
             borderColor: 'rgb(0, 255, 255)',
             fill: false,
@@ -64,6 +64,8 @@ export default {
         },
       },
       weights: null,
+      maxWeigt: null,
+      minWeight: null,
       loading: true,
     };
   },
@@ -97,6 +99,8 @@ export default {
     populateData(weights) {
       const data = [];
       const weightsOrdered = [];
+      let maxWeight = 0;
+      let minWeight = 1000;
 
       this.daysInMonth.forEach((day) => {
         let kg = null;
@@ -106,6 +110,14 @@ export default {
           if (this.$moment(day).format('YYMMDD') === `${weight.date}`) {
             kg = weight.weight;
             objectId = weight.objectId;
+
+            if (weight.weight > maxWeight) {
+              maxWeight = weight.weight;
+            }
+
+            if (weight.weight < minWeight) {
+              minWeight = weight.weight;
+            }
           }
         });
         data.push(kg);
@@ -115,6 +127,12 @@ export default {
           objectId,
         });
       });
+
+      this.maxWeigt = maxWeight;
+      this.minWeight = minWeight;
+
+      this.options.scales.yAxes[0].ticks.suggestedMin = minWeight - 5;
+      this.options.scales.yAxes[0].ticks.suggestedMax = maxWeight + 5;
 
       this.chart.datasets[0].data = data;
       this.weights = weightsOrdered;
@@ -162,7 +180,7 @@ export default {
 
 <style lang='scss'>
 .chart-wrapper {
-  padding-bottom: 62.5%;
+  padding-bottom: 42.79%;
   width: 100%;
   position: relative;
 }
