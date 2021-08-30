@@ -3,17 +3,19 @@
     <h1>Weight tracking</h1>
     <div class="chart-wrapper mb-5">
       <client-only>
-        <chart-line
-          v-if="dataReady"
-          ref="chart"
-          class="chart"
-          :data="chart"
-          :options="options"
-          :width="800"
-          :height="500"
-        />
+        <transition name="fade">
+          <chart-line
+            v-if="dataReady"
+            ref="chart"
+            class="chart"
+            :data="chart"
+            :options="options"
+            :width="800"
+            :height="500"
+          />
+          <div v-else class="spinner" />
+        </transition>
       </client-only>
-      <div v-if="loading" class="spinner" />
     </div>
     <button class="btn btn-primary" @click="showPopup">
       Add/edit weight
