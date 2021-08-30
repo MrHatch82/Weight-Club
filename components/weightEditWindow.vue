@@ -79,7 +79,6 @@ export default {
       let weightObject = new this.$parse.Object('Weights');
 
       if (this.weights[this.selectedDayIndex].objectId) {
-        console.log('edit weight');
         const Weights = this.$parse.Object.extend('Weights');
         weightObject = await new this.$parse.Query(Weights).get(this.weights[this.selectedDayIndex].objectId);
       }

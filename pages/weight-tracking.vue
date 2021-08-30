@@ -13,6 +13,7 @@
           :height="500"
         />
       </client-only>
+      <div v-if="loading" class="spinner" />
     </div>
     <button class="btn btn-primary" @click="showPopup">
       Add/edit weight
@@ -61,6 +62,7 @@ export default {
         },
       },
       weights: null,
+      loading: true,
     };
   },
   computed: {
@@ -120,6 +122,8 @@ export default {
       }
     },
     async getWeights() {
+      this.loading = true;
+
       const Weights = this.$parse.Object.extend('Weights');
       const query = new this.$parse.Query(Weights);
       // You can also query by using a parameter of an object
@@ -145,6 +149,7 @@ export default {
         }
 
         this.populateData(weights);
+        this.loading = false;
       } catch (error) {
         console.error('Error while fetching Weights', error);
       }
