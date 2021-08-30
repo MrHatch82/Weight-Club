@@ -1,7 +1,20 @@
 <template>
-  <div class="page container text-center">
-    <h1>Weight tracking</h1>
-    <div class="chart-wrapper mb-5">
+  <div class="page page-weight-tracking container text-center">
+    <h1>
+      Weight tracking
+    </h1>
+    <div class="row mb-4 justify-content-between">
+      <div class="col-lg-4">
+        {{ $moment().format('MMMM') }}
+      </div>
+      <div class="col-lg-4">
+        <button class="w-100 btn btn-primary" @click="showPopup">
+          Add/edit weight
+        </button>
+      </div>
+    </div>
+
+    <div class="chart-wrapper mb-4">
       <client-only>
         <transition name="fade">
           <chart-line
@@ -17,9 +30,25 @@
         </transition>
       </client-only>
     </div>
-    <button class="btn btn-primary" @click="showPopup">
-      Add/edit weight
-    </button>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="blurp">
+          <span class="text-secondary">15 kg</span> weight loss this month
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="blurp">
+          <span class="text-secondary">15 kg</span> total weight loss
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="blurp">
+          <span class="text-secondary">15 %</span> of goal reached
+        </div>
+      </div>
+    </div>
+
     <popup ref="popup" title="Add/edit weight">
       <weightEditWindow :days="daysInMonth" :weights="weights">
       </weighteditwindow>
@@ -45,6 +74,7 @@ export default {
             pointHoverRadius: 8,
             pointBackgroundColor: 'rgb(255, 255, 0)',
             pointBorderColor: 'rgb(255, 255, 0)',
+            borderWidth: 5,
           },
         ],
       },
@@ -179,15 +209,28 @@ export default {
 </script>
 
 <style lang='scss'>
-.chart-wrapper {
-  padding-bottom: 42.79%;
-  width: 100%;
-  position: relative;
-}
+.page-weight-tracking {
+  .chart-wrapper {
+    padding-bottom: 42.79%;
+    width: 100%;
+    position: relative;
+  }
 
-.chart {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  .chart {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .blurp {
+    padding: 0.375rem 0.75rem;
+    border-radius: 0.25rem;
+    background: #262626;
+    color: $primary;
+    font-weight: 600;
+    line-height: 1.5;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
 }
 </style>

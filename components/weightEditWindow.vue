@@ -66,11 +66,11 @@ export default {
       }
 
       this.selectedDayIndex = newDayIndex;
-      this.newWeight = this.weights[this.selectedDayIndex].weight;
+      this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.weights[this.selectedDayIndex].weight}` : '';
     },
     resetWeightEdit() {
       this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
-      this.newWeight = this.weights[this.selectedDayIndex].weight;
+      this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.weights[this.selectedDayIndex].weight}` : '';
     },
     closePopup() {
       this.$parent.toggle();
@@ -101,7 +101,7 @@ export default {
         const dotCount = (this.newWeight.match(/\./g) || []).length;
 
         if (!this.newWeight.endsWith('.') || dotCount > 1) {
-          this.newWeight = `${Math.trunc(parseFloat(this.newWeight) * 10) / 10}`;
+          this.newWeight = `${Math.trunc(parseFloat(this.newWeight) * 100) / 100}`;
         }
       }
     },
