@@ -47,7 +47,7 @@
 
   .tab {
     display: inline-block;
-    padding: 1rem 1rem 0.5rem;
+    padding: 1rem 1rem 0.25rem;
     min-width: 200px;
     margin: 0 0.25rem -1rem;
     border-radius: 6px 6px 0 0;
@@ -57,11 +57,11 @@
     background: #2d2d2d;
     cursor: pointer;
     box-shadow: inset 0px -5px 5px -4px rgba(0,0,0,0.15);
-    transition: padding 0.25s ease-in-out, color 0.25s, background 0.25s 0.25s, box-shadow 0.25s 0.25s , transform 0.25s ease-in-out;
+    transition: padding 0.25s ease-in-out, color 0.25s, background 0.25s, box-shadow 0.25s , transform 0.25s ease-in-out;
     color: darken($light, 15%);
     text-decoration: none;
     text-align: left;
-    transform: translateY(0.5rem);
+    transform: translateY(0.75rem);
 
     &:hover {
       color: $tertiary;
