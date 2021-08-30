@@ -9,7 +9,7 @@
         ▶
       </button>
     </div>
-    <b-form-input v-model="newWeight" placeholder="Enter weight" class="mb-4"></b-form-input>
+    <b-form-input v-model="newWeight" placeholder="Enter weight" class="mb-4" @keyup="sanitizeWeight"></b-form-input>
     <div class="d-flex justify-content-between">
       <button class="btn btn-primary" @click="closePopup">
         Cancel
@@ -94,6 +94,17 @@ export default {
         console.error('Error while saving Weight: ', error);
       }
     },
+    sanitizeWeight() {
+      if (this.newWeight) {
+        this.newWeight.replace(/[^0-9.]/g, '');
+
+        const dotCount = (this.newWeight.match(/\./g) || []).length;
+
+        if (!this.newWeight.endsWith('.') || dotCount > 1) {
+          this.newWeight = `${Math.trunc(parseFloat(this.newWeight) * 10) / 10}`;
+        }
+      }
+    },
   },
 };
 </script>
@@ -109,6 +120,7 @@ export default {
 
   input {
     text-align: center;
+    font-weight: 600;
   }
 }
 </style>
