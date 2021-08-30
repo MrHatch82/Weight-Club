@@ -1,5 +1,5 @@
 <template>
-  <div class="page-ranking container text-center pt-5">
+  <div class="page page-ranking container text-center">
     <h1>RANKING</h1>
     <ul>
       <li v-for="(rank, index) in ranks" :key="index">

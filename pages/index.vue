@@ -47,7 +47,7 @@ export default {
         const user = await this.$parse.User.logIn(this.name, this.password);
         this.$store.commit('userLoggedIn', user.id);
 
-        this.$router.push('/chart');
+        this.$router.push('/weight-tracking');
       } catch (error) {
         this.loading = false;
         this.error = error;
@@ -74,24 +74,6 @@ export default {
   input {
     width: 200px;
     margin: 0 auto 1rem;
-  }
-
-  .spinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 50px;
-    height: 50px;
-    border: 4px solid $primary;
-    border-bottom: 4px solid $tertiary;
-    border-top: 4px solid $tertiary;
-    border-radius: 50%;
-    animation: spin 1s linear infinite ;
-  }
-
-  @keyframes spin {
-    from { transform: translate(-50%, -50%) rotate(0deg); }
-    to { transform: translate(-50%, -50%) rotate(360deg); }
   }
 }
 </style>

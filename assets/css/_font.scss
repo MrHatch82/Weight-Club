@@ -1,5 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&display=swap');
 
+h1 {
+  color: $secondary;
+  margin-bottom: 3rem;
+  text-transform: uppercase;
+}
+
 b {
   font-weight: 600;
 }

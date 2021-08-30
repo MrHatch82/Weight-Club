@@ -1,5 +1,6 @@
 <template>
   <div class="page container text-center">
+    <h1>Weight tracking</h1>
     <div class="chart-wrapper mb-5">
       <client-only>
         <chart-line
@@ -14,18 +15,11 @@
       </client-only>
     </div>
     <button class="btn btn-primary" @click="showPopup">
-      Add todays weight
+      Add/edit weight
     </button>
-    <popup ref="popup" title="Weight options">
-      <b-form-input v-model="newWeight" placeholder="Enter weight" class="mb-4"></b-form-input>
-      <div class="d-flex justify-content-between">
-        <button class="btn btn-primary" @click="showPopup">
-          Cancel
-        </button>
-        <button class="btn btn-primary" @click="publishWeight">
-          Submit
-        </button>
-      </div>
+    <popup ref="popup" title="Add/edit weight">
+      <weightEditWindow :days="daysInMonth" :weights="weights">
+      </weighteditwindow>
     </popup>
   </div>
 </template>
@@ -34,7 +28,6 @@
 export default {
   data() {
     return {
-      newWeight: null,
       chart: {
         labels: null,
         datasets: [
@@ -45,12 +38,29 @@ export default {
             fill: false,
             spanGaps: true,
             tension: 0.2,
+            pointRadius: 6,
+            pointHoverRadius: 8,
+            pointBackgroundColor: 'rgb(255, 255, 0)',
+            pointBorderColor: 'rgb(255, 255, 0)',
           },
         ],
       },
       options: {
         legend: false,
+        scales: {
+          yAxes: [{
+            scaleLabel: {
+              display: false,
+              labelString: 'kg',
+            },
+            ticks: {
+              suggestedMin: 90,
+              suggestedMax: 140,
+            },
+          }],
+        },
       },
+      weights: null,
     };
   },
   computed: {
@@ -68,19 +78,6 @@ export default {
     this.createLabels();
   },
   methods: {
-    async publishWeight() {
-      const myNewObject = new this.$parse.Object('Weights');
-      myNewObject.set('date', parseInt(this.$moment().format('YYMMDD'), 10));
-      myNewObject.set('weight', parseInt(this.newWeight, 10));
-      myNewObject.set('userID', this.$store.state.loggedInUserId);
-      try {
-        await myNewObject.save();
-        this.getWeights();
-        this.showPopup();
-      } catch (error) {
-        console.error('Error while creating Weights: ', error);
-      }
-    },
     showPopup() {
       if (this.$refs && this.$refs.popup) {
         this.$refs.popup.toggle();
@@ -95,16 +92,28 @@ export default {
     },
     populateData(weights) {
       const data = [];
+      const weightsOrdered = [];
+
       this.daysInMonth.forEach((day) => {
         let kg = null;
+        let objectId = null;
+
         weights.forEach((weight) => {
           if (this.$moment(day).format('YYMMDD') === `${weight.date}`) {
             kg = weight.weight;
+            objectId = weight.objectId;
           }
         });
         data.push(kg);
+
+        weightsOrdered.push({
+          weight: kg,
+          objectId,
+        });
       });
+
       this.chart.datasets[0].data = data;
+      this.weights = weightsOrdered;
 
       if (this.$refs && this.$refs.chart) {
         this.$refs.chart.update();
@@ -131,6 +140,7 @@ export default {
             userID,
             date,
             weight,
+            objectId: object.id,
           });
         }
 

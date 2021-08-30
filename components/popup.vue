@@ -1,5 +1,6 @@
 <template>
   <div :class="{show: show}" class="popup">
+    <div class="popup-overlay" @click="toggle" />
     <div class="popup-window">
       <div class="header">
         {{ title }}
@@ -25,6 +26,10 @@ export default {
   methods: {
     toggle() {
       this.show = !this.show;
+
+      if (this.show) {
+        this.$nuxt.$emit('weight-edit-open');
+      }
     },
   },
 };
@@ -40,11 +45,19 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0,0,0,0.7);
   z-index: 21;
   opacity: 0;
   transition: opacity 0.25s linear;
   pointer-events: none;
+
+  .popup-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,0.7);
+  }
 
   .popup-window {
     background: $dark;
