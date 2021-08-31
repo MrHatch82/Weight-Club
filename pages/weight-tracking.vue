@@ -3,14 +3,28 @@
     <h1>
       Weight tracking
     </h1>
-    <div class="row mb-4 justify-content-between">
-      <div class="col-lg-4">
-        {{ $moment().format('MMMM') }}
+    <div class="row mb-4 justify-content-center">
+      <div class="col-lg-3">
+        <div class="datepicker">
+          <button class="btn btn-primary btn-sm mr-2 btn-arrow" @click="dateSubtract(1, 'month')">
+            ◀
+          </button>
+          {{ currentMonth }}
+          <button class="btn btn-primary btn-sm ml-2 btn-arrow" @click="dateAdd(1, 'month')">
+            ▶
+          </button>
+        </div>
       </div>
-      <div class="col-lg-4">
-        <button class="w-100 btn btn-primary" @click="showPopup">
-          Add/edit weight
-        </button>
+      <div class="col-lg-3">
+        <div class="datepicker">
+          <button class="btn btn-primary btn-sm mr-2 btn-arrow" @click="dateSubtract(1, 'year')">
+            ◀
+          </button>
+          {{ currentYear }}
+          <button class="btn btn-primary btn-sm ml-2 btn-arrow" @click="dateAdd(1, 'year')">
+            ▶
+          </button>
+        </div>
       </div>
     </div>
 
@@ -18,7 +32,7 @@
       <client-only>
         <transition name="fade">
           <chart-line
-            v-if="dataReady"
+            v-if="!loading"
             ref="chart"
             class="chart"
             :data="chart"
@@ -32,20 +46,20 @@
     </div>
 
     <div class="row">
-      <div class="col-lg-4">
+      <div v-for="fact in facts" :key="fact.text" class="col-lg-3">
         <div class="blurp">
-          <span class="text-secondary">15 kg</span> weight loss this month
+          <div class="big text-secondary">
+            {{ fact.variable }}
+          </div> {{ fact.text }}
         </div>
       </div>
+    </div>
+
+    <div class="row justify-content-end">
       <div class="col-lg-4">
-        <div class="blurp">
-          <span class="text-secondary">15 kg</span> total weight loss
-        </div>
-      </div>
-      <div class="col-lg-4">
-        <div class="blurp">
-          <span class="text-secondary">15 %</span> of goal reached
-        </div>
+        <button class="w-100 btn btn-primary" @click="showPopup">
+          Add/edit weight
+        </button>
       </div>
     </div>
 
@@ -60,6 +74,25 @@
 export default {
   data() {
     return {
+      selectedDate: this.$moment().format('YYYYMMDD'),
+      facts: [
+        {
+          variable: `15 ${this.$store.state.weightFormat}`,
+          text: 'total weight loss',
+        },
+        {
+          variable: `15 ${this.$store.state.weightFormat}`,
+          text: 'weight loss this month',
+        },
+        {
+          variable: `15 ${this.$store.state.weightFormat}`,
+          text: 'to go',
+        },
+        {
+          variable: '15 %',
+          text: 'of goal reached',
+        },
+      ],
       chart: {
         labels: null,
         datasets: [
@@ -100,8 +133,14 @@ export default {
     };
   },
   computed: {
+    currentMonth() {
+      return this.$moment(this.selectedDate).format('MMMM');
+    },
+    currentYear() {
+      return this.$moment(this.selectedDate).format('YYYY');
+    },
     daysInMonth() {
-      return new Array(this.$moment().daysInMonth()).fill(null).map((x, i) => this.$moment().startOf('month').add(i, 'days'));
+      return new Array(this.$moment(this.selectedDate).daysInMonth()).fill(null).map((x, i) => this.$moment(this.selectedDate).startOf('month').add(i, 'days'));
     },
     dataReady() {
       return this.chart.labels !== null && this.chart.datasets[0].data !== null;
@@ -110,10 +149,20 @@ export default {
   mounted() {
     this.chart.labels = this.daysInMonth;
 
-    this.getWeights();
     this.createLabels();
+    this.getWeights();
   },
   methods: {
+    dateAdd(number, unit) {
+      this.selectedDate = this.$moment(this.selectedDate).add(number, unit).format('YYYYMMDD');
+      this.createLabels();
+      this.getWeights();
+    },
+    dateSubtract(number, unit) {
+      this.selectedDate = this.$moment(this.selectedDate).subtract(number, unit).format('YYYYMMDD');
+      this.createLabels();
+      this.getWeights();
+    },
     showPopup() {
       if (this.$refs && this.$refs.popup) {
         this.$refs.popup.toggle();
@@ -137,7 +186,7 @@ export default {
         let objectId = null;
 
         weights.forEach((weight) => {
-          if (this.$moment(day).format('YYMMDD') === `${weight.date}`) {
+          if (this.$moment(day).format('YYYYMMDD') === `${weight.date}`) {
             kg = weight.weight;
             objectId = weight.objectId;
 
@@ -178,6 +227,8 @@ export default {
       const query = new this.$parse.Query(Weights);
       // You can also query by using a parameter of an object
       query.equalTo('userID', this.$store.state.loggedInUserId);
+      query.greaterThanOrEqualTo('date', parseInt(this.$moment(this.selectedDate).startOf('month').format('YYYYMMDD')), 10);
+      query.lessThanOrEqualTo('date', parseInt(this.$moment(this.selectedDate).endOf('month').format('YYYYMMDD')), 10);
       // const results = await query.find()
       try {
         const results = await query.find();
@@ -198,6 +249,8 @@ export default {
           });
         }
 
+        console.log(weights);
+
         this.populateData(weights);
         this.loading = false;
       } catch (error) {
@@ -210,6 +263,28 @@ export default {
 
 <style lang='scss'>
 .page-weight-tracking {
+  .datepicker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: $tertiary;
+    font-weight: 600;
+    letter-spacing: 1px;
+    background: #272727;
+    height: 38px;
+    text-transform: uppercase;
+
+    .btn {
+      height: 38px;
+      width: 38px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      padding-bottom: 5px;
+    }
+  }
+
   .chart-wrapper {
     padding-bottom: 42.79%;
     width: 100%;
@@ -225,12 +300,17 @@ export default {
   .blurp {
     padding: 0.375rem 0.75rem;
     border-radius: 0.25rem;
-    background: #262626;
+    background: #272727;
     color: $primary;
     font-weight: 600;
     line-height: 1.5;
     text-transform: uppercase;
     margin-bottom: 1rem;
+    font-size: 14px;
+  }
+
+  .big {
+    font-size: 24px;
   }
 }
 </style>

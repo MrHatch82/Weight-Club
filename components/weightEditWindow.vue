@@ -1,11 +1,11 @@
 <template>
   <div class="weight-edit-window">
     <div class="date">
-      <button class="btn btn-primary btn-sm mr-2" @click="changeDay(-1)">
+      <button class="btn btn-primary btn-sm mr-2 btn-arrow" @click="changeDay(-1)">
         ◀
       </button>
       {{ selectedDay }}
-      <button class="btn btn-primary btn-sm ml-2" @click="changeDay(1)">
+      <button class="btn btn-primary btn-sm ml-2 btn-arrow" @click="changeDay(1)">
         ▶
       </button>
     </div>
@@ -41,7 +41,7 @@ export default {
   },
   computed: {
     selectedDay() {
-      if (this.days && this.selectedDayIndex !== null) {
+      if (this.days && this.selectedDayIndex !== null && this.days[this.selectedDayIndex]) {
         return this.days[this.selectedDayIndex].format('dddd, DD.MM.');
       }
       return '';
@@ -83,7 +83,7 @@ export default {
         weightObject = await new this.$parse.Query(Weights).get(this.weights[this.selectedDayIndex].objectId);
       }
 
-      weightObject.set('date', parseInt(this.days[this.selectedDayIndex].format('YYMMDD'), 10));
+      weightObject.set('date', parseInt(this.days[this.selectedDayIndex].format('YYYYMMDD'), 10));
       weightObject.set('weight', parseFloat(this.newWeight));
       weightObject.set('userID', this.$store.state.loggedInUserId);
       try {
@@ -114,6 +114,7 @@ export default {
   .date {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-weight: 600;
     margin-bottom: 1.5rem;
   }
@@ -121,6 +122,10 @@ export default {
   input {
     text-align: center;
     font-weight: 600;
+  }
+
+  .btn-arrow {
+    padding: 0.15rem 0.5rem 0.35rem
   }
 }
 </style>
