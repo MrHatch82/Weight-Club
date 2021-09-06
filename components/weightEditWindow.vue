@@ -9,7 +9,18 @@
         ▶
       </button>
     </div>
-    <b-form-input v-model="newWeight" placeholder="Enter weight" class="mb-4" @keyup="sanitizeWeight"></b-form-input>
+    <b-form-input v-model="newWeight" placeholder="Enter weight" class="mb-4" :formatter="$sanitizeWeight"></b-form-input>
+    <b-form-textarea
+      v-model="newNote"
+      rows="2"
+      max-rows="2"
+      placeholder="Enter note (optional)"
+      class="note mb-4"
+      :class="{ 'text-center': !newNote }"
+      no-resize
+      :formatter="$sanitizeText"
+    >
+    </b-form-textarea>
     <div class="d-flex justify-content-between">
       <button class="btn btn-primary" @click="closePopup">
         Cancel
@@ -37,6 +48,7 @@ export default {
     return {
       selectedDayIndex: null,
       newWeight: null,
+      newNote: null,
     };
   },
   computed: {
@@ -67,6 +79,7 @@ export default {
 
       this.selectedDayIndex = newDayIndex;
       this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.weights[this.selectedDayIndex].weight}` : '';
+      this.newNote = this.weights[this.selectedDayIndex].note ? `${this.weights[this.selectedDayIndex].note}` : null;
     },
     resetWeightEdit() {
       this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
@@ -83,26 +96,16 @@ export default {
         weightObject = await new this.$parse.Query(Weights).get(this.weights[this.selectedDayIndex].objectId);
       }
 
+      weightObject.set('userID', this.$store.state.loggedInUserId);
       weightObject.set('date', parseInt(this.days[this.selectedDayIndex].format('YYYYMMDD'), 10));
       weightObject.set('weight', parseFloat(this.newWeight));
-      weightObject.set('userID', this.$store.state.loggedInUserId);
+      weightObject.set('note', this.newNote);
       try {
         await weightObject.save();
         this.$parent.$parent.getWeights();
         this.closePopup();
       } catch (error) {
         console.error('Error while saving Weight: ', error);
-      }
-    },
-    sanitizeWeight() {
-      if (this.newWeight) {
-        this.newWeight.replace(/[^0-9.]/g, '');
-
-        const dotCount = (this.newWeight.match(/\./g) || []).length;
-
-        if (!this.newWeight.endsWith('.') || dotCount > 1) {
-          this.newWeight = `${Math.trunc(parseFloat(this.newWeight) * 100) / 100}`;
-        }
       }
     },
   },
@@ -121,6 +124,11 @@ export default {
 
   input {
     text-align: center;
+    font-weight: 600;
+  }
+
+  .note {
+    height: 66px;
     font-weight: 600;
   }
 

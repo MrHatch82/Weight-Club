@@ -47,10 +47,46 @@ export default {
         const user = await this.$parse.User.logIn(this.name, this.password);
         this.$store.commit('userLoggedIn', user.id);
 
-        this.$router.push('/weight-tracking');
+        this.$nextTick(() => {
+          this.getUserSettings();
+        });
       } catch (error) {
         this.loading = false;
         this.error = error;
+      }
+    },
+    async getUserSettings() {
+      const state = this.$store.state;
+      const UserSettings = this.$parse.Object.extend('UserSettings');
+      const query = new this.$parse.Query(UserSettings);
+      query.equalTo('userID', state.loggedInUserId);
+      try {
+        const object = await query.first();
+
+        if (object) {
+          const weightUnit = object.get('weightUnit');
+          const weightStart = object.get('weightStart');
+          const weightGoal = object.get('weightGoal');
+          const displayName = object.get('displayName');
+
+          this.$store.commit('setUserSettings', {
+            weightUnit,
+            weightStart,
+            weightGoal,
+            displayName,
+            userSettingsId: object.id,
+          });
+        }
+
+        this.$nextTick(() => {
+          if (state.weightUnit && state.weightStart && state.weightGoal) {
+            this.$router.push('/weight-tracking');
+          } else {
+            this.$router.push('/user-settings');
+          }
+        });
+      } catch (error) {
+        console.error('Error while loading Settings', error);
       }
     },
   },

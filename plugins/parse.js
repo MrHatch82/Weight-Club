@@ -1,4 +1,4 @@
-import Vue from 'vue'
-const Parse = require('parse')
+import Vue from 'vue';
+const Parse = require('parse');
 
-Vue.prototype.$parse = Parse
+Vue.prototype.$parse = Parse;

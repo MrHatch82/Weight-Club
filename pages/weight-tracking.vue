@@ -1,10 +1,10 @@
 <template>
-  <div class="page page-weight-tracking container text-center">
+  <div class="page page-weight-tracking container">
     <h1>
       Weight tracking
     </h1>
-    <div class="row mb-4 justify-content-center">
-      <div class="col-lg-3">
+    <div class="row">
+      <div class="col-lg-3 mb-4">
         <div class="datepicker">
           <button class="btn btn-primary btn-sm mr-2 btn-arrow" @click="dateSubtract(1, 'month')">
             ◀
@@ -15,7 +15,7 @@
           </button>
         </div>
       </div>
-      <div class="col-lg-3">
+      <div class="col-lg-3 mb-4">
         <div class="datepicker">
           <button class="btn btn-primary btn-sm mr-2 btn-arrow" @click="dateSubtract(1, 'year')">
             ◀
@@ -25,6 +25,11 @@
             ▶
           </button>
         </div>
+      </div>
+      <div class="col-lg-4 offset-lg-2 mb-4">
+        <button class="w-100 btn btn-primary" @click="showPopup">
+          Add/edit weight
+        </button>
       </div>
     </div>
 
@@ -55,14 +60,6 @@
       </div>
     </div>
 
-    <div class="row justify-content-end">
-      <div class="col-lg-4">
-        <button class="w-100 btn btn-primary" @click="showPopup">
-          Add/edit weight
-        </button>
-      </div>
-    </div>
-
     <popup ref="popup" title="Add/edit weight">
       <weightEditWindow :days="daysInMonth" :weights="weights">
       </weighteditwindow>
@@ -77,15 +74,15 @@ export default {
       selectedDate: this.$moment().format('YYYYMMDD'),
       facts: [
         {
-          variable: `15 ${this.$store.state.weightFormat}`,
+          variable: `15 ${this.$store.state.weightUnit}`,
           text: 'total weight loss',
         },
         {
-          variable: `15 ${this.$store.state.weightFormat}`,
+          variable: `15 ${this.$store.state.weightUnit}`,
           text: 'weight loss this month',
         },
         {
-          variable: `15 ${this.$store.state.weightFormat}`,
+          variable: `15 ${this.$store.state.weightUnit}`,
           text: 'to go',
         },
         {
@@ -97,7 +94,7 @@ export default {
         labels: null,
         datasets: [
           {
-            label: 'Weight in kg',
+            label: 'Weight',
             data: null,
             borderColor: 'rgb(0, 255, 255)',
             fill: false,
@@ -125,6 +122,10 @@ export default {
             },
           }],
         },
+        tooltips: {
+          intersect: false,
+          callbacks: {},
+        },
       },
       weights: null,
       maxWeigt: null,
@@ -149,10 +150,28 @@ export default {
   mounted() {
     this.chart.labels = this.daysInMonth;
 
+    this.createOptionsCallbacks();
+
     this.createLabels();
     this.getWeights();
   },
   methods: {
+    createOptionsCallbacks() {
+      const year = this.$moment(this.selectedDate).format('YYYY');
+      const unit = this.$store.state.weightUnit;
+      this.options.tooltips.callbacks = {
+        title(tooltipItem, data) {
+          let title = tooltipItem[0].label;
+          title += year;
+          return title;
+        },
+        label(tooltipItem, data) {
+          let label = tooltipItem.yLabel;
+          label += ` ${unit}`;
+          return label;
+        },
+      };
+    },
     dateAdd(number, unit) {
       this.selectedDate = this.$moment(this.selectedDate).add(number, unit).format('YYYYMMDD');
       this.createLabels();
@@ -184,11 +203,13 @@ export default {
       this.daysInMonth.forEach((day) => {
         let kg = null;
         let objectId = null;
+        let note = null;
 
         weights.forEach((weight) => {
           if (this.$moment(day).format('YYYYMMDD') === `${weight.date}`) {
             kg = weight.weight;
             objectId = weight.objectId;
+            note = weight.note;
 
             if (weight.weight > maxWeight) {
               maxWeight = weight.weight;
@@ -203,6 +224,7 @@ export default {
 
         weightsOrdered.push({
           weight: kg,
+          note,
           objectId,
         });
       });
@@ -240,16 +262,16 @@ export default {
           const userID = object.get('userID');
           const date = object.get('date');
           const weight = object.get('weight');
+          const note = object.get('note');
 
           weights.push({
             userID,
             date,
             weight,
+            note,
             objectId: object.id,
           });
         }
-
-        console.log(weights);
 
         this.populateData(weights);
         this.loading = false;
@@ -305,8 +327,9 @@ export default {
     font-weight: 600;
     line-height: 1.5;
     text-transform: uppercase;
-    margin-bottom: 1rem;
+    margin-bottom: 2rem;
     font-size: 14px;
+    text-align: center;
   }
 
   .big {
