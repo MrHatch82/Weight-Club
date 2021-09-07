@@ -5,7 +5,7 @@
         ◀
       </button>
       {{ selectedDay }}
-      <button class="btn btn-primary btn-sm ml-2 btn-arrow" @click="changeDay(1)">
+      <button class="btn btn-primary btn-sm ml-2 btn-arrow" :disabled="nextButtonDisabled" @click="changeDay(1)">
         ▶
       </button>
     </div>
@@ -57,6 +57,12 @@ export default {
         return this.days[this.selectedDayIndex].format('dddd, DD.MM.');
       }
       return '';
+    },
+    nextButtonDisabled() {
+      if (this.selectedDayIndex && this.days[this.selectedDayIndex].diff(this.$moment(), 'days') === 0) {
+        return true;
+      }
+      return false;
     },
   },
   mounted() {

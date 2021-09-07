@@ -10,18 +10,29 @@
             ◀
           </button>
           {{ currentMonth }}
-          <button class="btn btn-primary btn-sm ml-2 btn-arrow" @click="dateAdd(1, 'month')">
+          <button
+            class="btn btn-primary btn-sm ml-2 btn-arrow"
+            :disabled="currentMonth === $moment().format('MMMM') && currentYear === $moment().format('YYYY')"
+            @click="dateAdd(1, 'month')"
+          >
             ▶
           </button>
         </div>
       </div>
       <div class="col-lg-3 mb-4">
         <div class="datepicker">
-          <button class="btn btn-primary btn-sm mr-2 btn-arrow" @click="dateSubtract(1, 'year')">
+          <button
+            class="btn btn-primary btn-sm mr-2 btn-arrow"
+            @click="dateSubtract(1, 'year')"
+          >
             ◀
           </button>
           {{ currentYear }}
-          <button class="btn btn-primary btn-sm ml-2 btn-arrow" @click="dateAdd(1, 'year')">
+          <button
+            class="btn btn-primary btn-sm ml-2 btn-arrow"
+            :disabled="currentYear === $moment().format('YYYY')"
+            @click="dateAdd(1, 'year')"
+          >
             ▶
           </button>
         </div>
@@ -72,24 +83,6 @@ export default {
   data() {
     return {
       selectedDate: this.$moment().format('YYYYMMDD'),
-      facts: [
-        {
-          variable: `15 ${this.$store.state.weightUnit}`,
-          text: 'total weight loss',
-        },
-        {
-          variable: `15 ${this.$store.state.weightUnit}`,
-          text: 'weight loss this month',
-        },
-        {
-          variable: `15 ${this.$store.state.weightUnit}`,
-          text: 'to go',
-        },
-        {
-          variable: '15 %',
-          text: 'of goal reached',
-        },
-      ],
       chart: {
         labels: null,
         datasets: [
@@ -130,6 +123,8 @@ export default {
       weights: null,
       maxWeigt: null,
       minWeight: null,
+      firstWeight: null,
+      lastWeight: null,
       loading: true,
     };
   },
@@ -145,6 +140,51 @@ export default {
     },
     dataReady() {
       return this.chart.labels !== null && this.chart.datasets[0].data !== null;
+    },
+    weightLossTotal() {
+      if (!this.lastWeight) {
+        return '';
+      }
+      return this.$store.state.weightStart - this.lastWeight;
+    },
+    weightLossMonth() {
+      if (!this.firstWeight || !this.lastWeight) {
+        return '';
+      }
+      return this.firstWeight - this.lastWeight;
+    },
+    weightLossRemaining() {
+      if (!this.lastWeight) {
+        return '';
+      }
+      return this.lastWeight - this.$store.state.weightGoal;
+    },
+    weightLossPercent() {
+      if (!this.weightLossTotal) {
+        return '';
+      }
+      const range = this.$store.state.weightStart - this.$store.state.weightGoal;
+      return (100 / range * this.weightLossTotal).toFixed(2);
+    },
+    facts() {
+      return [
+        {
+          variable: `${this.weightLossTotal} ${this.$store.state.weightUnit}`,
+          text: 'total weight loss',
+        },
+        {
+          variable: `${this.weightLossMonth} ${this.$store.state.weightUnit}`,
+          text: 'weight loss this month',
+        },
+        {
+          variable: `${this.weightLossRemaining} ${this.$store.state.weightUnit}`,
+          text: 'to go',
+        },
+        {
+          variable: `${this.weightLossPercent} %`,
+          text: 'of goal reached',
+        },
+      ];
     },
   },
   mounted() {
@@ -174,6 +214,9 @@ export default {
     },
     dateAdd(number, unit) {
       this.selectedDate = this.$moment(this.selectedDate).add(number, unit).format('YYYYMMDD');
+      if (this.$moment(this.selectedDate).isAfter()) {
+        this.selectedDate = this.$moment().format('YYYYMMDD');
+      }
       this.createLabels();
       this.getWeights();
     },
@@ -199,6 +242,8 @@ export default {
       const weightsOrdered = [];
       let maxWeight = 0;
       let minWeight = 1000;
+      let firstWeight = null;
+      let lastWeight = null;
 
       this.daysInMonth.forEach((day) => {
         let kg = null;
@@ -218,6 +263,12 @@ export default {
             if (weight.weight < minWeight) {
               minWeight = weight.weight;
             }
+
+            lastWeight = weight.weight;
+
+            if (!firstWeight) {
+              firstWeight = weight.weight;
+            }
           }
         });
         data.push(kg);
@@ -227,6 +278,9 @@ export default {
           note,
           objectId,
         });
+
+        this.lastWeight = lastWeight;
+        this.firstWeight = firstWeight;
       });
 
       this.maxWeigt = maxWeight;
