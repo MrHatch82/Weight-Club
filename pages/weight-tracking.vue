@@ -1,8 +1,5 @@
 <template>
   <div class="page page-weight-tracking container">
-    <h1>
-      Weight tracking
-    </h1>
     <div class="row">
       <div class="col-lg-3 mb-4">
         <div class="datepicker">
@@ -142,26 +139,26 @@ export default {
       return this.chart.labels !== null && this.chart.datasets[0].data !== null;
     },
     weightLossTotal() {
-      if (!this.lastWeight) {
-        return '';
+      if (!this.lastWeight || this.loading) {
+        return '-';
       }
       return this.$store.state.weightStart - this.lastWeight;
     },
     weightLossMonth() {
-      if (!this.firstWeight || !this.lastWeight) {
-        return '';
+      if (!this.firstWeight || !this.lastWeight || this.loading) {
+        return '-';
       }
       return this.firstWeight - this.lastWeight;
     },
     weightLossRemaining() {
-      if (!this.lastWeight) {
-        return '';
+      if (!this.lastWeight || this.loading) {
+        return '-';
       }
       return this.lastWeight - this.$store.state.weightGoal;
     },
     weightLossPercent() {
-      if (!this.weightLossTotal) {
-        return '';
+      if (this.weightLossTotal === '-' || this.loading) {
+        return '-';
       }
       const range = this.$store.state.weightStart - this.$store.state.weightGoal;
       return (100 / range * this.weightLossTotal).toFixed(2);

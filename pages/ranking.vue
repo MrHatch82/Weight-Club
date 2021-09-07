@@ -1,6 +1,5 @@
 <template>
   <div class="page page-ranking container text-center">
-    <h1>RANKING</h1>
     <ul>
       <li v-for="(rank, index) in ranks" :key="index">
         {{ index }} lost {{ rank > 0 ? rank : 0 }} kg.
@@ -123,8 +122,6 @@ export default {
             weight,
           });
         }
-
-        console.log(weights);
       } catch (error) {
         console.error('Error while fetching Weights', error);
       }

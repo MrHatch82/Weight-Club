@@ -155,13 +155,13 @@ export default {
     transform: translateY(0.75rem);
 
     &:hover {
-      color: $tertiary;
+      color: $secondary;
     }
 
     &.nuxt-link-active {
       padding: 1rem;
       background: $dark;
-      color: $light;
+      color: $secondary;
       transform: translateY(0);
       box-shadow: inset 0px -5px 5px -4px rgba(0,0,0,0);
       cursor: default;
