@@ -105,17 +105,37 @@ export default {
           yAxes: [{
             scaleLabel: {
               display: false,
-              labelString: 'kg',
             },
             ticks: {
               suggestedMin: 90,
               suggestedMax: 140,
+              fontFamily: 'Oswald, sans-serif',
+              fontSize: 13,
+            },
+          }],
+          xAxes: [{
+            ticks: {
+              fontFamily: 'Oswald, sans-serif',
+              fontSize: 13,
             },
           }],
         },
         tooltips: {
           intersect: false,
           callbacks: {},
+          displayColors: false,
+          titleFontColor: '#FFFF00',
+          titleFontFamily: 'Oswald, sans-serif',
+          titleFontSize: 15,
+          bodyFontColor: '#FF00FF',
+          bodyFontFamily: 'Oswald, sans-serif',
+          bodyFontSize: 13,
+          xPadding: 10,
+          yPadding: 10,
+          mode: 'index',
+        },
+        hover: {
+          animationDuration: 200,
         },
       },
       weights: null,
@@ -213,20 +233,20 @@ export default {
   },
   methods: {
     createOptionsCallbacks() {
-      const year = this.$moment(this.selectedDate).format('YYYY');
+      const year = this.$moment(this.selectedDate).format('YY');
       const unit = this.$store.state.weightUnit;
       const $round = this.$round;
 
       this.options.tooltips.callbacks = {
         title(tooltipItem, data) {
-          let title = tooltipItem[0].label;
-          title += year;
-          return title;
-        },
-        label(tooltipItem, data) {
-          let label = $round(tooltipItem.yLabel);
+          let label = $round(tooltipItem[0].yLabel);
           label += ` ${unit}`;
           return label;
+        },
+        label(tooltipItem, data) {
+          let title = tooltipItem.label;
+          title += year;
+          return title;
         },
       };
     },
