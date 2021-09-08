@@ -14,7 +14,7 @@
           <b-form class="mb-2" @submit.prevent="login">
             <b-form-input v-model="name" placeholder="Name"></b-form-input>
             <b-form-input v-model="password" type="password" placeholder="Password"></b-form-input>
-            <b-button type="submit" variant="primary">
+            <b-button type="submit" variant="primary" class="btn shadow-up">
               Submit
             </b-button>
           </b-form>

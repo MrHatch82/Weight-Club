@@ -1,11 +1,11 @@
 <template>
   <div class="weight-edit-window">
-    <div class="date">
-      <button class="btn btn-primary btn-sm mr-2 btn-arrow" :disabled="prevButtonDisabled" @click="changeDay(-1)">
+    <div class="date shadow-down">
+      <button class="btn btn-primary mr-2 btn-arrow shadow-up" :disabled="prevButtonDisabled" @click="changeDay(-1)">
         ◀
       </button>
       {{ selectedDay }}
-      <button class="btn btn-primary btn-sm ml-2 btn-arrow" :disabled="nextButtonDisabled" @click="changeDay(1)">
+      <button class="btn btn-primary ml-2 btn-arrow shadow-up" :disabled="nextButtonDisabled" @click="changeDay(1)">
         ▶
       </button>
     </div>
@@ -22,10 +22,10 @@
     >
     </b-form-textarea>
     <div class="d-flex justify-content-between">
-      <button class="btn btn-primary" @click="closePopup">
+      <button class="btn btn-primary shadow-up" @click="closePopup">
         Cancel
       </button>
-      <button class="btn btn-primary" @click="publishWeight">
+      <button class="btn btn-primary shadow-up" @click="publishWeight">
         Submit
       </button>
     </div>
@@ -137,6 +137,8 @@ export default {
     align-items: center;
     font-weight: 600;
     margin-bottom: 1.5rem;
+    background: $darker;
+    color: $tertiary;
   }
 
   input {
@@ -150,7 +152,9 @@ export default {
   }
 
   .btn-arrow {
-    padding: 0.15rem 0.5rem 0.35rem
+    padding: 0.3rem 0.75rem 0.525rem;
+    height: 38px;
+    width: 38px;
   }
 }
 </style>

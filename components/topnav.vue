@@ -92,6 +92,7 @@ export default {
   transition: transform 0.5s 0.5s ease-in-out;
   z-index: 20;
   overflow: hidden;
+box-shadow: inset 0px -1px 0px 0px rgba(255,255,255,0.15);
 
   &.show {
   transform: translateY(0);
@@ -135,21 +136,22 @@ export default {
 
   .tab {
     display: inline-block;
-    padding: 1rem 1rem 0.25rem;
+    padding: 1rem 1rem 1px;
     min-width: 200px;
     margin: 0 0.25rem -1rem;
     border-radius: 6px 6px 0 0;
     text-transform: uppercase;
+    font-size: 17px;
     font-weight: 600;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.75px;
     background: #2d2d2d;
     cursor: pointer;
-    box-shadow: inset 0px -5px 5px -4px rgba(0,0,0,0.15);
     transition: padding 0.25s ease-in-out, color 0.25s, background 0.25s, box-shadow 0.25s , transform 0.25s ease-in-out;
     color: darken($light, 15%);
     text-decoration: none;
     text-align: left;
     transform: translateY(0.75rem);
+    box-shadow: inset 0px -18px 25px -4px rgba(0, 0, 0, 0.1), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
 
     &:hover {
       color: $secondary;
@@ -160,7 +162,7 @@ export default {
       background: $dark;
       color: $secondary;
       transform: translateY(0);
-      box-shadow: inset 0px -5px 5px -4px rgba(0,0,0,0);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.1), inset 0px -5px 5px -4px rgba(0,0,0,0);
       cursor: default;
     }
 

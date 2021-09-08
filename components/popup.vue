@@ -1,8 +1,8 @@
 <template>
   <div :class="{show: show}" class="popup">
     <div class="popup-overlay" @click="toggle" />
-    <div class="popup-window">
-      <div class="header">
+    <div class="popup-window shadow-up">
+      <div class="header shadow-up-top">
         {{ title }}
         <div class="close-btn" @click="toggle" />
       </div>

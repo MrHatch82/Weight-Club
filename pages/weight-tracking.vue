@@ -2,13 +2,13 @@
   <div class="page page-weight-tracking container">
     <div class="row">
       <div class="col-lg-3 mb-4">
-        <div class="datepicker">
-          <button class="btn btn-primary btn-sm mr-2 btn-arrow" @click="dateSubtract(1, 'month')">
+        <div class="datepicker shadow-down">
+          <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract(1, 'month')">
             ◀
           </button>
           {{ currentMonth }}
           <button
-            class="btn btn-primary btn-sm ml-2 btn-arrow"
+            class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
             :disabled="currentMonth === $moment().format('MMMM') && currentYear === $moment().format('YYYY')"
             @click="dateAdd(1, 'month')"
           >
@@ -17,16 +17,16 @@
         </div>
       </div>
       <div class="col-lg-3 mb-4">
-        <div class="datepicker">
+        <div class="datepicker shadow-down">
           <button
-            class="btn btn-primary btn-sm mr-2 btn-arrow"
+            class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up"
             @click="dateSubtract(1, 'year')"
           >
             ◀
           </button>
           {{ currentYear }}
           <button
-            class="btn btn-primary btn-sm ml-2 btn-arrow"
+            class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
             :disabled="currentYear === $moment().format('YYYY')"
             @click="dateAdd(1, 'year')"
           >
@@ -35,7 +35,7 @@
         </div>
       </div>
       <div class="col-lg-4 offset-lg-2 mb-4">
-        <button class="w-100 btn btn-primary" @click="showPopup">
+        <button class="w-100 btn btn-primary shadow-up" @click="showPopup">
           Add/edit weight
         </button>
       </div>
@@ -61,7 +61,7 @@
 
     <div class="row">
       <div v-for="fact in facts" :key="fact.text" class="col-lg-3">
-        <div class="blurp">
+        <div class="blurp shadow-down">
           <div class="big text-secondary">
             {{ fact.variable }}
           </div> {{ fact.text }}
@@ -324,9 +324,11 @@ export default {
       this.maxWeigt = maxWeight;
       this.minWeight = minWeight;
 
-      const padding = this.$store.state.weightUnit === 'kg' ? 5 : 0.8;
-      this.options.scales.yAxes[0].ticks.suggestedMin = minWeight - padding;
-      this.options.scales.yAxes[0].ticks.suggestedMax = maxWeight + padding;
+      const paddingBot = this.$store.state.weightUnit === 'kg' ? 5 : 0.8;
+      const paddingTop = this.$store.state.weightUnit === 'kg' ? 1 : 0.16;
+
+      this.options.scales.yAxes[0].ticks.suggestedMin = minWeight - paddingBot;
+      this.options.scales.yAxes[0].ticks.suggestedMax = maxWeight + paddingTop;
 
       this.chart.datasets[0].data = data;
       this.weights = weightsOrdered;
@@ -394,13 +396,13 @@ export default {
     text-transform: uppercase;
 
     .btn {
+      font-size: 1rem;
       height: 38px;
       width: 38px;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 0;
-      padding-bottom: 5px;
+      padding: 0.3rem 0.75rem 0.525rem;
     }
   }
 
@@ -408,7 +410,7 @@ export default {
     padding-bottom: 42.79%;
     width: 100%;
     position: relative;
-    background: rgba(0,0,0,0.05);
+    background: rgba(0,0,0, 0.035);
     transition: background 0.2s;
     border-radius: 0.25rem;
 

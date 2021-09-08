@@ -36,7 +36,7 @@
       </div>
       <div class="row">
         <div v-if="!loading" class="col-lg-3 offset-lg-9">
-          <b-button type="submit" variant="primary" class="btn btn-primary w-100">
+          <b-button type="submit" variant="primary" class="btn btn-primary w-100 shadow-up">
             {{ settingsReady ? 'Save' : 'Save &amp; proceed' }}
           </b-button>
         </div>
