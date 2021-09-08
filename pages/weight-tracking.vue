@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <div class="chart-wrapper mb-4">
+    <div class="chart-wrapper mb-4" :class="{ loaded: !loading }">
       <client-only>
         <transition name="fade">
           <div v-if="!loading" key="chart">
@@ -353,7 +353,7 @@ export default {
         this.populateData(weights);
         this.loading = false;
       } catch (error) {
-        console.error('Error while fetching Weights', error);
+        console.error('Error while fetching Weights', error); // eslint-disable-line
       }
     },
   },
@@ -388,6 +388,13 @@ export default {
     padding-bottom: 42.79%;
     width: 100%;
     position: relative;
+    background: rgba(0,0,0,0.05);
+    transition: background 0.2s;
+    border-radius: 0.25rem;
+
+    &.loaded {
+      background: transparent;
+    }
   }
 
   .chart {

@@ -16,7 +16,7 @@
 <script>
 export default {
   props: {
-    title: String,
+    title: { type: String, default: '' },
   },
   data() {
     return {
@@ -47,7 +47,7 @@ export default {
   height: 100%;
   z-index: 21;
   opacity: 0;
-  transition: opacity 0.25s linear;
+  transition: opacity 0.2s linear;
   pointer-events: none;
 
   .popup-overlay {
@@ -64,7 +64,7 @@ export default {
     border-radius: 0.25rem;
     min-width: 300px;
     transform: scale(0.9);
-    transition: transform 0.25s ease-out;
+    transition: transform 0.2s ease-out;
 
     .header {
       display: flex;
@@ -84,7 +84,7 @@ export default {
       position: relative;
       cursor: pointer;
       transform: scale(0.9);
-      transition: transform 0.25s;
+      transition: transform 0.2s;
 
       &:hover {
         transform: scale(1);
