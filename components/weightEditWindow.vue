@@ -1,7 +1,7 @@
 <template>
   <div class="weight-edit-window">
     <div class="date">
-      <button class="btn btn-primary btn-sm mr-2 btn-arrow" @click="changeDay(-1)">
+      <button class="btn btn-primary btn-sm mr-2 btn-arrow" :disabled="prevButtonDisabled" @click="changeDay(-1)">
         ◀
       </button>
       {{ selectedDay }}
@@ -64,6 +64,12 @@ export default {
       }
       return false;
     },
+    prevButtonDisabled() {
+      if (this.selectedDayIndex === 0) {
+        return true;
+      }
+      return false;
+    },
   },
   mounted() {
     this.$nuxt.$on('weight-edit-open', this.resetWeightEdit);
@@ -84,12 +90,12 @@ export default {
       }
 
       this.selectedDayIndex = newDayIndex;
-      this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.weights[this.selectedDayIndex].weight}` : '';
+      this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.$round(this.weights[this.selectedDayIndex].weight)}` : '';
       this.newNote = this.weights[this.selectedDayIndex].note ? `${this.weights[this.selectedDayIndex].note}` : null;
     },
     resetWeightEdit() {
       this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
-      this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.weights[this.selectedDayIndex].weight}` : '';
+      this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.$round(this.weights[this.selectedDayIndex].weight)}` : '';
     },
     closePopup() {
       this.$parent.toggle();
@@ -102,9 +108,14 @@ export default {
         weightObject = await new this.$parse.Query(Weights).get(this.weights[this.selectedDayIndex].objectId);
       }
 
+      let newWeight = parseFloat(this.newWeight);
+      if (this.$store.state.weightUnit === 'stone') {
+        newWeight = this.$stoneToKg(newWeight);
+      }
+
       weightObject.set('userID', this.$store.state.loggedInUserId);
       weightObject.set('date', parseInt(this.days[this.selectedDayIndex].format('YYYYMMDD'), 10));
-      weightObject.set('weight', parseFloat(this.newWeight));
+      weightObject.set('weight', newWeight);
       weightObject.set('note', this.newNote);
       try {
         await weightObject.save();

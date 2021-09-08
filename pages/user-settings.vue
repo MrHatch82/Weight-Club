@@ -58,8 +58,9 @@ export default {
   data() {
     return {
       weightUnit: this.$store.state.weightUnit,
-      weightStart: this.$store.state.weightStart,
-      weightGoal: this.$store.state.weightGoal,
+      lastWeightUnit: this.$store.state.weightUnit,
+      weightStart: this.$store.state.weightUnit === 'kg' ? this.$store.state.weightStart : this.$kgToStone(this.$store.state.weightStart),
+      weightGoal: this.$store.state.weightUnit === 'kg' ? this.$store.state.weightGoal : this.$kgToStone(this.$store.state.weightGoal),
       displayName: this.$store.state.displayName,
       weightUnitOptions: this.$store.state.weightUnitOptions,
       loading: false,
@@ -70,6 +71,23 @@ export default {
     settingsReady() {
       const state = this.$store.state;
       return state.userSettingsId && state.weightGoal && state.weightStart;
+    },
+    storedWeightUnit() {
+      return this.$store.state.weightUnit;
+    },
+  },
+  watch: {
+    weightUnit() {
+      if (this.weightUnit !== null && this.weightUnit !== this.lastWeightUnit) {
+        if (this.weightStart) {
+          this.weightStart = this.weightUnit === 'kg' ? this.$stoneToKg(this.weightStart) : this.$kgToStone(this.weightStart);
+        }
+        if (this.weightGoal) {
+          this.weightGoal = this.weightUnit === 'kg' ? this.$stoneToKg(this.weightGoal) : this.$kgToStone(this.weightGoal);
+        }
+
+        this.lastWeightUnit = this.weightUnit;
+      }
     },
   },
   methods: {
@@ -88,18 +106,25 @@ export default {
           firstVisit = true;
         }
 
+        let weightStart = parseFloat(this.weightStart);
+        let weightGoal = parseFloat(this.weightGoal);
+        if (this.weightUnit === 'stone') {
+          weightStart = this.$stoneToKg(weightStart);
+          weightGoal = this.$stoneToKg(weightGoal);
+        }
+
         userSettingsObject.set('userID', this.$store.state.loggedInUserId);
         userSettingsObject.set('weightUnit', this.weightUnit);
-        userSettingsObject.set('weightStart', parseInt(this.weightStart, 10));
-        userSettingsObject.set('weightGoal', parseInt(this.weightGoal, 10));
+        userSettingsObject.set('weightStart', weightStart);
+        userSettingsObject.set('weightGoal', weightGoal);
         userSettingsObject.set('displayName', this.displayName);
         try {
           await userSettingsObject.save();
 
           this.$store.commit('setUserSettings', {
             weightUnit: this.weightUnit,
-            weightStart: parseInt(this.weightStart, 10),
-            weightGoal: parseInt(this.weightGoal, 10),
+            weightStart,
+            weightGoal,
             displayName: this.displayName,
             userSettingsId: userSettingsObject.id,
           });

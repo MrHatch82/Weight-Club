@@ -1,16 +1,18 @@
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.25s linear;
+  transition: opacity 0.2s linear;
 }
 
+.fade-enter,
 .fade-enter-from,
-.fade-leave-to {
+.fade-leave-to,
+.fade-leave-active {
   opacity: 0;
 }
 
 .page-enter-active,
 .page-leave-active {
-  transition: opacity 0.25s linear;
+  transition: opacity 0.2s linear;
 }
 .page-enter,
 .page-leave-to {

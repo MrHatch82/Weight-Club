@@ -5,8 +5,8 @@
       <nuxt-link to="/weight-tracking" :class="{ disabled: !settingsReady}" class="tab">
         weight tracking
       </nuxt-link>
-      <nuxt-link to="/ranking" :class="{ disabled: !settingsReady}" class="tab">
-        ranking
+      <nuxt-link to="/friends" :class="{ disabled: !settingsReady}" class="tab">
+        friends
       </nuxt-link>
       <nuxt-link to="/activities" :class="{ disabled: !settingsReady}" class="tab">
         Activities / Chat
@@ -24,9 +24,6 @@
         viewBox="0 0 1280.000000 1280.000000"
         preserveAspectRatio="xMidYMid meet"
       >
-        <metadata>
-          Created by potrace 1.15, written by Peter Selinger 2001-2017
-        </metadata>
         <g
           transform="translate(0.000000,1280.000000) scale(0.100000,-0.100000)"
           fill="#555555"

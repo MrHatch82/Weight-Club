@@ -22,3 +22,21 @@ Vue.prototype.$sanitizeText = function (value) {
   val = val.replace(/\n/g, '');
   return val;
 };
+
+Vue.prototype.$kgToStone = function (val) {
+  if (typeof val === 'string') {
+    return val;
+  }
+  return val / 6.35029318;
+};
+
+Vue.prototype.$stoneToKg = function (val) {
+  if (typeof val === 'string') {
+    return val;
+  }
+  return val * 6.35029318;
+};
+
+Vue.prototype.$round = function (val) {
+  return Math.round(val * 100) / 100;
+};

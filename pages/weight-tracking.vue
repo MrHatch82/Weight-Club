@@ -44,16 +44,17 @@
     <div class="chart-wrapper mb-4">
       <client-only>
         <transition name="fade">
-          <chart-line
-            v-if="!loading"
-            ref="chart"
-            class="chart"
-            :data="chart"
-            :options="options"
-            :width="1110"
-            :height="475"
-          />
-          <div v-else class="spinner" />
+          <div v-if="!loading" key="chart">
+            <chart-line
+              ref="chart"
+              class="chart"
+              :data="chart"
+              :options="options"
+              :width="1110"
+              :height="475"
+            />
+          </div>
+          <div v-else key="spinner" class="spinner" />
         </transition>
       </client-only>
     </div>
@@ -142,7 +143,14 @@ export default {
       if (!this.lastWeight || this.loading) {
         return '-';
       }
-      return this.$store.state.weightStart - this.lastWeight;
+      const state = this.$store.state;
+      let weightStart = state.weightStart;
+
+      if (state.weightUnit === 'stone') {
+        weightStart = this.$kgToStone(weightStart);
+      }
+
+      return weightStart - this.lastWeight;
     },
     weightLossMonth() {
       if (!this.firstWeight || !this.lastWeight || this.loading) {
@@ -154,31 +162,42 @@ export default {
       if (!this.lastWeight || this.loading) {
         return '-';
       }
-      return this.lastWeight - this.$store.state.weightGoal;
+      let weightGoal = this.$store.state.weightGoal;
+      if (this.$store.state.weightUnit === 'stone') {
+        weightGoal = this.$kgToStone(weightGoal);
+      }
+
+      return this.lastWeight - weightGoal;
     },
     weightLossPercent() {
       if (this.weightLossTotal === '-' || this.loading) {
         return '-';
       }
-      const range = this.$store.state.weightStart - this.$store.state.weightGoal;
-      return (100 / range * this.weightLossTotal).toFixed(2);
+
+      const state = this.$store.state;
+      let range = this.$store.state.weightStart - this.$store.state.weightGoal;
+
+      if (state.weightUnit === 'stone') {
+        range = this.$kgToStone(this.$store.state.weightStart) - this.$kgToStone(this.$store.state.weightGoal);
+      }
+      return 100 / range * this.weightLossTotal;
     },
     facts() {
       return [
         {
-          variable: `${this.weightLossTotal} ${this.$store.state.weightUnit}`,
+          variable: `${this.$round(this.weightLossTotal) || '-'} ${this.$store.state.weightUnit}`,
           text: 'total weight loss',
         },
         {
-          variable: `${this.weightLossMonth} ${this.$store.state.weightUnit}`,
+          variable: `${this.$round(this.weightLossMonth) || '-'} ${this.$store.state.weightUnit}`,
           text: 'weight loss this month',
         },
         {
-          variable: `${this.weightLossRemaining} ${this.$store.state.weightUnit}`,
+          variable: `${this.$round(this.weightLossRemaining) || '-'} ${this.$store.state.weightUnit}`,
           text: 'to go',
         },
         {
-          variable: `${this.weightLossPercent} %`,
+          variable: `${this.$round(this.weightLossPercent) || '-'} %`,
           text: 'of goal reached',
         },
       ];
@@ -196,6 +215,8 @@ export default {
     createOptionsCallbacks() {
       const year = this.$moment(this.selectedDate).format('YYYY');
       const unit = this.$store.state.weightUnit;
+      const $round = this.$round;
+
       this.options.tooltips.callbacks = {
         title(tooltipItem, data) {
           let title = tooltipItem[0].label;
@@ -203,7 +224,7 @@ export default {
           return title;
         },
         label(tooltipItem, data) {
-          let label = tooltipItem.yLabel;
+          let label = $round(tooltipItem.yLabel);
           label += ` ${unit}`;
           return label;
         },
@@ -283,8 +304,9 @@ export default {
       this.maxWeigt = maxWeight;
       this.minWeight = minWeight;
 
-      this.options.scales.yAxes[0].ticks.suggestedMin = minWeight - 5;
-      this.options.scales.yAxes[0].ticks.suggestedMax = maxWeight + 5;
+      const padding = this.$store.state.weightUnit === 'kg' ? 5 : 0.8;
+      this.options.scales.yAxes[0].ticks.suggestedMin = minWeight - padding;
+      this.options.scales.yAxes[0].ticks.suggestedMax = maxWeight + padding;
 
       this.chart.datasets[0].data = data;
       this.weights = weightsOrdered;
@@ -312,8 +334,12 @@ export default {
           // Access the Parse Object attributes using the .GET method
           const userID = object.get('userID');
           const date = object.get('date');
-          const weight = object.get('weight');
+          let weight = object.get('weight');
           const note = object.get('note');
+
+          if (this.$store.state.weightUnit === 'stone') {
+            weight = this.$kgToStone(weight);
+          }
 
           weights.push({
             userID,
