@@ -121,9 +121,13 @@ export default {
         await weightObject.save();
         this.$parent.$parent.getWeights();
         this.closePopup();
+        this.updateStatus();
       } catch (error) {
         console.error('Error while saving Weight: ', error);
       }
+    },
+    async updateStatus() {
+      await this.$parse.Cloud.run('setStatus', { userId: this.$store.state.loggedInUserId });
     },
   },
 };

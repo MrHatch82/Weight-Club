@@ -342,18 +342,17 @@ export default {
 
       const Weights = this.$parse.Object.extend('Weights');
       const query = new this.$parse.Query(Weights);
-      // You can also query by using a parameter of an object
       query.equalTo('userID', this.$store.state.loggedInUserId);
       query.greaterThanOrEqualTo('date', parseInt(this.$moment(this.selectedDate).startOf('month').format('YYYYMMDD')), 10);
       query.lessThanOrEqualTo('date', parseInt(this.$moment(this.selectedDate).endOf('month').format('YYYYMMDD')), 10);
-      // const results = await query.find()
+      query.ascending('date');
+
       try {
         const results = await query.find();
 
         const weights = [];
 
         for (const object of results) {
-          // Access the Parse Object attributes using the .GET method
           const userID = object.get('userID');
           const date = object.get('date');
           let weight = object.get('weight');
