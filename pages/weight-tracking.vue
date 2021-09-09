@@ -1,7 +1,7 @@
 <template>
   <div class="page page-weight-tracking container">
     <div class="row">
-      <div class="col-lg-3 mb-4">
+      <div class="col-md-6 col-lg-3 mb-4">
         <div class="datepicker shadow-down">
           <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract(1, 'month')">
             ◀
@@ -16,7 +16,7 @@
           </button>
         </div>
       </div>
-      <div class="col-lg-3 mb-4">
+      <div class="col-md-6 col-lg-3 mb-4">
         <div class="datepicker shadow-down">
           <button
             class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up"
@@ -60,7 +60,7 @@
     </div>
 
     <div class="row">
-      <div v-for="fact in facts" :key="fact.text" class="col-lg-3">
+      <div v-for="fact in facts" :key="fact.text" class="col-6 col-lg-3">
         <div class="blurp shadow-down">
           <div class="big text-secondary">
             {{ fact.variable }}
@@ -210,11 +210,11 @@ export default {
         },
         {
           variable: `${this.$round(this.weightLossMonth) || '-'} ${this.$store.state.weightUnit}`,
-          text: 'weight loss this month',
+          text: 'lost this month',
         },
         {
           variable: `${this.$round(this.weightLossRemaining) || '-'} ${this.$store.state.weightUnit}`,
-          text: 'to go',
+          text: 'still remaining',
         },
         {
           variable: `${this.$round(this.weightLossPercent) || '-'} %`,
@@ -410,13 +410,8 @@ export default {
     padding-bottom: 42.79%;
     width: 100%;
     position: relative;
-    background: rgba(0,0,0, 0.035);
     transition: background 0.2s;
     border-radius: 0.25rem;
-
-    &.loaded {
-      background: transparent;
-    }
   }
 
   .chart {
