@@ -1,6 +1,6 @@
 <template>
   <div class="home container text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
-    <logo :show-subtitle="true" class="logo mb-5" />
+    <logo :show-subtitle="true" class="logo" />
     <div ref="loginWrapper" class="position-relative mb-5">
       <p class="mb-5">
         Fat Friends is a communal weight loss platform.<br>
@@ -97,6 +97,7 @@ export default {
 .home {
   .logo {
     width: 250px;
+    margin-bottom: 4rem;
 
     img {
       margin-bottom: 0.25rem;

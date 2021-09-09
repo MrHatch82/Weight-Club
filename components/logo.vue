@@ -1,7 +1,10 @@
 <template>
   <div id="logo" class="text-center">
     <img src="/images/logo.png" alt="Fat Friends Logo">
-    <div v-if="showSubtitle" class="subtitle" v-html="subtitle" />
+    <transition name="fade">
+      <div v-if="showSubtitle && !switcher" key="subtitles[subtitle]" class="subtitle" v-html="subtitles[subtitle]" />
+      <div v-if="showSubtitle && switcher" key="subtitles[nextSubtitle]" class="subtitle" v-html="subtitles[nextSubtitle]" />
+    </transition>
   </div>
 </template>
 
@@ -15,6 +18,9 @@ export default {
   },
   data() {
     return {
+      subtitle: 0,
+      nextSubtitle: 0,
+      switcher: false,
       subtitles: [
         'Get off your bum!',
         'Competitive weight loss made easy!',
@@ -31,10 +37,18 @@ export default {
       ],
     };
   },
-  computed: {
-    subtitle() {
-      return this.subtitles[Math.floor(Math.random() * this.subtitles.length)];
-    },
+  mounted() {
+    if (this.showSubtitle) {
+      this.subtitle = Math.floor(Math.random() * this.subtitles.length);
+      setInterval(() => {
+        if (this.switcher) {
+          this.subtitle = Math.floor(Math.random() * this.subtitles.length);
+        } else {
+          this.nextSubtitle = Math.floor(Math.random() * this.subtitles.length);
+        }
+        this.switcher = !this.switcher;
+      }, 3500);
+    }
   },
 };
 </script>
@@ -43,6 +57,9 @@ export default {
 #logo {
   .subtitle {
     color: $tertiary;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
 
   img {
