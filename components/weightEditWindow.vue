@@ -127,7 +127,15 @@ export default {
       }
     },
     async updateStatus() {
-      await this.$parse.Cloud.run('setStatus', { userId: this.$store.state.loggedInUserId });
+      const state = this.$store.state;
+      await this.$parse.Cloud.run('setStatus', {
+        userId: state.loggedInUserId,
+        userSettings: {
+          weightStart: state.weightStart,
+          weightGoal: state.weightGoal,
+          displayName: state.displayName,
+        },
+      });
     },
   },
 };

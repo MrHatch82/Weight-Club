@@ -1,5 +1,6 @@
 Parse.Cloud.define('setStatus', async (request) => {
   const userId = request.params.userId;
+  const { userSettings } = request.params;
 
   const weightMonthStart = await Parse.Cloud.run('getWeight', {
     userId,
@@ -11,21 +12,52 @@ Parse.Cloud.define('setStatus', async (request) => {
     order: 'desc',
   });
 
+  const statusObject = await Parse.Cloud.run('getStatus', { userId });
+
   let weightLossMonth = 0;
+  let weightLossTotal = 0;
+  let weightRemaining = 0;
+  let weightPercent = 0;
   if (weightMonthStart) {
     weightLossMonth = weightMonthStart - weightMonthEnd;
+    weightLossTotal = userSettings.weightStart - weightMonthEnd;
+    weightRemaining = weightMonthEnd - userSettings.weightGoal;
+    weightPercent =
+      (100 / (userSettings.weightStart - userSettings.weightGoal)) *
+      weightLossTotal;
   }
 
   const Status = Parse.Object.extend('Status');
-  const status = new Status();
+  let status = new Status();
+  if (statusObject) {
+    status = statusObject;
+  }
   status.set('userId', userId);
   status.set('weightLossMonth', weightLossMonth);
+  status.set('weightLossTotal', weightLossTotal);
+  status.set('weightRemaining', weightRemaining);
+  status.set('weightPercent', weightPercent);
+  status.set('weightCurrent', weightMonthEnd);
+  status.set('displayName', userSettings.displayName);
 
   try {
     return await status.save();
   } catch (error) {
     console.log('setStatus - Error - ' + error.code + ' ' + error.message);
     return error;
+  }
+});
+
+Parse.Cloud.define('getStatus', async (request) => {
+  const userId = request.params.userId;
+  const Status = Parse.Object.extend('Status');
+  const query = new Parse.Query(Status);
+  query.equalTo('userId', userId);
+  try {
+    const object = await query.first();
+    return object || null;
+  } catch (error) {
+    console.error('Error while fetching Status', error);
   }
 });
 
