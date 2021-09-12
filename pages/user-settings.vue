@@ -129,8 +129,7 @@ export default {
             userSettingsId: userSettingsObject.id,
           });
 
-          this.loading = false;
-          this.success = true;
+          this.updateStatus();
 
           if (firstVisit) {
             setTimeout(() => {
@@ -141,6 +140,19 @@ export default {
           console.error('Error while saving Weight: ', error);
         }
       }
+    },
+    async updateStatus() {
+      const state = this.$store.state;
+      await this.$parse.Cloud.run('setStatus', {
+        userId: state.loggedInUserId,
+        userSettings: {
+          weightStart: state.weightStart,
+          weightGoal: state.weightGoal,
+          displayName: state.displayName,
+        },
+      });
+      this.loading = false;
+      this.success = true;
     },
   },
 };
