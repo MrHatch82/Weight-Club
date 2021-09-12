@@ -17,12 +17,12 @@ Parse.Cloud.define('setStatus', async (request) => {
   let weightLossMonth = 0;
   let weightLossTotal = 0;
   let weightRemaining = 0;
-  let weightPercent = 0;
+  let weightLossPercent = 0;
   if (weightMonthStart) {
     weightLossMonth = weightMonthStart - weightMonthEnd;
     weightLossTotal = userSettings.weightStart - weightMonthEnd;
     weightRemaining = weightMonthEnd - userSettings.weightGoal;
-    weightPercent =
+    weightLossPercent =
       (100 / (userSettings.weightStart - userSettings.weightGoal)) *
       weightLossTotal;
   }
@@ -36,7 +36,7 @@ Parse.Cloud.define('setStatus', async (request) => {
   status.set('weightLossMonth', weightLossMonth);
   status.set('weightLossTotal', weightLossTotal);
   status.set('weightRemaining', weightRemaining);
-  status.set('weightPercent', weightPercent);
+  status.set('weightLossPercent', weightLossPercent);
   status.set('weightCurrent', weightMonthEnd);
   status.set('displayName', userSettings.displayName);
 

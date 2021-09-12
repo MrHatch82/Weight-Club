@@ -67,6 +67,9 @@
           </div> {{ fact.text }}
         </div>
       </div>
+      <div class="col-12">
+        <status-bar :percent="weightLossPercent !== '-' ? weightLossPercent : 0" :month-percent="monthPercent" />
+      </div>
     </div>
 
     <popup ref="popup" title="Add/edit weight">
@@ -163,14 +166,7 @@ export default {
       if (!this.lastWeight || this.loading) {
         return '-';
       }
-      const state = this.$store.state;
-      let weightStart = state.weightStart;
-
-      if (state.weightUnit === 'stone') {
-        weightStart = this.$kgToStone(weightStart);
-      }
-
-      return weightStart - this.lastWeight;
+      return this.$displayWeight(this.$store.state.weightStart, this.$store) - this.lastWeight;
     },
     weightLossMonth() {
       if (!this.firstWeight || !this.lastWeight || this.loading) {
@@ -182,25 +178,21 @@ export default {
       if (!this.lastWeight || this.loading) {
         return '-';
       }
-      let weightGoal = this.$store.state.weightGoal;
-      if (this.$store.state.weightUnit === 'stone') {
-        weightGoal = this.$kgToStone(weightGoal);
-      }
-
-      return this.lastWeight - weightGoal;
+      return this.lastWeight - this.$displayWeight(this.$store.state.weightGoal, this.$store);
     },
     weightLossPercent() {
       if (this.weightLossTotal === '-' || this.loading) {
         return '-';
       }
+      const range = this.$displayWeight(this.$store.state.weightStart - this.$store.state.weightGoal, this.$store);
 
-      const state = this.$store.state;
-      let range = this.$store.state.weightStart - this.$store.state.weightGoal;
-
-      if (state.weightUnit === 'stone') {
-        range = this.$kgToStone(this.$store.state.weightStart) - this.$kgToStone(this.$store.state.weightGoal);
+      return (100 / range * this.weightLossTotal);
+    },
+    monthPercent() {
+      if (this.weightLossTotal === '-') {
+        return 0;
       }
-      return 100 / range * this.weightLossTotal;
+      return 100 / this.weightLossTotal * this.weightLossMonth;
     },
     facts() {
       return [
@@ -355,17 +347,13 @@ export default {
         for (const object of results) {
           const userID = object.get('userID');
           const date = object.get('date');
-          let weight = object.get('weight');
+          const weight = object.get('weight');
           const note = object.get('note');
-
-          if (this.$store.state.weightUnit === 'stone') {
-            weight = this.$kgToStone(weight);
-          }
 
           weights.push({
             userID,
             date,
-            weight,
+            weight: this.$displayWeight(weight, this.$store),
             note,
             objectId: object.id,
           });
@@ -417,23 +405,6 @@ export default {
     position: absolute;
     width: 100%;
     height: 100%;
-  }
-
-  .blurp {
-    padding: 0.375rem 0.75rem;
-    border-radius: 0.25rem;
-    background: #272727;
-    color: $primary;
-    font-weight: 600;
-    line-height: 1.5;
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-    font-size: 14px;
-    text-align: center;
-  }
-
-  .big {
-    font-size: 24px;
   }
 }
 </style>

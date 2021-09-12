@@ -23,12 +23,24 @@ Vue.prototype.$sanitizeText = function (value) {
   return val;
 };
 
-Vue.prototype.$kgToStone = function (val) {
+Vue.prototype.$displayWeight = function (val, store) {
+  if (val === null) {
+    return null;
+  }
+  if (store.state.weightUnit === 'kg') {
+    return $round(val);
+  }
+  return $round($kgToStone(val));
+};
+
+const $kgToStone = function (val) {
   if (typeof val === 'string') {
     return val;
   }
   return val / 6.35029318;
 };
+
+Vue.prototype.$kgToStone = $kgToStone;
 
 Vue.prototype.$stoneToKg = function (val) {
   if (typeof val === 'string') {
@@ -37,6 +49,8 @@ Vue.prototype.$stoneToKg = function (val) {
   return val * 6.35029318;
 };
 
-Vue.prototype.$round = function (val) {
+const $round = function (val) {
   return Math.round(val * 100) / 100;
 };
+
+Vue.prototype.$round = $round;
