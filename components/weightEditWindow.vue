@@ -96,6 +96,7 @@ export default {
     resetWeightEdit() {
       this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
       this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.$round(this.weights[this.selectedDayIndex].weight)}` : '';
+      this.newNote = this.weights[this.selectedDayIndex].note ? `${this.weights[this.selectedDayIndex].note}` : null;
     },
     closePopup() {
       this.$parent.toggle();
@@ -116,7 +117,11 @@ export default {
       weightObject.set('userID', this.$store.state.loggedInUserId);
       weightObject.set('date', parseInt(this.days[this.selectedDayIndex].format('YYYYMMDD'), 10));
       weightObject.set('weight', newWeight);
-      weightObject.set('note', this.newNote);
+      weightObject.set('note', this.newNote
+        ? this.$he.encode(this.newNote, {
+          encodeEverything: true,
+        })
+        : null);
       try {
         await weightObject.save();
         this.$parent.$parent.getWeights();

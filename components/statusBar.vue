@@ -43,7 +43,7 @@ export default {
       const offsetY = rect.top;
       const translateX = e.clientX - offsetX;
       const translateY = e.clientY - offsetY;
-      this.$refs.tooltip.style.transform = `translate(${translateX}px, ${translateY - 5}px) translate(-50%, -100%)`;
+      this.$refs.tooltip.style.transform = `translate(${translateX}px, ${translateY - 2}px) translate(-50%, -100%)`;
     },
   },
 };

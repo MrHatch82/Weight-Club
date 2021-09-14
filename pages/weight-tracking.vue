@@ -129,16 +129,19 @@ export default {
           displayColors: false,
           titleFontColor: '#FFFF00',
           titleFontFamily: 'Oswald, sans-serif',
-          titleFontSize: 15,
+          titleFontSize: 17,
           bodyFontColor: '#FF00FF',
           bodyFontFamily: 'Oswald, sans-serif',
           bodyFontSize: 13,
+          footerFontColor: '#00FFFF',
+          footerFontFamily: 'Oswald, sans-serif',
+          footerFontSize: 15,
           xPadding: 10,
           yPadding: 10,
           mode: 'index',
         },
         hover: {
-          animationDuration: 200,
+          animationDuration: 0,
         },
       },
       weights: null,
@@ -218,9 +221,6 @@ export default {
   mounted() {
     this.chart.labels = this.daysInMonth;
 
-    this.createOptionsCallbacks();
-
-    this.createLabels();
     this.getWeights();
   },
   methods: {
@@ -228,6 +228,7 @@ export default {
       const year = this.$moment(this.selectedDate).format('YY');
       const unit = this.$store.state.weightUnit;
       const $round = this.$round;
+      const weights = this.weights;
 
       this.options.tooltips.callbacks = {
         title(tooltipItem, data) {
@@ -239,6 +240,15 @@ export default {
           let title = tooltipItem.label;
           title += year;
           return title;
+        },
+        footer(tooltipItem, data) {
+          const note = weights[tooltipItem[0].index].note;
+
+          if (!note) {
+            return;
+          }
+
+          return note.split('. ').join('.$pl1t').split('! ').join('!$pl1t').split('? ').join('?$pl1t').split('$pl1t');
         },
       };
     },
@@ -325,6 +335,9 @@ export default {
       this.chart.datasets[0].data = data;
       this.weights = weightsOrdered;
 
+      this.createOptionsCallbacks();
+      this.createLabels();
+
       if (this.$refs && this.$refs.chart) {
         this.$refs.chart.update();
       }
@@ -354,7 +367,7 @@ export default {
             userID,
             date,
             weight: this.$displayWeight(weight, this.$store),
-            note,
+            note: note ? this.$he.decode(note) : '',
             objectId: object.id,
           });
         }

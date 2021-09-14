@@ -8,7 +8,7 @@ Vue.prototype.$sanitizeWeight = function (value) {
     const dotCount = (newWeight.match(/\./g) || []).length;
 
     if (!newWeight.endsWith('.') || dotCount > 1) {
-      newWeight = `${Math.trunc(parseFloat(newWeight) * 100) / 100}`;
+      newWeight = `${Math.round(parseFloat(newWeight) * 100) / 100}`;
     }
     return newWeight;
   }
@@ -54,3 +54,5 @@ const $round = function (val) {
 };
 
 Vue.prototype.$round = $round;
+
+Vue.prototype.$he = require('he');
