@@ -6,11 +6,16 @@
           <div class="status-card">
             <div class="row">
               <div class="col-12">
-                <div class="blurp text-tertiary bigger bg-transparent pl-0 text-left bg-transparent mb-1">
-                  <span class="text-primary">
-                    {{ index + 1 }}.
-                  </span>
-                  {{ friend.displayName }}
+                <div class="blurp tt-none text-tertiary bigger bg-transparent px-0 text-left bg-transparent mb-1 d-flex justify-content-between">
+                  <div class="tt-none">
+                    <span class="text-primary">
+                      {{ index + 1 }}.
+                    </span>
+                    {{ friend.displayName }}
+                  </div>
+                  <div class="text-secondary">
+                    500 Pts.
+                  </div>
                 </div>
               </div>
               <div class="col-md-6 col-lg-3">
@@ -98,6 +103,10 @@ export default {
 .page-ranking {
   .status-card {
     margin-bottom: 2rem;
+  }
+
+  .tt-none {
+    text-transform: none;
   }
 }
 </style>

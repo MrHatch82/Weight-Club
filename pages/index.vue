@@ -2,8 +2,10 @@
   <div class="home container text-center py-5 flex-grow-1 d-flex flex-column justify-content-center align-items-center">
     <logo :show-subtitle="true" class="logo" />
     <div ref="loginWrapper" class="position-relative mb-5">
+      <h1 class="p m-0">
+        Fat Friends is a communal weight loss platform.
+      </h1>
       <p class="mb-5">
-        Fat Friends is a communal weight loss platform.<br>
         <b>It is not a weight loss program.</b>
         Its sole purpose is to bring people together in their weight loss endeavour, to prevent falling off the wagon, to have fun and maybe get some tips along the way.
       </p>

@@ -57,6 +57,7 @@ export default {
     top: 0;
     left: 0;
     background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(3px);
   }
 
   .popup-window {
