@@ -1,51 +1,56 @@
 <template>
   <div class="page page-activities container">
-    <div class="speaker">
-      Jeeves<span class="time">15:28</span>
-    </div>
-    <div class="bubble activity shadow-down">
-      <h2>Light Activity: Hiking</h2>
-      Went for a 4k hike with the doggos. We got caught in a storm on the way back, so we all returned soaking wet :)
-    </div>
-    <div class="speaker user">
-      <span class="time">15:40</span>{{ displayName }}
-    </div>
-    <div class="bubble shadow-down user">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae odio vitae rem esse optio cupiditate nulla similique ducimus quo nemo. Doloribus fugiat hic, nobis cum repellendus amet dolores quod similique!
-    </div>
-    <div class="speaker">
-      Llama<span class="time">15:42</span>
-    </div>
-    <div class="bubble shadow-down">
-      Dolor sit amet consectetur adipisicing elit.
-    </div>
-    <div class="bubble shadow-down">
-      Lorem ipsum.
-    </div>
-    <div class="day-break">
-      <hr>
-      <div class="date">
-        22.09.21
+    <div class="chat">
+      <div class="speaker">
+        Maureen<span class="time">15:28</span>
+      </div>
+      <div class="bubble activity shadow-down">
+        <h2>Light Activity: Hiking</h2>
+        Went for a 4k hike with the doggos. We got caught in a storm on the way back, so we all returned soaking wet 🙃
+      </div>
+      <div class="speaker user">
+        <span class="time">15:40</span>{{ displayName }}
+      </div>
+      <div class="bubble shadow-down user">
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae odio vitae rem esse optio cupiditate nulla similique ducimus quo nemo. Doloribus fugiat hic, nobis cum repellendus amet dolores quod similique! 🍔🤣
+      </div>
+      <div class="speaker">
+        Bob<span class="time">15:42</span>
+      </div>
+      <div class="bubble shadow-down">
+        Dolor sit amet consectetur adipisicing elit.
+      </div>
+      <div class="bubble shadow-down">
+        Lorem ipsum. 🍆
+      </div>
+      <div class="day-break">
+        <hr>
+        <div class="date">
+          22.09.21
+        </div>
+      </div>
+      <div class="speaker user">
+        <span class="time">17:57</span>{{ displayName }}
+      </div>
+      <div class="bubble activity shadow-down user">
+        <h2>Intense Activity: HIIT Body weight training</h2>
+        2x10 Pushups, 2x15 Lying Pullups, 2x20s Planks, 2x25 Lunges.
+      </div>
+      <div class="speaker">
+        Steve<span class="time">18:10</span>
+      </div>
+      <div class="bubble shadow-down">
+        Good job!
+      </div>
+      <div class="speaker">
+        Bob<span class="time">18:11</span>
+      </div>
+      <div class="bubble shadow-down">
+        Yes, well done!
       </div>
     </div>
-    <div class="speaker user">
-      <span class="time">17:57</span>{{ displayName }}
-    </div>
-    <div class="bubble activity shadow-down user">
-      <h2>Intense Activity: HIIT Body weight training</h2>
-      2x10 Pushups, 2x15 Lying Pullups, 2x20s Planks, 2x25 Lunges.
-    </div>
-    <div class="speaker">
-      LTGaz<span class="time">18:10</span>
-    </div>
-    <div class="bubble shadow-down">
-      Good job!
-    </div>
-    <div class="speaker">
-      Llama<span class="time">18:11</span>
-    </div>
-    <div class="bubble shadow-down">
-      Yes, well done!
+    <div class="input">
+      <b-input placeholder="Enter message..."></b-input>
     </div>
   </div>
 </template>
@@ -65,6 +70,18 @@ export default {
 
 <style lang="scss">
 .page-activities {
+  .chat {
+    margin-bottom: 1rem;
+
+    // clearfix
+    &::after {
+      content: " ";
+      display: block;
+      height: 0;
+      clear: both;
+    }
+  }
+
   .day-break {
     padding: 0.5rem 0;
     float: none;
@@ -124,6 +141,12 @@ export default {
 
     &.user {
       border-radius: 10px 10px 3px 10px;
+    }
+  }
+
+  .input {
+    input {
+      font-weight: 500;
     }
   }
 

@@ -34,6 +34,9 @@ export default {
         'What have you got to lose?',
         'Striving to be fit friends!',
         'Your loss!',
+        'Start losing and stick to it!',
+        'Defeat your inner pigdog!',
+        'Oh lawd, they coming!',
       ],
     };
   },
