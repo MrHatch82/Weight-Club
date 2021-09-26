@@ -129,6 +129,7 @@ export default {
             userSettingsId: userSettingsObject.id,
           });
 
+          this.$parent.$parent.getDisplayNames();
           this.updateStatus();
 
           if (firstVisit) {
@@ -148,7 +149,6 @@ export default {
         userSettings: {
           weightStart: state.weightStart,
           weightGoal: state.weightGoal,
-          displayName: state.displayName,
         },
       });
       this.loading = false;

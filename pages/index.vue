@@ -48,6 +48,7 @@ export default {
       try {
         const user = await this.$parse.User.logIn(this.name, this.password);
         this.$store.commit('userLoggedIn', user.id);
+        this.$nuxt.$emit('userLoggedIn');
 
         this.$nextTick(() => {
           this.getUserSettings();

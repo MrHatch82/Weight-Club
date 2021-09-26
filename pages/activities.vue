@@ -1,68 +1,210 @@
 <template>
   <div class="page page-activities container">
-    <div class="chat">
-      <div class="speaker">
-        Maureen<span class="time">15:28</span>
+    <div class="gradient"></div>
+    <transition name="fade" @before-enter="scrollToBottom">
+      <div v-if="loading" key="spinner" class="spinner">
       </div>
-      <div class="bubble activity shadow-down">
-        <h2>Light Activity: Hiking</h2>
-        Went for a 4k hike with the doggos. We got caught in a storm on the way back, so we all returned soaking wet 🙃
-      </div>
-      <div class="speaker user">
-        <span class="time">15:40</span>{{ displayName }}
-      </div>
-      <div class="bubble shadow-down user">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Quae odio vitae rem esse optio cupiditate nulla similique ducimus quo nemo. Doloribus fugiat hic, nobis cum repellendus amet dolores quod similique! 🍔🤣
-      </div>
-      <div class="speaker">
-        Bob<span class="time">15:42</span>
-      </div>
-      <div class="bubble shadow-down">
-        Dolor sit amet consectetur adipisicing elit.
-      </div>
-      <div class="bubble shadow-down">
-        Lorem ipsum. 🍆
-      </div>
-      <div class="day-break">
-        <hr>
-        <div class="date">
-          22.09.21
+      <div v-else key="chat">
+        <div class="chat">
+          <div v-for="(msg, index) in messages" :key="index" class="message" :class="{ user: msg.userId === currentUserId }">
+            <div v-if="showDayLine(index, msg)" class="day-break">
+              <hr>
+              <div class="date">
+                {{ $moment(msg.createdAt).format('ll') }}
+              </div>
+            </div>
+            <div v-if="showSpeaker(index, msg)" class="speaker">
+              {{ displayNames[msg.userId] || msg.userId }}<span class="time">{{ getTime(msg.createdAt) }}</span>
+            </div>
+            <div class="bubble shadow-down" :class="{ activity: msg.activityLight || msg.activityIntense }">
+              <h2 v-if="msg.activityLight">
+                Light Activity
+              </h2>
+              <h2 v-if="msg.activityIntense" class="text-primary">
+                Intense Activity
+              </h2>
+              {{ msg.message }}
+            </div>
+          </div>
+        </div>
+        <div class="input">
+          <div class="container">
+            <div class="position-relative">
+              <b-form @submit.prevent="submit">
+                <b-input v-model="message" class="shadow-down" :placeholder="msgType === 'message' ? 'Enter message...' : 'Describe Activity...'">
+                </b-input>
+              </b-form>
+              <b-button-group size="sm" class="btn-group">
+                <button class="btn shadow-up" :class="msgType === 'message' ? 'btn-primary' : 'btn-inactive'" @click="msgType = 'message'">
+                  Message
+                </button>
+                <button class="btn shadow-up" :class="msgType === 'activityLight' ? 'btn-primary' : 'btn-inactive'" @click="msgType = 'activityLight'">
+                  Light activity
+                </button>
+                <button
+                  class="btn shadow-up"
+                  :class="msgType === 'activityIntense' ? 'btn-primary' : 'btn-inactive'"
+                  @click="msgType = 'activityIntense'"
+                >
+                  Intense activity
+                </button>
+              </b-button-group>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="speaker user">
-        <span class="time">17:57</span>{{ displayName }}
-      </div>
-      <div class="bubble activity shadow-down user">
-        <h2>Intense Activity: HIIT Body weight training</h2>
-        2x10 Pushups, 2x15 Lying Pullups, 2x20s Planks, 2x25 Lunges.
-      </div>
-      <div class="speaker">
-        Steve<span class="time">18:10</span>
-      </div>
-      <div class="bubble shadow-down">
-        Good job!
-      </div>
-      <div class="speaker">
-        Bob<span class="time">18:11</span>
-      </div>
-      <div class="bubble shadow-down">
-        Yes, well done!
-      </div>
-    </div>
-    <div class="input">
-      <b-input placeholder="Enter message..."></b-input>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script>
 export default {
   data() {
-    return {};
+    return {
+      message: '',
+      msgType: 'message',
+      loading: true,
+    };
   },
+
   computed: {
-    displayName() {
-      return this.$store.state.displayName;
+    displayNames() {
+      return this.$store.state.displayNames;
+    },
+    currentUserId() {
+      return this.$store.state.loggedInUserId;
+    },
+    messages() {
+      return this.$store.state.messages;
+    },
+  },
+  watch: {
+    messages() {
+      this.scrollToBottom();
+    },
+  },
+  mounted() {
+    this.getMessages();
+    this.scrollToBottom();
+  },
+  beforeDestroy() {
+    this.$nuxt.$off('newMessage');
+  },
+  methods: {
+    showDayLine(index, msg) {
+      const prevMsg = index > 0 ? this.messages[index - 1] : {};
+
+      if (Object.keys(prevMsg)) {
+        const date = this.$moment(prevMsg.createdAt).format('ll');
+        const prevDate = this.$moment(msg.createdAt).format('ll');
+        if (prevDate !== date) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    showSpeaker(index, msg) {
+      const prevMsg = index > 0 ? this.messages[index - 1] : {};
+
+      if (prevMsg.userId !== msg.userId) {
+        return true;
+      }
+
+      if (prevMsg.createdAt) {
+        const momentPrev = this.$moment(prevMsg.createdAt);
+        const moment = this.$moment(msg.createdAt);
+        const diffMinutes = moment.diff(momentPrev, 'minutes');
+
+        if (diffMinutes >= 5) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    getTime(date) {
+      return this.$moment(date).format('LT');
+    },
+    submit() {
+      if (this.message.length) {
+        this.publishMessage(this.message);
+        this.message = '';
+      }
+    },
+    scrollToBottom(waitForTransition = false) {
+      if (process.client) {
+        setTimeout(() => {
+          window.scrollTo(0, document.body.scrollHeight);
+        }, waitForTransition ? 11 : 1);
+      }
+    },
+    async getMessages() {
+      if (!this.$store.state.messages.length) {
+        const Messages = this.$parse.Object.extend('Messages');
+        const query = new this.$parse.Query(Messages);
+        query.descending('createdAt').limit(50);
+
+        try {
+          const results = await query.find();
+
+          const messages = [];
+
+          for (const object of results) {
+            const userId = object.get('userId');
+            const activityLight = object.get('activityLight');
+            const activityIntense = object.get('activityIntense');
+            const activityDescription = object.get('activityDescription');
+            const message = object.get('message');
+            const createdAt = object.get('createdAt');
+
+            messages.unshift({
+              userId,
+              activityLight,
+              activityIntense,
+              activityDescription,
+              message,
+              createdAt,
+            });
+          }
+
+          this.$store.commit('setMessages', messages);
+          this.loading = false;
+        } catch (error) {
+        console.error('Error while fetching Messages', error); // eslint-disable-line
+        }
+      } else {
+        this.loading = false;
+      }
+    },
+    async publishMessage(message) {
+      const messageObject = new this.$parse.Object('Messages');
+
+      const newMessage = message;
+
+      messageObject.set('userId', this.$store.state.loggedInUserId);
+      messageObject.set('message', newMessage);
+      messageObject.set('activityLight', this.msgType === 'activityLight');
+      messageObject.set('activityIntense', this.msgType === 'activityIntense');
+
+      this.$store.commit('appendMessages', {
+        createdAt: new Date(),
+        userId: this.$store.state.loggedInUserId,
+        activityLight: this.msgType === 'activityLight',
+        activityIntense: this.msgType === 'activityIntense',
+        message,
+      });
+
+      this.msgType = 'message';
+
+      this.scrollToBottom();
+
+      try {
+        await messageObject.save();
+      } catch (error) {
+        console.error('Error while saving message: ', error);
+        this.message = message;
+      }
     },
   },
 };
@@ -70,8 +212,20 @@ export default {
 
 <style lang="scss">
 .page-activities {
+  .gradient {
+    height: 4rem;
+    width: 100%;
+    position: fixed;
+    top: 72px;
+    left: 0;
+    background: linear-gradient(0deg, rgba(51,51,51,0) 0%, rgba(51,51,51,1) 70%);
+  }
   .chat {
-    margin-bottom: 1rem;
+    min-height: calc(100vh - 72px - 4rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    padding-bottom: 78px;
 
     // clearfix
     &::after {
@@ -87,6 +241,7 @@ export default {
     float: none;
     clear: both;
     position: relative;
+    margin-bottom: -1rem;
 
     .date {
       position: absolute;
@@ -104,7 +259,10 @@ export default {
   }
 
   .speaker {
-    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: baseline;
+    flex-direction: row;
+    margin: 1rem 0 0.25rem;
     padding: 0 1rem;
     float: left;
     clear: both;
@@ -113,10 +271,6 @@ export default {
     color: $primary;
     font-size: 18px;
     vertical-align: baseline;
-
-    &.user {
-      color: $secondary;
-    }
 
     .time {
       color: #6f6f6f;
@@ -138,20 +292,32 @@ export default {
     clear: both;
     letter-spacing: 0.5px;
     font-weight: 400;
+  }
 
-    &.user {
+  .user {
+    .speaker {
+      color: $secondary;
+      float: right;
+      flex-direction: row-reverse;
+    }
+
+    .bubble {
       border-radius: 10px 10px 3px 10px;
+     float: right;
     }
   }
 
   .input {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding-bottom: 2rem;
+
     input {
       font-weight: 500;
+      padding-right: 280px;
     }
-  }
-
-  .user {
-    float: right;
   }
 
   .activity {
@@ -164,6 +330,23 @@ export default {
       color: $tertiary;
       letter-spacing: 1px;
     }
+  }
+
+  .btn-inactive {
+    background: $darker;
+    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
+    inset -1px -1px 0 0 rgba(0, 0, 0, 0.3), inset 1px 0 0 0 rgba(0, 0, 0, 0.3),
+    0 4px 8px 0 rgba(0, 0, 0, 0.2) !important;
+  }
+
+  .btn-primary {
+    background: $primary;
+  }
+
+  .btn-group {
+    position: absolute;
+    right: 0;
+    top: 0;
   }
 }
 </style>

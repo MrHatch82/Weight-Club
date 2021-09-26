@@ -10,6 +10,8 @@ export const state = () => ({
   displayName: null,
   loggedInUserId: null,
   userSettingsId: null,
+  displayNames: {},
+  messages: [],
 });
 
 export const mutations = {
@@ -25,5 +27,14 @@ export const mutations = {
     state.weightGoal = payload.weightGoal;
     state.displayName = payload.displayName;
     state.userSettingsId = payload.userSettingsId;
+  },
+  setDisplayNames(state, payload) {
+    state.displayNames = payload;
+  },
+  setMessages(state, payload) {
+    state.messages = payload;
+  },
+  appendMessages(state, message) {
+    state.messages.push(message);
   },
 };

@@ -8,8 +8,9 @@
       <nuxt-link to="/friends" :class="{ disabled: !settingsReady}" class="tab">
         friends
       </nuxt-link>
-      <nuxt-link to="/activities" :class="{ disabled: !settingsReady}" class="tab">
+      <nuxt-link to="/activities" :class="{ disabled: !settingsReady}" class="tab position-relative" @click.native="newMessage = false">
         Activities / Chat
+        <div v-if="newMessage" class="message-indicator"></div>
       </nuxt-link>
       <nuxt-link to="/food-diary" :class="{ disabled: !settingsReady}" class="tab">
         food diary
@@ -68,10 +69,20 @@ l-169 -100 -186 90 c-208 100 -416 186 -626 258 -77 26 -141 48 -142 49 -1 0
 
 <script>
 export default {
+  data() {
+    return {
+      newMessage: false,
+    };
+  },
   computed: {
     settingsReady() {
       const state = this.$store.state;
       return state.userSettingsId && state.weightGoal && state.weightStart;
+    },
+  },
+  methods: {
+    messageReceived() {
+      this.newMessage = this.$route.path !== '/activities';
     },
   },
 };
@@ -171,6 +182,16 @@ box-shadow: inset 0px -1px 0px 0px rgba(255,255,255,0.15);
       cursor: default;
       color: transparent;
     }
+  }
+
+  .message-indicator {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: $primary;
   }
 }
 </style>

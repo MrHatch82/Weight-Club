@@ -11,7 +11,7 @@
                     <span class="text-primary">
                       {{ index + 1 }}.
                     </span>
-                    {{ friend.displayName }}
+                    {{ displayNames[friend.userId] }}
                   </div>
                   <div class="text-secondary">
                     500 Pts.
@@ -78,7 +78,7 @@ export default {
 
       for (const object of results) {
         friends.push({
-          displayName: object.get('displayName'),
+          userId: object.get('userId'),
           weightLossTotal: object.get('weightLossTotal'),
           weightLossMonth: object.get('weightLossMonth'),
           weightLossPercent: object.get('weightLossPercent'),
@@ -90,6 +90,11 @@ export default {
     } catch (error) {
       console.error('Error while fetching Weights', error);
     }
+  },
+  computed: {
+    displayNames() {
+      return this.$store.state.displayNames;
+    },
   },
   methods: {
     getMonthPercent(friend) {

@@ -38,7 +38,6 @@ Parse.Cloud.define('setStatus', async (request) => {
   status.set('weightRemaining', weightRemaining);
   status.set('weightLossPercent', weightLossPercent);
   status.set('weightCurrent', weightMonthEnd);
-  status.set('displayName', userSettings.displayName);
 
   try {
     return await status.save();
