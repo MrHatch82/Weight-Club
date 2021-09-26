@@ -1,6 +1,7 @@
 <template>
   <div class="layout-default d-flex flex-column">
     <topnav ref="topnav" />
+    <div class="gradient-overlay"></div>
     <Nuxt />
   </div>
 </template>
@@ -73,3 +74,15 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.gradient-overlay {
+    height: 4rem;
+    width: 100%;
+    position: fixed;
+    top: 72px;
+    left: 0;
+    background: linear-gradient(0deg, rgba(51,51,51,0) 0%, rgba(51,51,51,1) 70%);
+    z-index: 20;
+  }
+</style>

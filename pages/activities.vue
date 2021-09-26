@@ -1,6 +1,5 @@
 <template>
   <div class="page page-activities container">
-    <div class="gradient"></div>
     <transition name="fade" @before-enter="scrollToBottom">
       <div v-if="loading" key="spinner" class="spinner">
       </div>
@@ -212,14 +211,6 @@ export default {
 
 <style lang="scss">
 .page-activities {
-  .gradient {
-    height: 4rem;
-    width: 100%;
-    position: fixed;
-    top: 72px;
-    left: 0;
-    background: linear-gradient(0deg, rgba(51,51,51,0) 0%, rgba(51,51,51,1) 70%);
-  }
   .chat {
     min-height: calc(100vh - 72px - 4rem);
     display: flex;
