@@ -13,7 +13,7 @@
                     </span>
                     {{ displayNames[friend.userId] }}
                   </div>
-                  <div class="text-secondary">
+                  <div class="points text-secondary">
                     {{ friend.points }} Pts.
                   </div>
                 </div>
@@ -134,6 +134,10 @@ export default {
 
   .tt-none {
     text-transform: none;
+  }
+
+  .points {
+    cursor: default;
   }
 }
 </style>

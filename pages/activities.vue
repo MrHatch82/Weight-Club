@@ -4,6 +4,33 @@
       <div v-if="loading" key="spinner" class="spinner">
       </div>
       <div v-else key="chat">
+        <div class="date-picker-fixed">
+          <div class="container">
+            <date-picker @dateChanged="dateChanged">
+              <div class="col-lg-4 offset-lg-2 mb-4">
+                <button class="w-100 btn btn-primary shadow-up" @click="showPopup">
+                  add/edit activity
+                </button>
+              </div>
+            </date-picker>
+            <div ref="mo" class="month-overview">
+              <div
+                v-for="(day, index) in daysInMonth"
+                :key="index"
+                class="day"
+              >
+                <div class="number" :style="`width: ${dayWidth};`" :class="{ weekend: isWeekend(day.date)}">
+                  {{ index + 1 }}
+                </div>
+                <div class="box" :style="`width: ${dayWidth}; height: ${dayWidth}`" :class="{ weekend: isWeekend(day.date)}">
+                  <div v-if="day.activityLight && !day.activityIntense" class="light" />
+                  <div v-if="!day.activityLight && day.activityIntense" class="intense" />
+                  <div v-if="day.activityLight && day.activityIntense" class="both" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="chat">
           <div v-for="(msg, index) in messages" :key="index" class="message" :class="{ user: msg.userId === currentUserId }">
             <div v-if="showDayLine(index, msg)" class="day-break">
@@ -33,26 +60,14 @@
                 <b-input v-model="message" class="shadow-down" :placeholder="msgType === 'message' ? 'Enter message...' : 'Describe Activity...'">
                 </b-input>
               </b-form>
-              <b-button-group size="sm" class="btn-group">
-                <button class="btn shadow-up" :class="msgType === 'message' ? 'btn-primary' : 'btn-inactive'" @click="msgType = 'message'">
-                  Message
-                </button>
-                <button class="btn shadow-up" :class="msgType === 'activityLight' ? 'btn-primary' : 'btn-inactive'" @click="msgType = 'activityLight'">
-                  Light exercise
-                </button>
-                <button
-                  class="btn shadow-up"
-                  :class="msgType === 'activityIntense' ? 'btn-primary' : 'btn-inactive'"
-                  @click="msgType = 'activityIntense'"
-                >
-                  Heavy exercise
-                </button>
-              </b-button-group>
             </div>
           </div>
         </div>
       </div>
     </transition>
+    <popup ref="popup" title="add/edit activity">
+      HUI!
+    </popup>
   </div>
 </template>
 
@@ -60,9 +75,12 @@
 export default {
   data() {
     return {
+      selectedDate: this.$moment().format('YYYYMM'),
       message: '',
       msgType: 'message',
       loading: true,
+      activities: [],
+      moWidth: 1140,
     };
   },
 
@@ -76,6 +94,38 @@ export default {
     messages() {
       return this.$store.state.messages;
     },
+    daysInMonth() {
+      const monthArray = new Array(
+        this.$moment(this.selectedDate).daysInMonth()).fill(null).map((x, i) => {
+        let activityLight = false;
+        let activityIntense = false;
+        const date = this.$moment(this.selectedDate).startOf('month').add(i, 'days');
+
+        this.activities.forEach((activity) => {
+          const activityDate = this.$moment(activity.createdAt).format('YYYYMMDD');
+
+          if (activityDate === date.format('YYYYMMDD')) {
+            if (activity.activityLight) {
+              activityLight = true;
+            }
+            if (activity.activityIntense) {
+              activityIntense = true;
+            }
+          }
+        });
+
+        return {
+          date,
+          activityLight,
+          activityIntense,
+        };
+      },
+      );
+      return monthArray;
+    },
+    dayWidth() {
+      return `${this.moWidth / this.daysInMonth.length}px`;
+    },
   },
   watch: {
     messages() {
@@ -84,12 +134,36 @@ export default {
   },
   mounted() {
     this.getMessages();
+    this.getMessages(true);
     this.scrollToBottom();
+
+    this.$nextTick(() => {
+      this.getMoWidth();
+
+      window.addEventListener('resize', this.getMoWidth);
+    });
   },
   beforeDestroy() {
     this.$nuxt.$off('newMessage');
+    window.removeEventListener('resize', this.getMoWidth);
   },
   methods: {
+    getMoWidth() {
+      if (this.$refs) {
+        this.moWidth = this.$refs.mo.offsetWidth;
+      }
+    },
+    isWeekend(date) {
+      const dayOfWeek = date.day();
+      if (dayOfWeek % 6 === 0) {
+        return true;
+      }
+      return false;
+    },
+    dateChanged(newDate) {
+      this.selectedDate = this.$moment(newDate).format('YYYYMM');
+      this.getMessages(true);
+    },
     showDayLine(index, msg) {
       const prevMsg = index > 0 ? this.messages[index - 1] : {};
 
@@ -138,14 +212,30 @@ export default {
         }, waitForTransition ? 11 : 1);
       }
     },
-    async getMessages() {
-      if (!this.$store.state.messages.length) {
+    async getMessages(activitiesOnly = false) {
+      if (!this.$store.state.messages.length || activitiesOnly) {
         const Messages = this.$parse.Object.extend('Messages');
         const query = new this.$parse.Query(Messages);
-        query.descending('createdAt').limit(50);
+        const query2 = new this.$parse.Query(Messages);
+
+        if (activitiesOnly) {
+          const startOfMonth = this.$moment(`${this.selectedDate}01`).startOf('day').toDate();
+          const endOfMonth = this.$moment(`${this.selectedDate}${this.$moment(this.selectedDate).daysInMonth()}`).endOf('day').toDate();
+          query.greaterThanOrEqualTo('createdAt', startOfMonth);
+          query.lessThanOrEqualTo('createdAt', endOfMonth);
+          query.equalTo('activityLight', true);
+          query.equalTo('userId', this.$store.state.loggedInUserId);
+
+          query2.greaterThanOrEqualTo('createdAt', startOfMonth);
+          query2.lessThanOrEqualTo('createdAt', endOfMonth);
+          query2.equalTo('activityIntense', true);
+          query2.equalTo('userId', this.$store.state.loggedInUserId);
+        } else {
+          query.descending('createdAt').limit(100);
+        }
 
         try {
-          const results = await query.find();
+          const results = activitiesOnly ? await this.$parse.Query.or(query, query2).find() : await query.find();
 
           const messages = [];
 
@@ -153,7 +243,6 @@ export default {
             const userId = object.get('userId');
             const activityLight = object.get('activityLight');
             const activityIntense = object.get('activityIntense');
-            const activityDescription = object.get('activityDescription');
             const message = object.get('message');
             const createdAt = object.get('createdAt');
 
@@ -161,13 +250,17 @@ export default {
               userId,
               activityLight,
               activityIntense,
-              activityDescription,
               message,
               createdAt,
             });
           }
 
-          this.$store.commit('setMessages', messages);
+          if (!activitiesOnly) {
+            this.$store.commit('setMessages', messages);
+          } else {
+            this.activities = messages;
+          }
+
           this.loading = false;
         } catch (error) {
         console.error('Error while fetching Messages', error); // eslint-disable-line
@@ -221,17 +314,94 @@ export default {
         },
       });
     },
+    showPopup() {
+      if (this.$refs && this.$refs.popup) {
+        this.$refs.popup.toggle();
+      }
+    },
   },
 };
 </script>
 
 <style lang="scss">
 .page-activities {
+  .date-picker-fixed {
+    position: fixed;
+    top: 72px;
+    left: 0;
+    width: 100%;
+    z-index: 20;
+    padding-top: 64px;
+    background: $dark;
+  }
+
+  .month-overview {
+    display: flex;
+
+    .number {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 400;
+    }
+
+    .box {
+      border: 2px solid $dark;
+      background: lighten($medium, 1%);
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      border-radius: 0.2rem;
+
+      &.weekend {
+        background: darken($medium, 4%);
+      }
+
+      .light {
+        width: 65%;
+        height: 65%;
+        background: $tertiary;
+        border-radius: 50%;
+      }
+
+      .intense {
+        width: 65%;
+        height: 65%;
+        background: $primary;
+        border-radius: 50%;
+      }
+
+      .both {
+        width: 65%;
+        height: 65%;
+        background: $tertiary;
+        border-radius: 50%;
+        position: relative;
+        overflow: hidden;
+
+        &::after {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 52%;
+          background: $primary;
+          content: '';
+        }
+      }
+    }
+  }
+
   .chat {
     min-height: calc(100vh - 72px - 4rem);
     display: flex;
     flex-direction: column;
     justify-content: end;
+    padding-top: 117px;
     padding-bottom: 78px;
 
     // clearfix
@@ -323,7 +493,6 @@ export default {
 
     input {
       font-weight: 500;
-      padding-right: 280px;
     }
   }
 

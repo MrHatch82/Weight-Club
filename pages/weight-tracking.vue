@@ -1,45 +1,12 @@
 <template>
   <div class="page page-weight-tracking container">
-    <div class="row">
-      <div class="col-md-6 col-lg-3 mb-4">
-        <div class="datepicker shadow-down">
-          <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract(1, 'month')">
-            ◀
-          </button>
-          {{ currentMonth }}
-          <button
-            class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
-            :disabled="currentMonth === $moment().format('MMMM') && currentYear === $moment().format('YYYY')"
-            @click="dateAdd(1, 'month')"
-          >
-            ▶
-          </button>
-        </div>
-      </div>
-      <div class="col-md-6 col-lg-3 mb-4">
-        <div class="datepicker shadow-down">
-          <button
-            class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up"
-            @click="dateSubtract(1, 'year')"
-          >
-            ◀
-          </button>
-          {{ currentYear }}
-          <button
-            class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
-            :disabled="currentYear === $moment().format('YYYY')"
-            @click="dateAdd(1, 'year')"
-          >
-            ▶
-          </button>
-        </div>
-      </div>
+    <date-picker @dateChanged="dateChanged">
       <div class="col-lg-4 offset-lg-2 mb-4">
         <button class="w-100 btn btn-primary shadow-up" @click="showPopup">
           Add/edit weight
         </button>
       </div>
-    </div>
+    </date-picker>
 
     <div class="chart-wrapper mb-4" :class="{ loaded: !loading }">
       <client-only>
@@ -252,19 +219,6 @@ export default {
         },
       };
     },
-    dateAdd(number, unit) {
-      this.selectedDate = this.$moment(this.selectedDate).add(number, unit).format('YYYYMMDD');
-      if (this.$moment(this.selectedDate).isAfter()) {
-        this.selectedDate = this.$moment().format('YYYYMMDD');
-      }
-      this.createLabels();
-      this.getWeights();
-    },
-    dateSubtract(number, unit) {
-      this.selectedDate = this.$moment(this.selectedDate).subtract(number, unit).format('YYYYMMDD');
-      this.createLabels();
-      this.getWeights();
-    },
     showPopup() {
       if (this.$refs && this.$refs.popup) {
         this.$refs.popup.toggle();
@@ -276,6 +230,11 @@ export default {
         labels.push(day.format('DD.MM.'));
       });
       this.chart.labels = labels;
+    },
+    dateChanged(newDate) {
+      this.selectedDate = newDate;
+      this.createLabels();
+      this.getWeights();
     },
     populateData(weights) {
       const data = [];
@@ -384,28 +343,6 @@ export default {
 
 <style lang='scss'>
 .page-weight-tracking {
-  .datepicker {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: $tertiary;
-    font-weight: 600;
-    letter-spacing: 1px;
-    background: #272727;
-    height: 38px;
-    text-transform: uppercase;
-
-    .btn {
-      font-size: 1rem;
-      height: 38px;
-      width: 38px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0.3rem 0.75rem 0.525rem;
-    }
-  }
-
   .chart-wrapper {
     padding-bottom: 42.79%;
     width: 100%;
