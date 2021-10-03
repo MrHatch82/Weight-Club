@@ -17,10 +17,10 @@
             </div>
             <div class="bubble shadow-down" :class="{ activity: msg.activityLight || msg.activityIntense }">
               <h2 v-if="msg.activityLight">
-                Light Activity
+                Light Exercise
               </h2>
               <h2 v-if="msg.activityIntense" class="text-primary">
-                Intense Activity
+                Heavy exercise
               </h2>
               {{ msg.message }}
             </div>
@@ -38,14 +38,14 @@
                   Message
                 </button>
                 <button class="btn shadow-up" :class="msgType === 'activityLight' ? 'btn-primary' : 'btn-inactive'" @click="msgType = 'activityLight'">
-                  Light activity
+                  Light exercise
                 </button>
                 <button
                   class="btn shadow-up"
                   :class="msgType === 'activityIntense' ? 'btn-primary' : 'btn-inactive'"
                   @click="msgType = 'activityIntense'"
                 >
-                  Intense activity
+                  Heavy exercise
                 </button>
               </b-button-group>
             </div>
@@ -180,17 +180,19 @@ export default {
       const messageObject = new this.$parse.Object('Messages');
 
       const newMessage = message;
+      const activityLight = this.msgType === 'activityLight';
+      const activityIntense = this.msgType === 'activityIntense';
 
       messageObject.set('userId', this.$store.state.loggedInUserId);
       messageObject.set('message', newMessage);
-      messageObject.set('activityLight', this.msgType === 'activityLight');
-      messageObject.set('activityIntense', this.msgType === 'activityIntense');
+      messageObject.set('activityLight', activityLight);
+      messageObject.set('activityIntense', activityIntense);
 
       this.$store.commit('appendMessages', {
         createdAt: new Date(),
         userId: this.$store.state.loggedInUserId,
-        activityLight: this.msgType === 'activityLight',
-        activityIntense: this.msgType === 'activityIntense',
+        activityLight,
+        activityIntense,
         message,
       });
 
@@ -200,10 +202,24 @@ export default {
 
       try {
         await messageObject.save();
+
+        if (activityLight || activityIntense) {
+          this.updateStatus();
+        }
       } catch (error) {
         console.error('Error while saving message: ', error);
         this.message = message;
       }
+    },
+    async updateStatus() {
+      const state = this.$store.state;
+      await this.$parse.Cloud.run('setStatus', {
+        userId: state.loggedInUserId,
+        userSettings: {
+          weightStart: state.weightStart,
+          weightGoal: state.weightGoal,
+        },
+      });
     },
   },
 };

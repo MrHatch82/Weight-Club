@@ -83,7 +83,7 @@ export default {
 
         this.$nextTick(() => {
           if (state.weightUnit && state.weightStart && state.weightGoal) {
-            this.$router.push('/weight-tracking');
+            this.$router.push('/friends');
           } else {
             this.$router.push('/user-settings');
           }

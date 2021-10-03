@@ -138,7 +138,6 @@ export default {
         userSettings: {
           weightStart: state.weightStart,
           weightGoal: state.weightGoal,
-          displayName: state.displayName,
         },
       });
     },

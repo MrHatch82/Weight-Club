@@ -2,18 +2,18 @@
   <div id="topnav" :class="{ show: $route.path !== '/'}">
     <logo class="logo" />
     <div class="container text-right">
+      <nuxt-link to="/friends" :class="{ disabled: !settingsReady}" class="tab">
+        friends ranking
+      </nuxt-link>
       <nuxt-link to="/weight-tracking" :class="{ disabled: !settingsReady}" class="tab">
         weight tracking
-      </nuxt-link>
-      <nuxt-link to="/friends" :class="{ disabled: !settingsReady}" class="tab">
-        friends
       </nuxt-link>
       <nuxt-link to="/activities" :class="{ disabled: !settingsReady}" class="tab position-relative" @click.native="newMessage = false">
         Activities / Chat
         <div v-if="newMessage" class="message-indicator"></div>
       </nuxt-link>
       <nuxt-link to="/food-diary" :class="{ disabled: !settingsReady}" class="tab">
-        food diary
+        Nutrition diary
       </nuxt-link>
     </div>
     <nuxt-link to="/user-settings" class="settings">

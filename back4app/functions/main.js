@@ -12,6 +12,10 @@ Parse.Cloud.define('setStatus', async (request) => {
     order: 'desc',
   });
 
+  const activities = await Parse.Cloud.run('getActivities', {
+    userId,
+  });
+
   const statusObject = await Parse.Cloud.run('getStatus', { userId });
 
   let weightLossMonth = 0;
@@ -38,6 +42,8 @@ Parse.Cloud.define('setStatus', async (request) => {
   status.set('weightRemaining', weightRemaining);
   status.set('weightLossPercent', weightLossPercent);
   status.set('weightCurrent', weightMonthEnd);
+  status.set('activitiesLight', activities.light);
+  status.set('activitiesIntense', activities.intense);
 
   try {
     return await status.save();
@@ -57,6 +63,66 @@ Parse.Cloud.define('getStatus', async (request) => {
     return object || null;
   } catch (error) {
     console.error('Error while fetching Status', error);
+  }
+});
+
+Parse.Cloud.define('getActivities', async (request) => {
+  const userId = request.params.userId;
+
+  const date = new Date();
+  const firstDay = new Date(date.getFullYear(), date.getMonth(), 0);
+
+  const Messages = Parse.Object.extend('Messages');
+
+  const queryLight = new Parse.Query(Messages);
+  queryLight.equalTo('userId', userId);
+  queryLight.greaterThanOrEqualTo('createdAt', firstDay);
+  queryLight.lessThanOrEqualTo('createdAt', date);
+  queryLight.equalTo('activityLight', true);
+
+  const queryIntense = new Parse.Query(Messages);
+  queryIntense.equalTo('userId', userId);
+  queryIntense.greaterThanOrEqualTo('createdAt', firstDay);
+  queryIntense.lessThanOrEqualTo('createdAt', date);
+  queryIntense.equalTo('activityIntense', true);
+
+  const queryMain = Parse.Query.or(queryLight, queryIntense);
+
+  try {
+    const results = await queryMain.find();
+
+    const activitiesLight = [];
+    const activitiesIntense = [];
+
+    for (const object of results) {
+      if (object.get('activityLight')) {
+        const date = object.get('createdAt');
+        const month =
+          date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
+        const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+        const dateString = `${date.getFullYear()}${month}${day}`;
+        if (!activitiesLight.includes(dateString)) {
+          activitiesLight.push(dateString);
+        }
+      }
+      if (object.get('activityIntense')) {
+        const date = object.get('createdAt');
+        const month =
+          date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
+        const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+        const dateString = `${date.getFullYear()}${month}${day}`;
+        if (!activitiesIntense.includes(dateString)) {
+          activitiesIntense.push(dateString);
+        }
+      }
+    }
+
+    return {
+      light: activitiesLight.length,
+      intense: activitiesIntense.length,
+    };
+  } catch (error) {
+    console.error('Error while fetching Weights', error);
   }
 });
 

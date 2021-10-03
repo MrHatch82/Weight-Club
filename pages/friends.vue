@@ -14,11 +14,11 @@
                     {{ displayNames[friend.userId] }}
                   </div>
                   <div class="text-secondary">
-                    500 Pts.
+                    {{ friend.points }} Pts.
                   </div>
                 </div>
               </div>
-              <div class="col-md-6 col-lg-3">
+              <div class="col-6 col-lg-3">
                 <div class="blurp shadow-down text-center">
                   <div class="big text-secondary">
                     {{ $displayWeight(friend.weightLossTotal, $store) }} {{ $store.state.weightUnit }}
@@ -26,7 +26,7 @@
                   total weight loss
                 </div>
               </div>
-              <div class="col-md-6 col-lg-3">
+              <div class="col-6 col-lg-3">
                 <div class="blurp shadow-down text-center">
                   <div class="big text-secondary">
                     {{ $displayWeight(friend.weightLossMonth, $store) }} {{ $store.state.weightUnit }}
@@ -35,7 +35,7 @@
                 </div>
               </div>
 
-              <div class="col-md-6 col-lg-3">
+              <div class="col-6 col-lg-3">
                 <div class="blurp shadow-down text-center">
                   <div class="big text-secondary">
                     {{ $displayWeight(friend.weightRemaining, $store) }} {{ $store.state.weightUnit }}
@@ -43,7 +43,7 @@
                   still remaining
                 </div>
               </div>
-              <div class="col-md-6 col-lg-3">
+              <div class="col-6 col-lg-3">
                 <div class="blurp shadow-down text-center">
                   <div class="big text-secondary">
                     {{ $round(friend.weightLossPercent) }} %
@@ -77,16 +77,31 @@ export default {
       const friends = [];
 
       for (const object of results) {
+        const lastUpdate = parseInt(this.$moment(object.get('updatedAt')).format('YYYYMM'), 10);
+        const firstOfMonth = parseInt(this.$moment().format('YYYYMM'), 10);
+        const statusValid = lastUpdate === firstOfMonth;
+
+        const weightLossMonth = statusValid ? object.get('weightLossMonth') : 0;
+        const activitiesLight = object.get('activitiesLight');
+        const activitiesIntense = object.get('activitiesIntense');
+
         friends.push({
           userId: object.get('userId'),
           weightLossTotal: object.get('weightLossTotal'),
-          weightLossMonth: object.get('weightLossMonth'),
+          weightLossMonth,
           weightLossPercent: object.get('weightLossPercent'),
           weightRemaining: object.get('weightRemaining'),
+          activitiesLight,
+          activitiesIntense,
+          points: this.getPoints({
+            weightLossMonth,
+            activitiesLight,
+            activitiesIntense,
+          }),
         });
       }
 
-      this.friends = friends;
+      this.friends = friends.sort((a, b) => (a.points > b.points) ? -1 : ((b.points > a.points) ? 1 : 0));
     } catch (error) {
       console.error('Error while fetching Weights', error);
     }
@@ -99,6 +114,13 @@ export default {
   methods: {
     getMonthPercent(friend) {
       return 100 / friend.weightLossTotal * friend.weightLossMonth;
+    },
+    getPoints(friend) {
+      let points = 0;
+      points += Math.round(friend.weightLossMonth * 100);
+      points += (friend.activitiesLight || 0) * 20;
+      points += (friend.activitiesIntense || 0) * 50;
+      return points;
     },
   },
 };
