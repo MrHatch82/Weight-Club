@@ -39,9 +39,8 @@
       </div>
     </div>
 
-    <popup ref="popup" title="Add/edit weight">
-      <weightEditWindow :days="daysInMonth" :weights="weights">
-      </weighteditwindow>
+    <popup ref="popup" title="Add/edit weight" emit-id="weight-edit-open">
+      <weightEditWindow :days="daysInMonth" :weights="weights" />
     </popup>
   </div>
 </template>

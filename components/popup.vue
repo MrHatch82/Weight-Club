@@ -17,6 +17,7 @@
 export default {
   props: {
     title: { type: String, default: '' },
+    emitId: { type: String, default: '' },
   },
   data() {
     return {
@@ -27,8 +28,8 @@ export default {
     toggle() {
       this.show = !this.show;
 
-      if (this.show) {
-        this.$nuxt.$emit('weight-edit-open');
+      if (this.show && this.emitId) {
+        this.$nuxt.$emit(this.emitId);
       }
     },
   },

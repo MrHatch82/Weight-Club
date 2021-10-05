@@ -9,27 +9,13 @@
             <date-picker @dateChanged="dateChanged">
               <div class="col-lg-4 offset-lg-2 mb-4">
                 <button class="w-100 btn btn-primary shadow-up" @click="showPopup">
-                  add/edit activity
+                  add activity
                 </button>
               </div>
             </date-picker>
-            <div ref="mo" class="month-overview">
-              <div
-                v-for="(day, index) in daysInMonth"
-                :key="index"
-                class="day"
-              >
-                <div class="number" :style="`width: ${dayWidth};`" :class="{ weekend: isWeekend(day.date)}">
-                  {{ index + 1 }}
-                </div>
-                <div class="box" :style="`width: ${dayWidth}; height: ${dayWidth}`" :class="{ weekend: isWeekend(day.date)}">
-                  <div v-if="day.activityLight && !day.activityIntense" class="light" />
-                  <div v-if="!day.activityLight && day.activityIntense" class="intense" />
-                  <div v-if="day.activityLight && day.activityIntense" class="both" />
-                </div>
-              </div>
-            </div>
+            <activity-calendar :month="daysInMonth" />
           </div>
+          <div class="gradient" />
         </div>
         <div class="chat">
           <div v-for="(msg, index) in messages" :key="index" class="message" :class="{ user: msg.userId === currentUserId }">
@@ -65,8 +51,8 @@
         </div>
       </div>
     </transition>
-    <popup ref="popup" title="add/edit activity">
-      HUI!
+    <popup ref="popup" title="add activity" emit-id="activity-edit-open">
+      <activityEditWindow :days="daysInMonth" />
     </popup>
   </div>
 </template>
@@ -80,7 +66,6 @@ export default {
       msgType: 'message',
       loading: true,
       activities: [],
-      moWidth: 1140,
     };
   },
 
@@ -123,9 +108,6 @@ export default {
       );
       return monthArray;
     },
-    dayWidth() {
-      return `${this.moWidth / this.daysInMonth.length}px`;
-    },
   },
   watch: {
     messages() {
@@ -136,30 +118,12 @@ export default {
     this.getMessages();
     this.getMessages(true);
     this.scrollToBottom();
-
-    this.$nextTick(() => {
-      this.getMoWidth();
-
-      window.addEventListener('resize', this.getMoWidth);
-    });
   },
   beforeDestroy() {
     this.$nuxt.$off('newMessage');
     window.removeEventListener('resize', this.getMoWidth);
   },
   methods: {
-    getMoWidth() {
-      if (this.$refs) {
-        this.moWidth = this.$refs.mo.offsetWidth;
-      }
-    },
-    isWeekend(date) {
-      const dayOfWeek = date.day();
-      if (dayOfWeek % 6 === 0) {
-        return true;
-      }
-      return false;
-    },
     dateChanged(newDate) {
       this.selectedDate = this.$moment(newDate).format('YYYYMM');
       this.getMessages(true);
@@ -269,12 +233,12 @@ export default {
         this.loading = false;
       }
     },
-    async publishMessage(message) {
+    async publishMessage(message, msgType) {
       const messageObject = new this.$parse.Object('Messages');
 
       const newMessage = message;
-      const activityLight = this.msgType === 'activityLight';
-      const activityIntense = this.msgType === 'activityIntense';
+      const activityLight = msgType === 'activityLight';
+      const activityIntense = msgType === 'activityIntense';
 
       messageObject.set('userId', this.$store.state.loggedInUserId);
       messageObject.set('message', newMessage);
@@ -289,15 +253,18 @@ export default {
         message,
       });
 
-      this.msgType = 'message';
-
       this.scrollToBottom();
+
+      if (activityLight || activityIntense) {
+        this.$refs.popup.toggle();
+      }
 
       try {
         await messageObject.save();
 
         if (activityLight || activityIntense) {
           this.updateStatus();
+          this.getMessages(true);
         }
       } catch (error) {
         console.error('Error while saving message: ', error);
@@ -335,65 +302,14 @@ export default {
     background: $dark;
   }
 
-  .month-overview {
-    display: flex;
-
-    .number {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 11px;
-      font-weight: 400;
-    }
-
-    .box {
-      border: 2px solid $dark;
-      background: lighten($medium, 1%);
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 12px;
-      font-weight: 700;
-      border-radius: 0.2rem;
-
-      &.weekend {
-        background: darken($medium, 4%);
-      }
-
-      .light {
-        width: 65%;
-        height: 65%;
-        background: $tertiary;
-        border-radius: 50%;
-      }
-
-      .intense {
-        width: 65%;
-        height: 65%;
-        background: $primary;
-        border-radius: 50%;
-      }
-
-      .both {
-        width: 65%;
-        height: 65%;
-        background: $tertiary;
-        border-radius: 50%;
-        position: relative;
-        overflow: hidden;
-
-        &::after {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 52%;
-          background: $primary;
-          content: '';
-        }
-      }
-    }
+  .gradient {
+    position: absolute;
+    bottom: 0;
+    transform: translateY(100%);
+    height: 4rem;
+    width: 100%;
+    background: linear-gradient(0deg, rgba(51,51,51,0) 0%, rgba(51,51,51,1) 80%);
+    z-index: 20;
   }
 
   .chat {
@@ -401,7 +317,7 @@ export default {
     display: flex;
     flex-direction: column;
     justify-content: end;
-    padding-top: 117px;
+    padding-top: 149px;
     padding-bottom: 78px;
 
     // clearfix
@@ -506,23 +422,6 @@ export default {
       color: $tertiary;
       letter-spacing: 1px;
     }
-  }
-
-  .btn-inactive {
-    background: $darker;
-    box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.2),
-    inset -1px -1px 0 0 rgba(0, 0, 0, 0.3), inset 1px 0 0 0 rgba(0, 0, 0, 0.3),
-    0 4px 8px 0 rgba(0, 0, 0, 0.2) !important;
-  }
-
-  .btn-primary {
-    background: $primary;
-  }
-
-  .btn-group {
-    position: absolute;
-    right: 0;
-    top: 0;
   }
 }
 </style>
