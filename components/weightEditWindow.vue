@@ -1,13 +1,13 @@
 <template>
   <div class="weight-edit-window">
     <div class="date shadow-down">
-      <button class="btn btn-primary mr-2 btn-arrow shadow-up" :disabled="prevButtonDisabled" @click="changeDay(-1)">
+      <!-- <button class="btn btn-primary mr-2 btn-arrow shadow-up" :disabled="prevButtonDisabled" @click="changeDay(-1)">
         ◀
-      </button>
+      </button> -->
       {{ selectedDay }}
-      <button class="btn btn-primary ml-2 btn-arrow shadow-up" :disabled="nextButtonDisabled" @click="changeDay(1)">
+      <!-- <button class="btn btn-primary ml-2 btn-arrow shadow-up" :disabled="nextButtonDisabled" @click="changeDay(1)">
         ▶
-      </button>
+      </button> -->
     </div>
     <b-form-input v-model="newWeight" placeholder="Enter weight" class="mb-4" :formatter="$sanitizeWeight"></b-form-input>
     <b-form-textarea
@@ -148,13 +148,15 @@ export default {
 <style lang="scss">
 .weight-edit-window {
   .date {
+    height: 38px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     font-weight: 600;
     margin-bottom: 1.5rem;
     background: $darker;
     color: $tertiary;
+    border-radius: 0.3rem;
   }
 
   input {
