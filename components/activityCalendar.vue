@@ -1,7 +1,7 @@
 <template>
   <div ref="mo" class="month-overview">
     <div
-      v-for="(day, index) in month"
+      v-for="(day, index) in monthWithFallback"
       :key="index"
       class="day"
     >
@@ -20,11 +20,14 @@
 </template>
 
 <script>
+import Moment from 'moment';
 export default {
   props: {
     month: {
       type: Array,
-      default: () => { return []; },
+      default: () => {
+        return [];
+      },
     },
   },
   data() {
@@ -33,6 +36,22 @@ export default {
     };
   },
   computed: {
+    monthWithFallback() {
+      if (this.month.length) {
+        return this.month;
+      }
+      return new Array(
+        Moment().daysInMonth()).fill(null).map((x, i) => {
+        const date = Moment().startOf('month').add(i, 'days');
+
+        return {
+          date,
+          activityLight: false,
+          activityIntense: false,
+        };
+      },
+      );
+    },
     dayWidth() {
       return `${this.moWidth / 31}px`;
     },
@@ -54,7 +73,7 @@ export default {
       }
     },
     isWeekend(date) {
-      const dayOfWeek = date.day();
+      const dayOfWeek = this.$moment(date).day();
       if (dayOfWeek % 6 === 0) {
         return true;
       }

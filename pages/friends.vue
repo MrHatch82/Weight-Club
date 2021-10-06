@@ -52,7 +52,8 @@
                 </div>
               </div>
             </div>
-            <status-bar :percent="friend.weightLossPercent" :month-percent="getMonthPercent(friend)" />
+            <status-bar class="mb-3" :percent="friend.weightLossPercent" :month-percent="getMonthPercent(friend)" />
+            <activity-calendar :month="friend.activities" />
           </div>
         </div>
       </div>
@@ -93,6 +94,7 @@ export default {
           weightRemaining: object.get('weightRemaining'),
           activitiesLight,
           activitiesIntense,
+          activities: statusValid ? object.get('activities') : [],
           points: this.getPoints({
             weightLossMonth,
             activitiesLight,

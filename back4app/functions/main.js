@@ -44,6 +44,7 @@ Parse.Cloud.define('setStatus', async (request) => {
   status.set('weightCurrent', weightMonthEnd);
   status.set('activitiesLight', activities.light);
   status.set('activitiesIntense', activities.intense);
+  status.set('activities', activities.activities);
 
   try {
     return await status.save();
@@ -91,28 +92,39 @@ Parse.Cloud.define('getActivities', async (request) => {
   try {
     const results = await queryMain.find();
 
+    const days = [];
+    const month = new Date().getMonth();
+    const firstDay = new Date(new Date().getFullYear(), month, 1);
+
+    while (firstDay.getMonth() === month) {
+      const activityLight = false;
+      const activityIntense = false;
+      days.push({
+        date: new Date(firstDay.getTime()),
+        activityLight,
+        activityIntense,
+      });
+      firstDay.setDate(firstDay.getDate() + 1);
+    }
+
     const activitiesLight = [];
     const activitiesIntense = [];
 
     for (const object of results) {
       if (object.get('activityLight')) {
-        const date = object.get('createdAt');
-        const month =
-          date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
-        const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-        const dateString = `${date.getFullYear()}${month}${day}`;
+        const dateString = `${object.get('date')}`;
+        const dayIndex = parseInt(dateString.substring('6'), 10) - 1;
         if (!activitiesLight.includes(dateString)) {
           activitiesLight.push(dateString);
+          days[dayIndex].activityLight = true;
         }
       }
       if (object.get('activityIntense')) {
-        const date = object.get('createdAt');
-        const month =
-          date.getMonth() < 10 ? `0${date.getMonth()}` : date.getMonth();
-        const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-        const dateString = `${date.getFullYear()}${month}${day}`;
+        const dateString = `${object.get('date')}`;
+        const dayIndex = parseInt(dateString.substring('6'), 10) - 1;
         if (!activitiesIntense.includes(dateString)) {
           activitiesIntense.push(dateString);
+          days[dayIndex].activityIntense = true;
         }
       }
     }
@@ -120,6 +132,7 @@ Parse.Cloud.define('getActivities', async (request) => {
     return {
       light: activitiesLight.length,
       intense: activitiesIntense.length,
+      activities: days,
     };
   } catch (error) {
     console.error('Error while fetching Weights', error);

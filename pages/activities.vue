@@ -87,9 +87,7 @@ export default {
         const date = this.$moment(this.selectedDate).startOf('month').add(i, 'days');
 
         this.activities.forEach((activity) => {
-          const activityDate = this.$moment(activity.createdAt).format('YYYYMMDD');
-
-          if (activityDate === date.format('YYYYMMDD')) {
+          if (`${activity.date}` === date.format('YYYYMMDD')) {
             if (activity.activityLight) {
               activityLight = true;
             }
@@ -204,18 +202,13 @@ export default {
           const messages = [];
 
           for (const object of results) {
-            const userId = object.get('userId');
-            const activityLight = object.get('activityLight');
-            const activityIntense = object.get('activityIntense');
-            const message = object.get('message');
-            const createdAt = object.get('createdAt');
-
             messages.unshift({
-              userId,
-              activityLight,
-              activityIntense,
-              message,
-              createdAt,
+              userId: object.get('userId'),
+              activityLight: object.get('activityLight'),
+              activityIntense: object.get('activityIntense'),
+              message: object.get('message'),
+              createdAt: object.get('createdAt'),
+              date: object.get('date'),
             });
           }
 
@@ -239,11 +232,13 @@ export default {
       const newMessage = message;
       const activityLight = msgType === 'activityLight';
       const activityIntense = msgType === 'activityIntense';
+      const date = parseInt(this.$moment().format('YYYYMMDD'), 10);
 
       messageObject.set('userId', this.$store.state.loggedInUserId);
       messageObject.set('message', newMessage);
       messageObject.set('activityLight', activityLight);
       messageObject.set('activityIntense', activityIntense);
+      messageObject.set('date', date);
 
       this.$store.commit('appendMessages', {
         createdAt: new Date(),
@@ -251,6 +246,7 @@ export default {
         activityLight,
         activityIntense,
         message,
+        date,
       });
 
       this.scrollToBottom();
