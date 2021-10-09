@@ -1,6 +1,6 @@
 <template>
   <div id="logo" class="text-center">
-    <img src="/images/logo.png" alt="Fat Friends Logo">
+    <logo-img alt="Fat Friends Logo" title="Fat Friends Logo" />
     <transition name="fade">
       <div v-if="showSubtitle && !switcher" key="subtitles[subtitle]" class="subtitle" v-html="subtitles[subtitle]" />
       <div v-if="showSubtitle && switcher" key="subtitles[nextSubtitle]" class="subtitle" v-html="subtitles[nextSubtitle]" />
@@ -9,7 +9,10 @@
 </template>
 
 <script>
+import LogoImg from '~/assets/svg/logo.svg?inline';
 export default {
+
+  components: { LogoImg },
   props: {
     showSubtitle: {
       type: Boolean,
