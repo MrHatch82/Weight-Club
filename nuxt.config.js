@@ -82,7 +82,20 @@ export default {
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     '@nuxtjs/style-resources',
+    'nuxt-mq',
   ],
+
+  mq: {
+    defaultBreakpoint: 'sm',
+    breakpoints: {
+      xs: 576,
+      sm: 768,
+      md: 992,
+      lg: 1200,
+      xl: 1400,
+      xxl: Infinity,
+    },
+  },
 
   bootstrapVue: {
     bootstrapCSS: false, // Or `css: false`
