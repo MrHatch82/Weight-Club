@@ -263,7 +263,7 @@ export default {
           this.getMessages(true);
         }
       } catch (error) {
-        console.error('Error while saving message: ', error);
+        console.error('Error while saving message: ', error); // eslint-disable-line
         this.message = message;
       }
     },
@@ -312,7 +312,7 @@ export default {
     min-height: calc(100vh - 72px - 4rem);
     display: flex;
     flex-direction: column;
-    justify-content: end;
+    justify-content: flex-end;
     padding-top: 149px;
     padding-bottom: 78px;
 

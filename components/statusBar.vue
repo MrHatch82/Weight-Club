@@ -1,12 +1,11 @@
 <template>
   <div class="status-bar">
     <div class="status-bar-container shadow-down">
-      <div ref="statusBar" class="status-bar-before" @mousemove="tooltipHover($event)" @mouseleave="showTooltip = false">
+      <div ref="statusBar" class="status-bar-before" @mousemove="tooltipHover($event)" @mouseleave="tooltipHover(null)">
         <div class="status-bar-month" :style="`width: ${monthPercent}%;`" />
       </div>
     </div>
-    <div ref="tooltip" class="tooltip" :class="{ show: showTooltip, month: tooltipMonth }" v-html="tooltip">
-    </div>
+    <tooltip ref="tooltip" parent-ref-title="statusBar" :tooltip="tooltip" :text-color="tooltipColor" />
   </div>
 </template>
 
@@ -18,8 +17,7 @@ export default {
   },
   data() {
     return {
-      showTooltip: false,
-      tooltipMonth: false,
+      tooltipColor: 'primary',
       tooltip: '',
     };
   },
@@ -35,15 +33,11 @@ export default {
   },
   methods: {
     tooltipHover(e) {
-      this.showTooltip = true;
-      this.tooltipMonth = e.target !== this.$refs.statusBar;
-      this.tooltip = e.target === this.$refs.statusBar ? 'Weight loss in<br>previous months' : 'Weight loss<br>this month';
-      const rect = this.$refs.statusBar.getBoundingClientRect();
-      const offsetX = rect.left;
-      const offsetY = rect.top;
-      const translateX = e.clientX - offsetX;
-      const translateY = e.clientY - offsetY;
-      this.$refs.tooltip.style.transform = `translate(${translateX}px, ${translateY - 2}px) translate(-50%, -100%)`;
+      if (e) {
+        this.tooltipColor = e.target === this.$refs.statusBar ? 'primary' : 'secondary';
+        this.tooltip = e.target === this.$refs.statusBar ? 'Weight loss in<br>previous months' : 'Weight loss<br>this month';
+      }
+      this.$refs.tooltip.trigger(e);
     },
   },
 };
@@ -83,33 +77,6 @@ export default {
     width: 0;
     box-shadow: inset 0 4px 4px 0px rgba(0, 0, 0, 0.35),
     inset 0 1px 1px 0px rgba(0, 0, 0, 0.4);
-  }
-
-  .tooltip {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: none;
-    background: rgba(0,0,0,0.7);
-    padding: 0.25rem 0.6rem 0.4rem;
-    color: $white;
-    border-radius: 7px;
-    font-weight: 600;
-    color: $tertiary;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    text-align: center;
-    transform: translateX(-50%);
-    pointer-events: none;
-    line-height: 1.2;
-
-    &.month {
-      color: $secondary;
-    }
-
-    &.show {
-      display: block;
-    }
   }
 }
 </style>
