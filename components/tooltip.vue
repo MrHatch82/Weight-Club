@@ -28,11 +28,8 @@ export default {
     trigger(e) {
       if (e) {
         this.showTooltip = true;
-        const rect = this.parentEl.getBoundingClientRect();
-        const offsetX = rect.left;
-        const offsetY = rect.top;
-        const translateX = e.clientX - offsetX;
-        const translateY = e.clientY - offsetY;
+        const translateX = e.clientX;
+        const translateY = e.clientY;
         this.$refs.tooltip.style.transform = `translate(${translateX}px, ${translateY - 2}px) translate(-50%, -100%)`;
       }
 
@@ -46,7 +43,7 @@ export default {
 
 <style lang="scss" scoped>
 .tooltip {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     display: none;

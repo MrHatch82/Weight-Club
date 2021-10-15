@@ -1,14 +1,15 @@
 <template>
-  <div ref="mo" class="month-overview">
+  <div ref="mo" class="month-overview" @mousemove="tooltipHover($event)" @mouseleave="tooltipHover(null)">
     <div
       v-for="(day, index) in monthWithFallback"
       :key="index"
       class="day"
+      :data-index="index"
     >
       <div class="number" :style="`width: ${dayWidth};`" :class="{ weekend: isWeekend(day.date)}">
         {{ index + 1 }}
       </div>
-      <div class="box" :style="`width: ${dayWidth}; height: ${dayWidth}`" :class="{ weekend: isWeekend(day.date)}">
+      <div class="box" :data-index="index" :style="`width: ${dayWidth}; height: ${dayWidth}`" :class="{ weekend: isWeekend(day.date)}">
         <transition name="fade">
           <div v-if="day.activityLight && !day.activityIntense" key="light" class="light" />
           <div v-if="!day.activityLight && day.activityIntense" key="intense" class="intense" />
@@ -16,6 +17,7 @@
         </transition>
       </div>
     </div>
+    <tooltip ref="tooltip" parent-ref-title="mo" :tooltip="tooltip" />
   </div>
 </template>
 
@@ -33,6 +35,7 @@ export default {
   data() {
     return {
       moWidth: 1140,
+      tooltip: 'hui',
     };
   },
   computed: {
@@ -79,6 +82,25 @@ export default {
       }
       return false;
     },
+    tooltipHover(e) {
+      if (e) {
+        const day = this.monthWithFallback[e.target.dataset.index];
+
+        if (day.activityLight && day.activityIntense) {
+          this.tooltip = '<span class="text-primary">Heavy Exercise</span><br>& Light Exercise';
+        }
+        if (day.activityLight && !day.activityIntense) {
+          this.tooltip = 'Light Exercise';
+        }
+        if (!day.activityLight && day.activityIntense) {
+          this.tooltip = 'Heavy Exercise';
+        }
+        if (!day.activityLight && !day.activityIntense) {
+          this.tooltip = '<span class="text-white">No Exercise</span>';
+        }
+      }
+      this.$refs.tooltip.trigger(e);
+    },
   },
 };
 </script>
@@ -93,6 +115,7 @@ export default {
       align-items: center;
       font-size: 11px;
       font-weight: 400;
+      pointer-events: none;
     }
 
     .box {
@@ -108,6 +131,10 @@ export default {
 
       &.weekend {
         background: darken($medium, 4%);
+      }
+
+      div {
+        pointer-events: none;
       }
 
       .light {
