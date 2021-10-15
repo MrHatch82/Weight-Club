@@ -42,7 +42,8 @@ export default {
     top: 0;
     left: 0;
     display: none;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(3px);
     padding: 0.25rem 0.6rem 0.4rem;
     color: $white;
     border-radius: 7px;

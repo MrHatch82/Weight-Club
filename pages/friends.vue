@@ -129,20 +129,23 @@ export default {
     triggerTooltip(e, friendIndex) {
       if (e) {
         const friend = this.friends[friendIndex];
-        this.tooltip = friend.points ? 'Points calculation<br>' : 'No point';
+        this.tooltip = friend.points ? '' : '<span class="text-white">There\'s No point</span>';
 
         if (friend.weightLossMonth) {
-          this.tooltip += `<br>${friend.weightLossMonth || 0} kilo${friend.weightLossMonth > 1 ? 's' : ''} lost x 100 = ${(friend.weightLossMonth || 0) * 100} Pts.`;
+          const sum = friend.weightLossMonth * 100;
+          this.tooltip += `<span class="text-tertiary">${friend.weightLossMonth} kilo${friend.weightLossMonth > 1 ? 's' : ''} lost x 100</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.`;
         }
 
         if (friend.activitiesIntense) {
-          this.tooltip += `<br>${friend.activitiesIntense || 0} Heavy exercise${friend.activitiesintense > 1 ? 's' : ''} x 50 = ${(friend.activitiesIntense || 0) * 50} Pts.`;
+          const sum = friend.activitiesIntense * 50;
+          this.tooltip += `<br><span class="text-tertiary">${friend.activitiesIntense} Heavy exercise${friend.activitiesintense > 1 ? 's' : ''} x 50</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.`;
         }
         if (friend.activitiesLight) {
-          this.tooltip += `<br>${friend.activitiesLight || 0} Light exercise${friend.activitiesLight > 1 ? 's' : ''} x 20 = ${(friend.activitiesLight || 0) * 20} Pts.`;
+          const sum = friend.activitiesLight * 20;
+          this.tooltip += `<br><span class="text-tertiary">${friend.activitiesLight} Light exercise${friend.activitiesLight > 1 ? 's' : ''} x 20</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.`;
         }
         if (friend.points) {
-          this.tooltip += `<br><br>Total = ${friend.points} Pts.`;
+          this.tooltip += `<br><br><span class="text-primary">Total</span>&nbsp;&nbsp;&nbsp;${friend.points < 100 ? '&nbsp;&nbsp;' : ''}${friend.points} Pts.`;
         }
       }
       this.$refs.tooltip.trigger(e);
