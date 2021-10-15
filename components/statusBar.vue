@@ -5,7 +5,7 @@
         <div class="status-bar-month" :style="`width: ${monthPercent}%;`" />
       </div>
     </div>
-    <tooltip ref="tooltip" parent-ref-title="statusBar" :tooltip="tooltip" :text-color="tooltipColor" />
+    <tooltip ref="tooltip" :tooltip="tooltip" :text-color="tooltipColor" />
   </div>
 </template>
 

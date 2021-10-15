@@ -5,7 +5,6 @@
 <script>
 export default {
   props: {
-    parentRefTitle: String, // eslint-disable-line
     tooltip: {
       type: String,
       default: '',
@@ -18,11 +17,7 @@ export default {
   data() {
     return {
       showTooltip: false,
-      parentEl: null,
     };
-  },
-  mounted() {
-    this.parentEl = this.$parent.$refs[this.parentRefTitle];
   },
   methods: {
     trigger(e) {

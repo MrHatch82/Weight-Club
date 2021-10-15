@@ -13,7 +13,7 @@
                     </span>
                     {{ displayNames[friend.userId] }}
                   </div>
-                  <div class="points text-secondary">
+                  <div ref="points" class="points text-secondary" @mousemove="triggerTooltip($event, index)" @mouseleave="triggerTooltip(null)">
                     {{ friend.points }} Pts.
                   </div>
                 </div>
@@ -59,6 +59,7 @@
       </div>
       <div v-else key="spinner" class="spinner"></div>
     </transition>
+    <tooltip ref="tooltip" :tooltip="tooltip" class="text-right text-secondary" />
   </div>
 </template>
 
@@ -67,6 +68,7 @@ export default {
   data() {
     return {
       friends: [],
+      tooltip: 'POINTS!',
     };
   },
   async fetch() {
@@ -123,6 +125,27 @@ export default {
       points += (friend.activitiesLight || 0) * 20;
       points += (friend.activitiesIntense || 0) * 50;
       return points;
+    },
+    triggerTooltip(e, friendIndex) {
+      if (e) {
+        const friend = this.friends[friendIndex];
+        this.tooltip = friend.points ? 'Points calculation<br>' : 'No point';
+
+        if (friend.weightLossMonth) {
+          this.tooltip += `<br>${friend.weightLossMonth || 0} kilo${friend.weightLossMonth > 1 ? 's' : ''} lost x 100 = ${(friend.weightLossMonth || 0) * 100} Pts.`;
+        }
+
+        if (friend.activitiesIntense) {
+          this.tooltip += `<br>${friend.activitiesIntense || 0} Heavy exercise${friend.activitiesintense > 1 ? 's' : ''} x 50 = ${(friend.activitiesIntense || 0) * 50} Pts.`;
+        }
+        if (friend.activitiesLight) {
+          this.tooltip += `<br>${friend.activitiesLight || 0} Light exercise${friend.activitiesLight > 1 ? 's' : ''} x 20 = ${(friend.activitiesLight || 0) * 20} Pts.`;
+        }
+        if (friend.points) {
+          this.tooltip += `<br><br>Total = ${friend.points} Pts.`;
+        }
+      }
+      this.$refs.tooltip.trigger(e);
     },
   },
 };

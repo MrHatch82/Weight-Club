@@ -17,7 +17,7 @@
         </transition>
       </div>
     </div>
-    <tooltip ref="tooltip" parent-ref-title="mo" :tooltip="tooltip" />
+    <tooltip ref="tooltip" :tooltip="tooltip" />
   </div>
 </template>
 
