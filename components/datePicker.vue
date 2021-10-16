@@ -1,6 +1,6 @@
 <template>
   <div class="date-picker row">
-    <div class="col-md-6 col-lg-3 mb-4">
+    <div class="col-6 col-lg-3 mb-4">
       <div class="datepicker shadow-down">
         <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract(1, 'month')">
           ◀
@@ -15,7 +15,7 @@
         </button>
       </div>
     </div>
-    <div class="col-md-6 col-lg-3 mb-4">
+    <div class="col-6 col-lg-3 mb-4">
       <div class="datepicker shadow-down">
         <button
           class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up"
@@ -46,6 +46,9 @@ export default {
   },
   computed: {
     currentMonth() {
+      if (this.$mq === 'xs' || this.$mq === 'sm') {
+        return this.$moment(this.selectedDate).format('MMM');
+      }
       return this.$moment(this.selectedDate).format('MMMM');
     },
     currentYear() {

@@ -55,6 +55,7 @@ export default {
     transform: translateX(-50%);
     pointer-events: none;
     line-height: 1.2;
+    z-index: 1;
 
     &.secondary {
       color: $secondary;

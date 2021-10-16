@@ -17,7 +17,7 @@ body {
 }
 
 .page {
-  padding-top: calc(#{$topnavHeightMobile} + 2rem);
+  padding-top: calc(#{$topnavHeightMobile} + 1rem);
 
   @include media-breakpoint-up(lg) {
     padding-top: calc(#{$topnavHeight} + 4rem);

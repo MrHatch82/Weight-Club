@@ -56,6 +56,9 @@ export default {
       );
     },
     dayWidth() {
+      if (this.$mq === 'xs' || this.$mq === 'sm') {
+        return `${this.moWidth / 16}px`;
+      }
       return `${this.moWidth / 31}px`;
     },
   },
@@ -108,6 +111,14 @@ export default {
 <style lang="scss">
 .month-overview {
     display: flex;
+    flex-wrap: wrap;
+    margin-right: -1px;
+
+    @include media-breakpoint-up(lg) {
+      flex-wrap: nowrap;
+      margin-right: 0;
+      margin-top: 0;
+    }
 
     .number {
       display: flex;

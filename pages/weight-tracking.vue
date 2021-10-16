@@ -290,6 +290,12 @@ export default {
       this.options.scales.yAxes[0].ticks.suggestedMin = minWeight - paddingBot;
       this.options.scales.yAxes[0].ticks.suggestedMax = maxWeight + paddingTop;
 
+      if (this.$mq === 'xs' || this.$mq === 'sm') {
+        this.chart.datasets[0].pointRadius = 3;
+        this.chart.datasets[0].pointHoverRadius = 5;
+        this.chart.datasets[0].borderWidth = 3;
+      }
+
       this.chart.datasets[0].data = data;
       this.weights = weightsOrdered;
 

@@ -130,7 +130,7 @@ export default {
 
 <style lang="scss">
 .gradient-overlay {
-    height: 2rem;
+    height: 1rem;
     width: 100%;
     position: fixed;
     top: $topnavHeightMobile;

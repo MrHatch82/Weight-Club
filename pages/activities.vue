@@ -294,7 +294,7 @@ export default {
     left: 0;
     width: 100%;
     z-index: 1;
-    padding-top: 2rem;
+    padding-top: 1rem;
     background: $dark;
 
     @include media-breakpoint-up(lg) {
@@ -302,6 +302,13 @@ export default {
       padding-top: 4rem;
     }
 
+    .month-overview {
+      margin-top: -1rem;
+
+      @include media-breakpoint-up(lg) {
+        margin-top: 0;
+      }
+    }
   }
 
   .gradient {
@@ -398,7 +405,7 @@ export default {
 
     .bubble {
       border-radius: 10px 10px 3px 10px;
-     float: right;
+      float: right;
     }
   }
 
@@ -407,7 +414,11 @@ export default {
     bottom: 0;
     left: 0;
     width: 100%;
-    padding-bottom: 2rem;
+    padding-bottom: 1.5rem;
+
+    @include media-breakpoint-up(lg) {
+      padding-bottom: 2rem;
+    }
 
     input {
       font-weight: 500;
