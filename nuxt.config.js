@@ -55,7 +55,7 @@ export default {
   css: ['~/assets/css/app.scss'],
 
   styleResources: {
-    scss: ['~/assets/css/_vars.scss'],
+    scss: ['~/assets/css/resources.scss'],
   },
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins

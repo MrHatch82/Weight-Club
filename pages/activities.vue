@@ -290,12 +290,18 @@ export default {
 .page-activities {
   .date-picker-fixed {
     position: fixed;
-    top: 72px;
+    top: $topnavHeightMobile;
     left: 0;
     width: 100%;
-    z-index: 20;
-    padding-top: 64px;
+    z-index: 1;
+    padding-top: 2rem;
     background: $dark;
+
+    @include media-breakpoint-up(lg) {
+      top: $topnavHeight;
+      padding-top: 4rem;
+    }
+
   }
 
   .gradient {

@@ -17,7 +17,11 @@ body {
 }
 
 .page {
-  padding-top: calc(#{$topnavHeight} + 4rem);
+  padding-top: calc(#{$topnavHeightMobile} + 2rem);
+
+  @include media-breakpoint-up(lg) {
+    padding-top: calc(#{$topnavHeight} + 4rem);
+  }
 }
 
 .btn {

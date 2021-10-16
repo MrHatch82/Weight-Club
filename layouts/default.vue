@@ -130,12 +130,18 @@ export default {
 
 <style lang="scss">
 .gradient-overlay {
-    height: 4rem;
+    height: 2rem;
     width: 100%;
     position: fixed;
-    top: 72px;
+    top: $topnavHeightMobile;
     left: 0;
     background: linear-gradient(0deg, rgba(51,51,51,0) 0%, rgba(51,51,51,1) 70%);
     z-index: 20;
+
+    @include media-breakpoint-up(lg) {
+      height: 4rem;
+      top: $topnavHeight;
+    }
+
   }
 </style>
