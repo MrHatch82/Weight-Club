@@ -102,7 +102,9 @@ export default {
           this.tooltip = '<span class="text-white">No Exercise</span>';
         }
       }
-      this.$refs.tooltip.trigger(e);
+      if (this.$refs && this.$refs.tooltip) {
+        this.$refs.tooltip.trigger(e);
+      }
     },
   },
 };

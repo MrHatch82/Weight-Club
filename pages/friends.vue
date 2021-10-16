@@ -148,7 +148,9 @@ export default {
           this.tooltip += `<br><br><span class="text-primary">Total</span>&nbsp;&nbsp;&nbsp;${friend.points < 100 ? '&nbsp;&nbsp;' : ''}${friend.points} Pts.`;
         }
       }
-      this.$refs.tooltip.trigger(e);
+      if (this.$refs && this.$refs.tooltip) {
+        this.$refs.tooltip.trigger(e);
+      }
     },
   },
 };

@@ -37,7 +37,9 @@ export default {
         this.tooltipColor = e.target === this.$refs.statusBar ? 'primary' : 'secondary';
         this.tooltip = e.target === this.$refs.statusBar ? 'Weight loss in<br>previous months' : 'Weight loss<br>this month';
       }
-      this.$refs.tooltip.trigger(e);
+      if (this.$refs && this.$refs.tooltip) {
+        this.$refs.tooltip.trigger(e);
+      }
     },
   },
 };
