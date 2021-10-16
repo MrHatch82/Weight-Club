@@ -6,7 +6,7 @@
           <div class="status-card">
             <div class="row">
               <div class="col-12">
-                <div class="blurp tt-none text-tertiary bigger bg-transparent px-0 text-left bg-transparent mb-1 d-flex justify-content-between">
+                <div class="blurp tt-none text-tertiary bigger bg-transparent p-0 text-left bg-transparent mb-2 d-flex justify-content-between">
                   <div class="tt-none">
                     <span class="text-primary">
                       {{ index + 1 }}.
@@ -133,19 +133,19 @@ export default {
 
         if (friend.weightLossMonth) {
           const sum = friend.weightLossMonth * 100;
-          this.tooltip += `<span class="text-tertiary">${friend.weightLossMonth} kilo${friend.weightLossMonth > 1 ? 's' : ''} lost x 100</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.`;
+          this.tooltip += `<span class="text-tertiary">${friend.weightLossMonth} kilo${friend.weightLossMonth > 1 ? 's' : ''} lost x 100</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
 
         if (friend.activitiesIntense) {
           const sum = friend.activitiesIntense * 50;
-          this.tooltip += `<br><span class="text-tertiary">${friend.activitiesIntense} Heavy exercise${friend.activitiesintense > 1 ? 's' : ''} x 50</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.`;
+          this.tooltip += `<span class="text-tertiary">${friend.activitiesIntense} Heavy exercise${friend.activitiesintense > 1 ? 's' : ''} x 50</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
         if (friend.activitiesLight) {
           const sum = friend.activitiesLight * 20;
-          this.tooltip += `<br><span class="text-tertiary">${friend.activitiesLight} Light exercise${friend.activitiesLight > 1 ? 's' : ''} x 20</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.`;
+          this.tooltip += `<span class="text-tertiary">${friend.activitiesLight} Light exercise${friend.activitiesLight > 1 ? 's' : ''} x 20</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
         if (friend.points) {
-          this.tooltip += `<br><br><span class="text-primary">Total</span>&nbsp;&nbsp;&nbsp;${friend.points < 100 ? '&nbsp;&nbsp;' : ''}${friend.points} Pts.`;
+          this.tooltip += `<br><span class="text-primary">Total</span>&nbsp;&nbsp;&nbsp;${friend.points < 100 ? '&nbsp;&nbsp;' : ''}${friend.points} Pts.`;
         }
       }
       if (this.$refs && this.$refs.tooltip) {
@@ -158,6 +158,10 @@ export default {
 
 <style lang='scss'>
 .page-ranking {
+  @include media-breakpoint-up(md) {
+    margin-top: -0.75rem;
+  }
+
   .status-card {
     margin-bottom: 2rem;
   }
