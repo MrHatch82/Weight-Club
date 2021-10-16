@@ -9,7 +9,11 @@
       </p>
     </div>
     <div v-else>
-      <h1>User Settings</h1>
+      <div class="row">
+        <div class="col-lg-9">
+          <h1>User Settings</h1>
+        </div>
+      </div>
     </div>
     <b-form @submit.prevent="saveSettings">
       <div class="row">
@@ -35,28 +39,24 @@
         </div>
       </div>
       <div class="row mb-4">
-        <div v-if="!loading" class="col-lg-3 offset-lg-9">
-          <b-button type="submit" variant="primary" class="btn btn-primary w-100 shadow-up">
+        <div v-if="!loading" class="col-lg-3 order-lg-2 offset-lg-6">
+          <b-button type="submit" variant="primary" class="btn btn-primary w-100 shadow-up mb-4">
             {{ settingsReady ? 'Save' : 'Save &amp; proceed' }}
           </b-button>
         </div>
-        <div v-else class="col-lg-3 offset-lg-9 position-relative mt-3">
+        <div v-else class="col-lg-3 order-lg-2 offset-lg-6 position-relative mt-3">
           <div class="spinner" />
+        </div>
+        <div v-if="!loading && success" class="col-lg-3 order-lg-3 offset-lg-9 text-center text-tertiary text-uppercase mb-4">
+          <b>Successfully saved!</b>
+        </div>
+        <div class="col-lg-3 order-lg-1">
+          <b-button variant="primary" class="btn btn-primary w-100 shadow-up mb-4" @click="logOut">
+            log out
+          </b-button>
         </div>
       </div>
     </b-form>
-    <div v-if="settingsReady" class="row">
-      <div class="col-lg-3 offset-lg-9">
-        <b-button variant="primary" class="btn btn-primary w-100 shadow-up" @click="logOut">
-          log out
-        </b-button>
-      </div>
-    </div>
-    <div v-if="!loading && success" class="row mt-4">
-      <div class="col-lg-3 offset-lg-9 text-center text-tertiary text-uppercase">
-        <b>Successfully saved!</b>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -72,13 +72,10 @@ export default {
       weightUnitOptions: this.$store.state.weightUnitOptions,
       loading: false,
       success: false,
+      settingsReady: false,
     };
   },
   computed: {
-    settingsReady() {
-      const state = this.$store.state;
-      return state.userSettingsId && state.weightGoal && state.weightStart;
-    },
     storedWeightUnit() {
       return this.$store.state.weightUnit;
     },
@@ -96,6 +93,10 @@ export default {
         this.lastWeightUnit = this.weightUnit;
       }
     },
+  },
+  mounted() {
+    const state = this.$store.state;
+    this.settingsReady = state.userSettingsId && state.weightGoal && state.weightStart;
   },
   methods: {
     logOut() {
