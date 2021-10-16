@@ -96,16 +96,28 @@ input:-webkit-autofill {
   line-height: 1.5;
   text-transform: uppercase;
   margin-bottom: 1rem;
-  font-size: 14px;
+  font-size: 12px;
   text-align: center;
+
+  @include media-breakpoint-up(lg) {
+    font-size: 14px;
+  }
 }
 
 .big {
-  font-size: 24px;
+  font-size: 16px;
+
+  @include media-breakpoint-up(lg) {
+    font-size: 24px;
+  }
 }
 
 .bigger {
-  font-size: 32px;
+  font-size: 24px;
+
+  @include media-breakpoint-up(md) {
+    font-size: 32px;
+  }
 }
 
 hr {

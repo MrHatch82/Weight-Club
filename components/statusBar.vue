@@ -49,11 +49,15 @@ export default {
 
   .status-bar-container {
       border-radius: 0.25rem;
-      height: 1.25rem;
+      height: 0.8rem;
       width: 100%;
       background: $darker;
       overflow: hidden;
       position: relative;
+
+      @include media-breakpoint-up(lg) {
+        height: 1.25rem;
+      }
   }
 
   .status-bar-before {

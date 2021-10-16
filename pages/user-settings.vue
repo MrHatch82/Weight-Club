@@ -45,7 +45,7 @@
         </div>
       </div>
     </b-form>
-    <div class="row">
+    <div v-if="settingsReady" class="row">
       <div class="col-lg-3 offset-lg-9">
         <b-button variant="primary" class="btn btn-primary w-100 shadow-up" @click="logOut">
           log out
