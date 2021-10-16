@@ -318,7 +318,7 @@ export default {
     height: 4rem;
     width: 100%;
     background: linear-gradient(0deg, rgba(51,51,51,0) 0%, rgba(51,51,51,1) 80%);
-    z-index: 20;
+    z-index: 1;
   }
 
   .chat {

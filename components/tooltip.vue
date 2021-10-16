@@ -25,7 +25,7 @@ export default {
         this.showTooltip = true;
         const translateX = e.clientX;
         const translateY = e.clientY;
-        this.$refs.tooltip.style.transform = `translate(${translateX}px, ${translateY - 2}px) translate(-50%, -100%)`;
+        this.$refs.tooltip.style.transform = `translate(${translateX}px, ${translateY - 2}px) translate(-50%, 20px)`;
       }
 
       if (!e && this.showTooltip) {
@@ -55,7 +55,7 @@ export default {
     transform: translateX(-50%);
     pointer-events: none;
     line-height: 1.2;
-    z-index: 1;
+    z-index: 5;
 
     &.secondary {
       color: $secondary;
