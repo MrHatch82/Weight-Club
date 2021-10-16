@@ -10,6 +10,7 @@ export const state = () => ({
   displayName: null,
   loggedInUserId: null,
   userSettingsId: null,
+  sessionToken: null,
   displayNames: {},
   messages: [],
 });

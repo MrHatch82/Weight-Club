@@ -2,13 +2,18 @@
   <div class="layout-default d-flex flex-column">
     <topnav ref="topnav" />
     <div class="gradient-overlay"></div>
-    <Nuxt />
+    <Nuxt :key="key" />
   </div>
 </template>
 
 <script>
 export default {
-  mounted() {
+  data() {
+    return {
+      key: 0,
+    };
+  },
+  created() {
     // Parse init
     this.$parse.initialize(
       this.$config.appId, // This is your Application ID
@@ -16,13 +21,24 @@ export default {
     );
     this.$parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
 
+    const sessionToken = localStorage.getItem('sessionToken');
+    if (sessionToken) {
+      this.loginWithSessionToken(sessionToken);
+    }
+
     // Subscribe to chat messages
     this.$nuxt.$on('userLoggedIn', () => {
+      this.getUserSettings(this.$route.path === '/');
       this.initChatLiveQuery();
       this.getDisplayNames();
     });
   },
   methods: {
+    async loginWithSessionToken(token) {
+      const user = await this.$parse.User.become(token);
+      this.$store.commit('userLoggedIn', user.id);
+      this.$nuxt.$emit('userLoggedIn');
+    },
     async getDisplayNames() {
       const Users = this.$parse.Object.extend('UserSettings');
       const query = new this.$parse.Query(Users);
@@ -70,6 +86,43 @@ export default {
           }
         }
       });
+    },
+    async getUserSettings(redirect = false) {
+      const state = this.$store.state;
+      const UserSettings = this.$parse.Object.extend('UserSettings');
+      const query = new this.$parse.Query(UserSettings);
+      query.equalTo('userID', state.loggedInUserId);
+      try {
+        const object = await query.first();
+
+        if (object) {
+          const weightUnit = object.get('weightUnit');
+          const weightStart = object.get('weightStart');
+          const weightGoal = object.get('weightGoal');
+          const displayName = object.get('displayName');
+
+          this.$store.commit('setUserSettings', {
+            weightUnit,
+            weightStart,
+            weightGoal,
+            displayName,
+            userSettingsId: object.id,
+          });
+        }
+        if (redirect) {
+          this.$nextTick(() => {
+            if (state.weightUnit && state.weightStart && state.weightGoal) {
+              this.$router.push('/friends');
+            } else {
+              this.$router.push('/user-settings');
+            }
+          });
+        } else {
+          this.key += 1;
+        }
+      } catch (error) {
+        console.error('Error while loading Settings', error);
+      }
     },
   },
 };

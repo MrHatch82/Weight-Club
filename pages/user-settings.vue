@@ -34,7 +34,7 @@
           </b-form-group>
         </div>
       </div>
-      <div class="row">
+      <div class="row mb-4">
         <div v-if="!loading" class="col-lg-3 offset-lg-9">
           <b-button type="submit" variant="primary" class="btn btn-primary w-100 shadow-up">
             {{ settingsReady ? 'Save' : 'Save &amp; proceed' }}
@@ -45,6 +45,13 @@
         </div>
       </div>
     </b-form>
+    <div class="row">
+      <div class="col-lg-3 offset-lg-9">
+        <b-button variant="primary" class="btn btn-primary w-100 shadow-up" @click="logOut">
+          log out
+        </b-button>
+      </div>
+    </div>
     <div v-if="!loading && success" class="row mt-4">
       <div class="col-lg-3 offset-lg-9 text-center text-tertiary text-uppercase">
         <b>Successfully saved!</b>
@@ -91,6 +98,10 @@ export default {
     },
   },
   methods: {
+    logOut() {
+      localStorage.removeItem('sessionToken');
+      window.location.href = '/';
+    },
     async saveSettings() {
       if (this.weightUnit && this.weightStart && this.weightGoal) {
         this.loading = true;

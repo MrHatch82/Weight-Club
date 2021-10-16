@@ -1,4 +1,5 @@
 export default {
+  ssr: false,
   publicRuntimeConfig: {
     appId: process.env.APP_ID,
     jsKey: process.env.JS_KEY,
