@@ -16,29 +16,53 @@
       </div>
     </div>
     <b-form @submit.prevent="saveSettings">
-      <div class="row">
-        <div class="col-lg-3">
-          <b-form-group label="Display Name" class="mb-4 m-lg-0">
-            <b-form-input v-model="displayName" placeholder="Something catchy..." :formatter="$sanitizeText" required />
+      <div class="row mb-1">
+        <div class="col-12">
+          <h2>General</h2>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <b-form-group label="Display Name">
+            <b-form-input v-model="displayName" class="mb-3" placeholder="Something catchy..." :formatter="$sanitizeText" required />
           </b-form-group>
         </div>
-        <div class="col-lg-3">
+      </div>
+      <div class="row mb-1">
+        <div class="col-12">
+          <h2>Weight</h2>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
           <b-form-group label="Weight unit">
             <b-form-select v-model="weightUnit" :options="weightUnitOptions" class="mb-3" required />
           </b-form-group>
         </div>
-        <div class="col-lg-3">
+        <div class="col-6 d-md-none"></div>
+        <div class="col-6 col-md-4 col-lg-3">
           <b-form-group label="Starting Weight">
             <b-form-input v-model="weightStart" placeholder="Where you're at" class="mb-3" :formatter="$sanitizeWeight" required />
           </b-form-group>
         </div>
-        <div class="col-lg-3">
+        <div class="col-6 col-md-4 col-lg-3">
           <b-form-group label="Weight goal">
             <b-form-input v-model="weightGoal" placeholder="Where you want to end up" class="mb-3" :formatter="$sanitizeWeight" required />
           </b-form-group>
         </div>
       </div>
       <div class="row mb-4">
+        <div class="col-12">
+          <h2>Nutrition</h2>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <b-form-group label="Track kcal">
+            <b-form-select v-model="trackKcal" :options="boolOptions" class="mb-3" />
+          </b-form-group>
+        </div>
+        <div class="col-6 col-md-4 col-lg-3">
+          <b-form-group label="Track ml">
+            <b-form-select v-model="trackMl" :options="boolOptions" class="mb-3" />
+          </b-form-group>
+        </div>
+      </div>
+      <div class="row mb-1">
         <div v-if="!loading" class="col-lg-3 order-lg-2 offset-lg-6">
           <b-button type="submit" variant="primary" class="btn btn-primary w-100 shadow-up mb-4">
             {{ settingsReady ? 'Save' : 'Save &amp; proceed' }}
@@ -73,6 +97,12 @@ export default {
       loading: false,
       success: false,
       settingsReady: false,
+      trackKcal: this.$store.state.trackKcal,
+      trackMl: this.$store.state.trackMl,
+      boolOptions: [
+        { value: true, text: 'Yes' },
+        { value: false, text: 'No' },
+      ],
     };
   },
   computed: {
@@ -130,6 +160,8 @@ export default {
         userSettingsObject.set('weightStart', weightStart);
         userSettingsObject.set('weightGoal', weightGoal);
         userSettingsObject.set('displayName', this.displayName);
+        userSettingsObject.set('trackKcal', this.trackKcal);
+        userSettingsObject.set('trackMl', this.trackMl);
         try {
           await userSettingsObject.save();
 
@@ -137,6 +169,8 @@ export default {
             weightUnit: this.weightUnit,
             weightStart,
             weightGoal,
+            trackKcal: this.trackKcal,
+            trackMl: this.trackMl,
             displayName: this.displayName,
             userSettingsId: userSettingsObject.id,
           });
