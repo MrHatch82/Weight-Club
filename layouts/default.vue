@@ -102,7 +102,9 @@ export default {
             weightGoal: object.get('weightGoal'),
             displayName: object.get('displayName'),
             trackKcal: object.get('trackKcal'),
+            kcalLimit: object.get('kcalLimit'),
             trackMl: object.get('trackMl'),
+            mlGoal: object.get('mlGoal'),
             userSettingsId: object.id,
           });
         }

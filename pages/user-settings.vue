@@ -56,9 +56,19 @@
             <b-form-select v-model="trackKcal" :options="boolOptions" class="mb-3" />
           </b-form-group>
         </div>
+        <div v-if="trackKcal" class="col-6 col-md-4 col-lg-3">
+          <b-form-group label="kcal limit">
+            <b-form-input v-model="kcalLimit" placeholder="Intended daily intake" class="mb-3" :formatter="$sanitizeWeight" required />
+          </b-form-group>
+        </div>
         <div class="col-6 col-md-4 col-lg-3">
           <b-form-group label="Track ml">
             <b-form-select v-model="trackMl" :options="boolOptions" class="mb-3" />
+          </b-form-group>
+        </div>
+        <div v-if="trackMl" class="col-6 col-md-4 col-lg-3">
+          <b-form-group label="ml goal">
+            <b-form-input v-model="mlGoal" placeholder="Daily target" class="mb-3" :formatter="$sanitizeWeight" required />
           </b-form-group>
         </div>
       </div>
@@ -98,7 +108,9 @@ export default {
       success: false,
       settingsReady: false,
       trackKcal: this.$store.state.trackKcal,
+      kcalLimit: this.$store.state.kcalLimit,
       trackMl: this.$store.state.trackMl,
+      mlGoal: this.$store.state.mlGoal,
       boolOptions: [
         { value: true, text: 'Yes' },
         { value: false, text: 'No' },
@@ -170,7 +182,9 @@ export default {
             weightStart,
             weightGoal,
             trackKcal: this.trackKcal,
+            kcalLimit: this.kcalLimit,
             trackMl: this.trackMl,
+            mlGoal: this.mlGoal,
             displayName: this.displayName,
             userSettingsId: userSettingsObject.id,
           });

@@ -9,7 +9,9 @@ export const state = () => ({
   weightGoal: null,
   displayName: null,
   trackKcal: null,
+  kcalLimit: null,
   trackMl: null,
+  mlGoal: null,
   loggedInUserId: null,
   userSettingsId: null,
   sessionToken: null,
@@ -31,7 +33,9 @@ export const mutations = {
     state.displayName = payload.displayName;
     state.userSettingsId = payload.userSettingsId;
     state.trackKcal = payload.trackKcal;
+    state.kcalLimit = payload.kcalLimit;
     state.trackMl = payload.trackMl;
+    state.mlGoal = payload.mlGoal;
   },
   setDisplayNames(state, payload) {
     state.displayNames = payload;

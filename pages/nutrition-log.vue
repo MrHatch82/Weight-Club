@@ -47,6 +47,20 @@ export default {
       liquids: [],
     };
   },
+  computed: {
+    trackKcal() {
+      return this.$store.state.trackKcal;
+    },
+    kcalLimit() {
+      return this.$store.state.kcalLimit;
+    },
+    trackMl() {
+      return this.$store.state.trackMl;
+    },
+    mlGoal() {
+      return this.$store.state.mlGoal;
+    },
+  },
   methods: {
     dateChanged(newDate) {
       console.log(newDate);

@@ -15,14 +15,14 @@
       :formatter="$sanitizeText"
     />
     <b-form-input
-      v-if="nutritionType === 'solids'"
+      v-if="trackKcal && nutritionType === 'solids'"
       v-model="kcal"
       placeholder="kcal (optional)"
       class="mb-4"
       :formatter="$sanitizeWeight"
     />
     <b-form-input
-      v-if="nutritionType === 'liquids'"
+      v-if="trackMl && nutritionType === 'liquids'"
       v-model="ml"
       placeholder="ml (optional, Pint = 568 ml)"
       class="mb-4"
@@ -78,6 +78,12 @@ export default {
         return true;
       }
       return false;
+    },
+    trackKcal() {
+      return this.$store.state.trackKcal;
+    },
+    trackMl() {
+      return this.$store.state.trackMl;
     },
   },
   mounted() {
