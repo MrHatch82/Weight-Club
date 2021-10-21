@@ -125,7 +125,7 @@ export default {
           weightGoal = this.$stoneToKg(weightGoal);
         }
 
-        userSettingsObject.set('userID', this.$store.state.loggedInUserId);
+        userSettingsObject.set('userId', this.$store.state.loggedInUserId);
         userSettingsObject.set('weightUnit', this.weightUnit);
         userSettingsObject.set('weightStart', weightStart);
         userSettingsObject.set('weightGoal', weightGoal);

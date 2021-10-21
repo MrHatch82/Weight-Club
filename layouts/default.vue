@@ -49,7 +49,7 @@ export default {
         const displayNames = {};
 
         for (const object of results) {
-          displayNames[object.get('userID')] = object.get('displayName');
+          displayNames[object.get('userId')] = object.get('displayName');
         }
 
         this.$store.commit('setDisplayNames', displayNames);
@@ -73,8 +73,8 @@ export default {
         const message = {
           createdAt: msg.get('createdAt'),
           userId: msg.get('userId'),
-          activityLight: msg.get('activityLight'),
-          activityIntense: msg.get('activityIntense'),
+          exerciseLight: msg.get('exerciseLight'),
+          exerciseHeavy: msg.get('exerciseHeavy'),
           message: msg.get('message'),
         };
 
@@ -91,7 +91,7 @@ export default {
       const state = this.$store.state;
       const UserSettings = this.$parse.Object.extend('UserSettings');
       const query = new this.$parse.Query(UserSettings);
-      query.equalTo('userID', state.loggedInUserId);
+      query.equalTo('userId', state.loggedInUserId);
       try {
         const object = await query.first();
 

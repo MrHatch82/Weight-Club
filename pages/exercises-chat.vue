@@ -1,5 +1,5 @@
 <template>
-  <div class="page page-activities container">
+  <div class="page page-exercises container">
     <transition name="fade" @before-enter="scrollToBottom">
       <div v-if="loading" key="spinner" class="spinner">
       </div>
@@ -28,11 +28,11 @@
             <div v-if="showSpeaker(index, msg)" class="speaker">
               {{ displayNames[msg.userId] || msg.userId }}<span class="time">{{ getTime(msg.createdAt) }}</span>
             </div>
-            <div class="bubble shadow-down" :class="{ activity: msg.activityLight || msg.activityIntense }">
-              <h2 v-if="msg.activityLight">
+            <div class="bubble shadow-down" :class="{ activity: msg.exerciseLight || msg.exerciseHeavy }">
+              <h2 v-if="msg.exerciseLight">
                 Light Exercise
               </h2>
-              <h2 v-if="msg.activityIntense" class="text-primary">
+              <h2 v-if="msg.exerciseHeavy" class="text-primary">
                 Heavy exercise
               </h2>
               {{ msg.message }}
@@ -65,7 +65,7 @@ export default {
       message: '',
       msgType: 'message',
       loading: true,
-      activities: [],
+      exercises: [],
     };
   },
 
@@ -82,25 +82,25 @@ export default {
     daysInMonth() {
       const monthArray = new Array(
         this.$moment(this.selectedDate).daysInMonth()).fill(null).map((x, i) => {
-        let activityLight = false;
-        let activityIntense = false;
+        let exerciseLight = false;
+        let exerciseHeavy = false;
         const date = this.$moment(this.selectedDate).startOf('month').add(i, 'days');
 
-        this.activities.forEach((activity) => {
+        this.exercises.forEach((activity) => {
           if (`${activity.date}` === date.format('YYYYMMDD')) {
-            if (activity.activityLight) {
-              activityLight = true;
+            if (activity.exerciseLight) {
+              exerciseLight = true;
             }
-            if (activity.activityIntense) {
-              activityIntense = true;
+            if (activity.exerciseHeavy) {
+              exerciseHeavy = true;
             }
           }
         });
 
         return {
           date,
-          activityLight,
-          activityIntense,
+          exerciseLight,
+          exerciseHeavy,
         };
       },
       );
@@ -174,48 +174,48 @@ export default {
         }, waitForTransition ? 11 : 1);
       }
     },
-    async getMessages(activitiesOnly = false) {
-      if (!this.$store.state.messages.length || activitiesOnly) {
+    async getMessages(exercisesOnly = false) {
+      if (!this.$store.state.messages.length || exercisesOnly) {
         const Messages = this.$parse.Object.extend('Messages');
         const query = new this.$parse.Query(Messages);
         const query2 = new this.$parse.Query(Messages);
 
-        if (activitiesOnly) {
+        if (exercisesOnly) {
           const startOfMonth = this.$moment(`${this.selectedDate}01`).startOf('day').toDate();
           const endOfMonth = this.$moment(`${this.selectedDate}${this.$moment(this.selectedDate).daysInMonth()}`).endOf('day').toDate();
           query.greaterThanOrEqualTo('createdAt', startOfMonth);
           query.lessThanOrEqualTo('createdAt', endOfMonth);
-          query.equalTo('activityLight', true);
+          query.equalTo('exerciseLight', true);
           query.equalTo('userId', this.$store.state.loggedInUserId);
 
           query2.greaterThanOrEqualTo('createdAt', startOfMonth);
           query2.lessThanOrEqualTo('createdAt', endOfMonth);
-          query2.equalTo('activityIntense', true);
+          query2.equalTo('exerciseHeavy', true);
           query2.equalTo('userId', this.$store.state.loggedInUserId);
         } else {
           query.descending('createdAt').limit(100);
         }
 
         try {
-          const results = activitiesOnly ? await this.$parse.Query.or(query, query2).find() : await query.find();
+          const results = exercisesOnly ? await this.$parse.Query.or(query, query2).find() : await query.find();
 
           const messages = [];
 
           for (const object of results) {
             messages.unshift({
               userId: object.get('userId'),
-              activityLight: object.get('activityLight'),
-              activityIntense: object.get('activityIntense'),
+              exerciseLight: object.get('exerciseLight'),
+              exerciseHeavy: object.get('exerciseHeavy'),
               message: object.get('message'),
               createdAt: object.get('createdAt'),
               date: object.get('date'),
             });
           }
 
-          if (!activitiesOnly) {
+          if (!exercisesOnly) {
             this.$store.commit('setMessages', messages);
           } else {
-            this.activities = messages;
+            this.exercises = messages;
           }
 
           this.loading = false;
@@ -230,35 +230,35 @@ export default {
       const messageObject = new this.$parse.Object('Messages');
 
       const newMessage = message;
-      const activityLight = msgType === 'activityLight';
-      const activityIntense = msgType === 'activityIntense';
+      const exerciseLight = msgType === 'exerciseLight';
+      const exerciseHeavy = msgType === 'exerciseHeavy';
       const date = parseInt(this.$moment().format('YYYYMMDD'), 10);
 
       messageObject.set('userId', this.$store.state.loggedInUserId);
       messageObject.set('message', newMessage);
-      messageObject.set('activityLight', activityLight);
-      messageObject.set('activityIntense', activityIntense);
+      messageObject.set('exerciseLight', exerciseLight);
+      messageObject.set('exerciseHeavy', exerciseHeavy);
       messageObject.set('date', date);
 
       this.$store.commit('appendMessages', {
         createdAt: new Date(),
         userId: this.$store.state.loggedInUserId,
-        activityLight,
-        activityIntense,
+        exerciseLight,
+        exerciseHeavy,
         message,
         date,
       });
 
       this.scrollToBottom();
 
-      if (activityLight || activityIntense) {
+      if (exerciseLight || exerciseHeavy) {
         this.$refs.popup.toggle();
       }
 
       try {
         await messageObject.save();
 
-        if (activityLight || activityIntense) {
+        if (exerciseLight || exerciseHeavy) {
           this.updateStatus();
           this.getMessages(true);
         }
@@ -287,7 +287,7 @@ export default {
 </script>
 
 <style lang="scss">
-.page-activities {
+.page-exercises {
   .date-picker-fixed {
     position: fixed;
     top: $topnavHeightMobile;

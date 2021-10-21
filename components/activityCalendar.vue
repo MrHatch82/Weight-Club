@@ -11,9 +11,9 @@
       </div>
       <div class="box" :data-index="index" :style="`width: ${dayWidth}; height: ${dayWidth}`" :class="{ weekend: isWeekend(day.date)}">
         <transition name="fade">
-          <div v-if="day.activityLight && !day.activityIntense" key="light" class="light" />
-          <div v-if="!day.activityLight && day.activityIntense" key="intense" class="intense" />
-          <div v-if="day.activityLight && day.activityIntense" key="both" class="both" />
+          <div v-if="day.exerciseLight && !day.exerciseHeavy" key="light" class="light" />
+          <div v-if="!day.exerciseLight && day.exerciseHeavy" key="intense" class="intense" />
+          <div v-if="day.exerciseLight && day.exerciseHeavy" key="both" class="both" />
         </transition>
       </div>
     </div>
@@ -49,8 +49,8 @@ export default {
 
         return {
           date,
-          activityLight: false,
-          activityIntense: false,
+          exerciseLight: false,
+          exerciseHeavy: false,
         };
       },
       );
@@ -89,16 +89,16 @@ export default {
       if (e) {
         const day = this.monthWithFallback[e.target.dataset.index];
 
-        if (day.activityLight && day.activityIntense) {
+        if (day.exerciseLight && day.exerciseHeavy) {
           this.tooltip = '<span class="text-primary">Heavy Exercise</span><br>& Light Exercise';
         }
-        if (day.activityLight && !day.activityIntense) {
+        if (day.exerciseLight && !day.exerciseHeavy) {
           this.tooltip = 'Light Exercise';
         }
-        if (!day.activityLight && day.activityIntense) {
+        if (!day.exerciseLight && day.exerciseHeavy) {
           this.tooltip = 'Heavy Exercise';
         }
-        if (!day.activityLight && !day.activityIntense) {
+        if (!day.exerciseLight && !day.exerciseHeavy) {
           this.tooltip = '<span class="text-white">No Exercise</span>';
         }
       }

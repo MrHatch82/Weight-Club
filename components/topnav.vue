@@ -9,18 +9,18 @@
     </div>
     <div class="container text-right">
       <div class="menu" :class="{ toggled: menuToggled}">
-        <nuxt-link to="/friends" :class="{ disabled: !settingsReady}" class="tab">
+        <nuxt-link to="/friends-ranking" :class="{ disabled: !settingsReady}" class="tab">
           friends ranking
         </nuxt-link>
         <nuxt-link to="/weight-tracking" :class="{ disabled: !settingsReady}" class="tab">
           weight tracking
         </nuxt-link>
-        <nuxt-link to="/activities" :class="{ disabled: !settingsReady}" class="tab position-relative" @click.native="newMessage = false">
-          Activities / Chat
+        <nuxt-link to="/exercises-chat" :class="{ disabled: !settingsReady}" class="tab position-relative" @click.native="newMessage = false">
+          Exercises / Chat
           <div v-if="newMessage" class="message-indicator"></div>
         </nuxt-link>
-        <nuxt-link to="/food-diary" :class="{ disabled: !settingsReady}" class="tab">
-          Nutrition diary
+        <nuxt-link to="/nutrition-log" :class="{ disabled: !settingsReady}" class="tab">
+          Nutrition log
         </nuxt-link>
         <nuxt-link to="/user-settings" class="tab d-lg-none">
           Settings
@@ -59,7 +59,7 @@ export default {
   },
   methods: {
     messageReceived() {
-      this.newMessage = this.$route.path !== '/activities';
+      this.newMessage = this.$route.path !== '/exercises';
     },
   },
 };

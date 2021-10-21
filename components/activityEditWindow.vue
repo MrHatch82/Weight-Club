@@ -1,10 +1,10 @@
 <template>
   <div class="activity-edit-window">
     <b-button-group>
-      <button class="btn shadow-up" :class="activityType === 'activityLight' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'activityLight'">
+      <button class="btn shadow-up" :class="activityType === 'exerciseLight' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseLight'">
         light exercise
       </button>
-      <button class="btn shadow-up" :class="activityType === 'activityIntense' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'activityIntense'">
+      <button class="btn shadow-up" :class="activityType === 'exerciseHeavy' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseHeavy'">
         heavy exercise
       </button>
     </b-button-group>
@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       selectedDayIndex: null,
-      activityType: 'activityLight',
+      activityType: 'exerciseLight',
       activityText: null,
     };
   },
@@ -92,7 +92,7 @@ export default {
     reset() {
       this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
       this.activityText = '';
-      this.activityType = 'activityLight';
+      this.activityType = 'exerciseLight';
     },
     closePopup() {
       this.$parent.toggle();

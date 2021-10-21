@@ -114,7 +114,7 @@ export default {
         newWeight = this.$stoneToKg(newWeight);
       }
 
-      weightObject.set('userID', this.$store.state.loggedInUserId);
+      weightObject.set('userId', this.$store.state.loggedInUserId);
       weightObject.set('date', parseInt(this.days[this.selectedDayIndex].format('YYYYMMDD'), 10));
       weightObject.set('weight', newWeight);
       weightObject.set('note', this.newNote

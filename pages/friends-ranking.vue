@@ -53,7 +53,7 @@
               </div>
             </div>
             <status-bar class="mb-3" :percent="friend.weightLossPercent" :month-percent="getMonthPercent(friend)" />
-            <activity-calendar :month="friend.activities" />
+            <activity-calendar :month="friend.exercises" />
           </div>
         </div>
       </div>
@@ -85,8 +85,8 @@ export default {
         const statusValid = lastUpdate === firstOfMonth;
 
         const weightLossMonth = statusValid ? object.get('weightLossMonth') : 0;
-        const activitiesLight = object.get('activitiesLight');
-        const activitiesIntense = object.get('activitiesIntense');
+        const exercisesLight = object.get('exercisesLight');
+        const exercisesHeavy = object.get('exercisesHeavy');
 
         friends.push({
           userId: object.get('userId'),
@@ -94,13 +94,13 @@ export default {
           weightLossMonth,
           weightLossPercent: object.get('weightLossPercent'),
           weightRemaining: object.get('weightRemaining'),
-          activitiesLight,
-          activitiesIntense,
-          activities: statusValid ? object.get('activities') : [],
+          exercisesLight,
+          exercisesHeavy,
+          exercises: statusValid ? object.get('exercises') : [],
           points: this.getPoints({
             weightLossMonth,
-            activitiesLight,
-            activitiesIntense,
+            exercisesLight,
+            exercisesHeavy,
           }),
         });
       }
@@ -122,8 +122,8 @@ export default {
     getPoints(friend) {
       let points = 0;
       points += Math.round(friend.weightLossMonth * 100);
-      points += (friend.activitiesLight || 0) * 20;
-      points += (friend.activitiesIntense || 0) * 50;
+      points += (friend.exercisesLight || 0) * 20;
+      points += (friend.exercisesHeavy || 0) * 50;
       return points;
     },
     triggerTooltip(e, friendIndex) {
@@ -136,13 +136,13 @@ export default {
           this.tooltip += `<span class="text-tertiary">${friend.weightLossMonth} kilo${friend.weightLossMonth > 1 ? 's' : ''} lost x 100</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
 
-        if (friend.activitiesIntense) {
-          const sum = friend.activitiesIntense * 50;
-          this.tooltip += `<span class="text-tertiary">${friend.activitiesIntense} Heavy exercise${friend.activitiesintense > 1 ? 's' : ''} x 50</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
+        if (friend.exercisesHeavy) {
+          const sum = friend.exercisesHeavy * 50;
+          this.tooltip += `<span class="text-tertiary">${friend.exercisesHeavy} Heavy exercise${friend.exercisesintense > 1 ? 's' : ''} x 50</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
-        if (friend.activitiesLight) {
-          const sum = friend.activitiesLight * 20;
-          this.tooltip += `<span class="text-tertiary">${friend.activitiesLight} Light exercise${friend.activitiesLight > 1 ? 's' : ''} x 20</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
+        if (friend.exercisesLight) {
+          const sum = friend.exercisesLight * 20;
+          this.tooltip += `<span class="text-tertiary">${friend.exercisesLight} Light exercise${friend.exercisesLight > 1 ? 's' : ''} x 20</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
         if (friend.points) {
           this.tooltip += `<br><span class="text-primary">Total</span>&nbsp;&nbsp;&nbsp;${friend.points < 100 ? '&nbsp;&nbsp;' : ''}${friend.points} Pts.`;

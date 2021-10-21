@@ -12,7 +12,7 @@ Parse.Cloud.define('setStatus', async (request) => {
     order: 'desc',
   });
 
-  const activities = await Parse.Cloud.run('getActivities', {
+  const exercises = await Parse.Cloud.run('getExercises', {
     userId,
   });
 
@@ -42,9 +42,9 @@ Parse.Cloud.define('setStatus', async (request) => {
   status.set('weightRemaining', weightRemaining);
   status.set('weightLossPercent', weightLossPercent);
   status.set('weightCurrent', weightMonthEnd);
-  status.set('activitiesLight', activities.light);
-  status.set('activitiesIntense', activities.intense);
-  status.set('activities', activities.activities);
+  status.set('exercisesLight', exercises.light);
+  status.set('exercisesHeavy', exercises.intense);
+  status.set('exercises', exercises.exercises);
 
   try {
     return await status.save();
@@ -67,7 +67,7 @@ Parse.Cloud.define('getStatus', async (request) => {
   }
 });
 
-Parse.Cloud.define('getActivities', async (request) => {
+Parse.Cloud.define('getExercises', async (request) => {
   const userId = request.params.userId;
 
   const date = new Date();
@@ -79,13 +79,13 @@ Parse.Cloud.define('getActivities', async (request) => {
   queryLight.equalTo('userId', userId);
   queryLight.greaterThanOrEqualTo('createdAt', firstDay);
   queryLight.lessThanOrEqualTo('createdAt', date);
-  queryLight.equalTo('activityLight', true);
+  queryLight.equalTo('exerciseLight', true);
 
   const queryIntense = new Parse.Query(Messages);
   queryIntense.equalTo('userId', userId);
   queryIntense.greaterThanOrEqualTo('createdAt', firstDay);
   queryIntense.lessThanOrEqualTo('createdAt', date);
-  queryIntense.equalTo('activityIntense', true);
+  queryIntense.equalTo('exerciseHeavy', true);
 
   const queryMain = Parse.Query.or(queryLight, queryIntense);
 
@@ -97,42 +97,42 @@ Parse.Cloud.define('getActivities', async (request) => {
     const firstDay = new Date(new Date().getFullYear(), month, 1);
 
     while (firstDay.getMonth() === month) {
-      const activityLight = false;
-      const activityIntense = false;
+      const exerciseLight = false;
+      const exerciseHeavy = false;
       days.push({
         date: new Date(firstDay.getTime()),
-        activityLight,
-        activityIntense,
+        exerciseLight,
+        exerciseHeavy,
       });
       firstDay.setDate(firstDay.getDate() + 1);
     }
 
-    const activitiesLight = [];
-    const activitiesIntense = [];
+    const exercisesLight = [];
+    const exercisesHeavy = [];
 
     for (const object of results) {
-      if (object.get('activityLight')) {
+      if (object.get('exerciseLight')) {
         const dateString = `${object.get('date')}`;
         const dayIndex = parseInt(dateString.substring('6'), 10) - 1;
-        if (!activitiesLight.includes(dateString)) {
-          activitiesLight.push(dateString);
-          days[dayIndex].activityLight = true;
+        if (!exercisesLight.includes(dateString)) {
+          exercisesLight.push(dateString);
+          days[dayIndex].exerciseLight = true;
         }
       }
-      if (object.get('activityIntense')) {
+      if (object.get('exerciseHeavy')) {
         const dateString = `${object.get('date')}`;
         const dayIndex = parseInt(dateString.substring('6'), 10) - 1;
-        if (!activitiesIntense.includes(dateString)) {
-          activitiesIntense.push(dateString);
-          days[dayIndex].activityIntense = true;
+        if (!exercisesHeavy.includes(dateString)) {
+          exercisesHeavy.push(dateString);
+          days[dayIndex].exerciseHeavy = true;
         }
       }
     }
 
     return {
-      light: activitiesLight.length,
-      intense: activitiesIntense.length,
-      activities: days,
+      light: exercisesLight.length,
+      intense: exercisesHeavy.length,
+      exercises: days,
     };
   } catch (error) {
     console.error('Error while fetching Weights', error);
@@ -157,7 +157,7 @@ Parse.Cloud.define('getWeight', async (request) => {
 
   const Weights = Parse.Object.extend('Weights');
   const query = new Parse.Query(Weights);
-  query.equalTo('userID', userId);
+  query.equalTo('userId', userId);
   query.greaterThanOrEqualTo('date', firstDayInt);
   query.lessThanOrEqualTo('date', lastDayInt);
   if (order === 'asc') {

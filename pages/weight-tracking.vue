@@ -311,7 +311,7 @@ export default {
 
       const Weights = this.$parse.Object.extend('Weights');
       const query = new this.$parse.Query(Weights);
-      query.equalTo('userID', this.$store.state.loggedInUserId);
+      query.equalTo('userId', this.$store.state.loggedInUserId);
       query.greaterThanOrEqualTo('date', parseInt(this.$moment(this.selectedDate).startOf('month').format('YYYYMMDD')), 10);
       query.lessThanOrEqualTo('date', parseInt(this.$moment(this.selectedDate).endOf('month').format('YYYYMMDD')), 10);
       query.ascending('date');
@@ -322,13 +322,13 @@ export default {
         const weights = [];
 
         for (const object of results) {
-          const userID = object.get('userID');
+          const userId = object.get('userId');
           const date = object.get('date');
           const weight = object.get('weight');
           const note = object.get('note');
 
           weights.push({
-            userID,
+            userId,
             date,
             weight: this.$displayWeight(weight, this.$store),
             note: note ? this.$he.decode(note) : '',
