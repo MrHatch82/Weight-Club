@@ -96,23 +96,20 @@ export default {
         const object = await query.first();
 
         if (object) {
-          const weightUnit = object.get('weightUnit');
-          const weightStart = object.get('weightStart');
-          const weightGoal = object.get('weightGoal');
-          const displayName = object.get('displayName');
-
           this.$store.commit('setUserSettings', {
-            weightUnit,
-            weightStart,
-            weightGoal,
-            displayName,
+            weightUnit: object.get('weightUnit'),
+            weightStart: object.get('weightStart'),
+            weightGoal: object.get('weightGoal'),
+            displayName: object.get('displayName'),
+            trackKcal: object.get('trackKcal'),
+            trackMl: object.get('trackMl'),
             userSettingsId: object.id,
           });
         }
         if (redirect) {
           this.$nextTick(() => {
             if (state.weightUnit && state.weightStart && state.weightGoal) {
-              this.$router.push('/friends');
+              this.$router.push('/friends-ranking');
             } else {
               this.$router.push('/user-settings');
             }

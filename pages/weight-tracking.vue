@@ -1,6 +1,6 @@
 <template>
   <div class="page page-weight-tracking container">
-    <date-picker @dateChanged="dateChanged">
+    <date-picker ref="datePicker" @dateChanged="dateChanged">
       <div class="col-lg-4 offset-lg-2 mb-4">
         <button class="w-100 btn btn-primary shadow-up" @click="showPopup">
           Add/edit weight
@@ -220,6 +220,12 @@ export default {
     },
     showPopup() {
       if (this.$refs && this.$refs.popup) {
+        const today = this.$moment().format('YYYYMMDD');
+        if (this.selectedDate !== today) {
+          this.selectedDate = today;
+          this.$refs.datePicker.dateSet(today);
+          this.getWeights();
+        }
         this.$refs.popup.toggle();
       }
     },

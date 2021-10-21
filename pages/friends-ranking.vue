@@ -107,7 +107,7 @@ export default {
 
       this.friends = friends.sort((a, b) => (a.points > b.points) ? -1 : ((b.points > a.points) ? 1 : 0));
     } catch (error) {
-      console.error('Error while fetching Weights', error);
+      console.error('Error while fetching Weights', error); // eslint-disable-line
     }
   },
   computed: {

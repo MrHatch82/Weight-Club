@@ -128,7 +128,7 @@ export default {
         this.closePopup();
         this.updateStatus();
       } catch (error) {
-        console.error('Error while saving Weight: ', error);
+        console.error('Error while saving Weight: ', error); // eslint-disable-line
       }
     },
     async updateStatus() {

@@ -1,5 +1,20 @@
 <template>
   <div class="date-picker row">
+    <div v-if="dayPicker" class="col-6 col-lg-3 mb-4">
+      <div class="datepicker shadow-down">
+        <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract(1, 'day')">
+          ◀
+        </button>
+        {{ currentDay }}
+        <button
+          class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
+          :disabled="$moment(selectedDate).isSame($moment(), 'day')"
+          @click="dateAdd(1, 'day')"
+        >
+          ▶
+        </button>
+      </div>
+    </div>
     <div class="col-6 col-lg-3 mb-4">
       <div class="datepicker shadow-down">
         <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract(1, 'month')">
@@ -39,12 +54,24 @@
 
 <script>
 export default {
+  props: {
+    dayPicker: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       selectedDate: this.$moment().format('YYYYMMDD'),
     };
   },
   computed: {
+    currentDay() {
+      if (this.$mq === 'xs' || this.$mq === 'sm') {
+        return `${this.$moment(this.selectedDate).format('D')}.`;
+      }
+      return `${this.$moment(this.selectedDate).format('dddd')}, ${this.$moment(this.selectedDate).format('D')}.`;
+    },
     currentMonth() {
       if (this.$mq === 'xs' || this.$mq === 'sm') {
         return this.$moment(this.selectedDate).format('MMM');
@@ -69,6 +96,9 @@ export default {
     dateSubtract(number, unit) {
       this.selectedDate = this.$moment(this.selectedDate).subtract(number, unit).format('YYYYMMDD');
       this.$emit('dateChanged', this.selectedDate);
+    },
+    dateSet(newDate) {
+      this.selectedDate = newDate;
     },
   },
 };

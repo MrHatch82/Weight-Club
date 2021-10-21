@@ -1,24 +1,33 @@
 <template>
-  <div class="activity-edit-window">
+  <div class="nutrition-edit-window">
     <b-button-group>
-      <button class="btn shadow-up" :class="activityType === 'exerciseLight' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseLight'">
-        light exercise
+      <button class="btn shadow-up" :class="nutritionType === 'solids' ? 'btn-primary' : 'btn-inactive'" @click="nutritionType = 'solids'">
+        Solids
       </button>
-      <button class="btn shadow-up" :class="activityType === 'exerciseHeavy' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseHeavy'">
-        heavy exercise
+      <button class="btn shadow-up" :class="nutritionType === 'liquids' ? 'btn-primary' : 'btn-inactive'" @click="nutritionType = 'liquids'">
+        Liquids
       </button>
     </b-button-group>
-    <b-form-textarea
-      v-model="activityText"
-      rows="2"
-      max-rows="2"
-      placeholder="Describe exercise..."
-      class="note mb-4"
-      :class="{ 'text-center': !activityText }"
-      no-resize
+    <b-form-input
+      v-model="itemText"
+      placeholder="What you consumed..."
+      class="mb-4"
       :formatter="$sanitizeText"
-    >
-    </b-form-textarea>
+    />
+    <b-form-input
+      v-if="nutritionType === 'solids'"
+      v-model="kcal"
+      placeholder="kcal (optional)"
+      class="mb-4"
+      :formatter="$sanitizeWeight"
+    />
+    <b-form-input
+      v-if="nutritionType === 'liquids'"
+      v-model="ml"
+      placeholder="ml (optional, Pint = 568 ml)"
+      class="mb-4"
+      :formatter="$sanitizeWeight"
+    />
     <div class="d-flex justify-content-between">
       <button class="btn btn-primary shadow-up" @click="closePopup">
         Cancel
@@ -45,8 +54,10 @@ export default {
   data() {
     return {
       selectedDayIndex: null,
-      activityType: 'exerciseLight',
-      activityText: null,
+      nutritionType: 'solids',
+      itemText: null,
+      kcal: '',
+      ml: '',
     };
   },
   computed: {
@@ -91,15 +102,15 @@ export default {
     },
     reset() {
       this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
-      this.activityText = '';
-      this.activityType = 'exerciseLight';
+      this.itemText = '';
+      this.nutritionType = 'exerciseLight';
     },
     closePopup() {
       this.$parent.toggle();
     },
     publish() {
-      if (this.activityText) {
-        this.$parent.$parent.publishMessage(this.activityText, this.activityType);
+      if (this.itemText) {
+        this.$parent.$parent.publishMessage(this.itemText, this.nutritionType);
       }
     },
   },
@@ -107,7 +118,7 @@ export default {
 </script>
 
 <style lang="scss">
-.activity-edit-window {
+.nutrition-edit-window {
 
   input {
     text-align: center;
