@@ -9,6 +9,7 @@
       </button>
     </b-button-group>
     <b-form-textarea
+      ref="input"
       v-model="activityText"
       rows="2"
       max-rows="2"
@@ -93,6 +94,7 @@ export default {
       this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
       this.activityText = '';
       this.activityType = 'exerciseLight';
+      this.$refs.input.focus();
     },
     closePopup() {
       this.$parent.toggle();

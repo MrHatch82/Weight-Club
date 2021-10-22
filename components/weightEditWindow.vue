@@ -9,7 +9,7 @@
         ▶
       </button> -->
     </div>
-    <b-form-input v-model="newWeight" placeholder="Enter weight" class="mb-4" :formatter="$sanitizeWeight"></b-form-input>
+    <b-form-input ref="input" v-model="newWeight" placeholder="Enter weight" class="mb-4" :formatter="$sanitizeWeight" />
     <b-form-textarea
       v-model="newNote"
       rows="2"
@@ -97,6 +97,7 @@ export default {
       this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
       this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.$round(this.weights[this.selectedDayIndex].weight)}` : '';
       this.newNote = this.weights[this.selectedDayIndex].note ? `${this.weights[this.selectedDayIndex].note}` : null;
+      this.$refs.input.focus();
     },
     closePopup() {
       this.$parent.toggle();

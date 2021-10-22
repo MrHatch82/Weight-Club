@@ -24,12 +24,20 @@ export default {
       show: false,
     };
   },
+  mounted() {
+    window.addEventListener('keydown', this.keydown);
+  },
   methods: {
     toggle() {
       this.show = !this.show;
 
       if (this.show && this.emitId) {
         this.$nuxt.$emit(this.emitId);
+      }
+    },
+    keydown(event) {
+      if (event.key === 'Escape') {
+        this.show = false;
       }
     },
   },

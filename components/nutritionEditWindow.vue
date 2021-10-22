@@ -1,14 +1,7 @@
 <template>
   <div class="nutrition-edit-window">
-    <b-button-group>
-      <button class="btn shadow-up" :class="nutritionType === 'solids' ? 'btn-primary' : 'btn-inactive'" @click="nutritionType = 'solids'">
-        Solids
-      </button>
-      <button class="btn shadow-up" :class="nutritionType === 'liquids' ? 'btn-primary' : 'btn-inactive'" @click="nutritionType = 'liquids'">
-        Liquids
-      </button>
-    </b-button-group>
     <b-form-input
+      ref="input"
       v-model="itemText"
       placeholder="What you consumed..."
       class="mb-4"
@@ -87,36 +80,41 @@ export default {
     },
   },
   mounted() {
-    this.$nuxt.$on('activity-edit-open', this.reset);
+    this.$nuxt.$on('nutrition-edit-open', this.reset);
   },
   beforeDestroy() {
-    this.$nuxt.$off('activity-edit-open');
+    this.$nuxt.$off('nutrition-edit-open');
   },
   methods: {
-    changeDay(val) {
-      let newDayIndex = this.selectedDayIndex + val;
-
-      if (newDayIndex < 0) {
-        newDayIndex = this.days.length - 1;
-      }
-
-      if (newDayIndex > this.days.length - 1) {
-        newDayIndex = 0;
-      }
-
-      this.selectedDayIndex = newDayIndex;
-    },
     reset() {
-      this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
       this.itemText = '';
-      this.nutritionType = 'exerciseLight';
+      this.kcal = '';
+      this.ml = '';
+      this.$refs.input.focus();
     },
     closePopup() {
       this.$parent.toggle();
     },
+    setType(type) {
+      this.nutritionType = type;
+    },
     publish() {
       if (this.itemText) {
-        this.$parent.$parent.publishMessage(this.itemText, this.nutritionType);
+        const item = {
+          type: this.nutritionType,
+          text: this.itemText,
+        };
+
+        if (this.nutritionType === 'solids') {
+          item.kcal = parseInt(this.kcal, 10);
+        }
+
+        if (this.nutritionType === 'liquids') {
+          item.ml = parseInt(this.ml, 10);
+        }
+
+        this.$parent.$parent.addItem(item);
+        this.closePopup();
       }
     },
   },
