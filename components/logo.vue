@@ -40,6 +40,12 @@ export default {
         'Start losing and stick to it!',
         'Defeat your inner pigdog!',
         'Oh lawd, they coming!',
+        'Less Dota, more sports!',
+        'Look at them run!',
+        'How about a healthy snack for a change?',
+        'Stop stuffing your face with crap!',
+        'Take back control!',
+        'Chonk no more!',
       ],
     };
   },

@@ -210,7 +210,7 @@ export default {
 
           if (firstVisit) {
             setTimeout(() => {
-              this.$router.push('/weight-tracking');
+              this.$router.push('/');
             }, 1000);
           }
         } catch (error) {

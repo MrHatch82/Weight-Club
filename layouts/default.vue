@@ -1,7 +1,7 @@
 <template>
   <div class="layout-default d-flex flex-column">
     <topnav ref="topnav" />
-    <div class="gradient-overlay"></div>
+    <div v-if="settingsReady" class="gradient-overlay"></div>
     <Nuxt :key="key" />
   </div>
 </template>
@@ -12,6 +12,12 @@ export default {
     return {
       key: 0,
     };
+  },
+  computed: {
+    settingsReady() {
+      const state = this.$store.state;
+      return state.userSettingsId && state.weightGoal && state.weightStart;
+    },
   },
   created() {
     // Parse init
@@ -110,9 +116,7 @@ export default {
         }
         if (redirect) {
           this.$nextTick(() => {
-            if (state.weightUnit && state.weightStart && state.weightGoal) {
-              this.$router.push('/friends-ranking');
-            } else {
+            if (!state.weightUnit || !state.weightStart || !state.weightGoal) {
               this.$router.push('/user-settings');
             }
           });
