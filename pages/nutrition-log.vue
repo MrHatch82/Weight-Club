@@ -2,19 +2,21 @@
   <div class="page page-nutrition-log container">
     <date-picker :day-picker="true" @dateChanged="dateChanged" />
     <div class="row">
-      <div class="col-lg-6 d-flex flex-column">
-        <h3 class="text-secondary">
-          Solids
-        </h3>
+      <div class="col-lg-9 d-flex flex-column">
         <div class="list shadow-down">
           <ul>
-            <li v-if="!solids.length">
+            <li v-if="!items.length">
               No items...
             </li>
-            <li v-for="(item, index) in solids" :key="index" class="item" :class="{today: today}" @click="deleteItem('solids', index)">
+            <li v-for="(item, index) in items" :key="index" class="item" :class="{today: today, 'text-tertiary': item.type === 'drink'}" @click="prepareDelete(index)">
               <div>{{ item.text }}</div>
-              <div v-if="trackKcal && item.kcal">
-                {{ item.kcal }} kcal
+              <div v-if="trackKcal || trackMl" class="d-flex flex-row">
+                <div v-if="item.type ==='drink'" class="pl-2 ml">
+                  {{ item.ml }} ml
+                </div>
+                <div class="pl-2 kcal">
+                  {{ item.kcal }} kcal
+                </div>
               </div>
             </li>
           </ul>
@@ -25,78 +27,75 @@
                 <div>
                   Total
                 </div>
-                <div>
-                  {{ totalKcal }} kcal
+                <div class="d-flex flex-row">
+                  <div class="pl-2 ml">
+                    {{ totalMl }} ml
+                  </div>
+                  <div class="pl-2 kcal">
+                    {{ totalKcal }} kcal
+                  </div>
                 </div>
               </li>
               <li class="nodash">
                 <div>
                   Remaining
                 </div>
-                <div>
-                  {{ kcalLimit - totalKcal }} kcal
+                <div class="d-flex flex-row">
+                  <div class="pl-2 ml">
+                    {{ mlGoal - totalMl }} ml
+                  </div>
+                  <div class="pl-2 kcal">
+                    {{ kcalLimit - totalKcal }} kcal
+                  </div>
                 </div>
               </li>
             </ul>
           </div>
-          <button
-            v-if="today"
-            class="w-100 btn btn-primary shadow-up"
-            @click="showPopup('solids')"
-          >
-            add item
-          </button>
         </div>
-      </div>
-      <div class="col-lg-6 d-flex flex-column">
-        <h3 class="text-tertiary">
-          Liquids
-        </h3>
-        <div class="list shadow-down">
-          <ul>
-            <li v-if="!liquids.length">
-              No items...
-            </li>
-            <li v-for="(item, index) in liquids" :key="index" class="item" :class="{today: today}" @click="deleteItem('liquids', index)">
-              <div>{{ item.text }}</div>
-              <div v-if="trackMl && item.ml">
-                {{ item.ml }} ml
-              </div>
-            </li>
-          </ul>
-          <div v-if="trackMl">
-            <hr>
-            <ul>
-              <li class="nodash">
-                <div>
-                  Total
-                </div>
-                <div>
-                  {{ totalMl }} ml
-                </div>
-              </li>
-              <li class="nodash">
-                <div>
-                  Remaining
-                </div>
-                <div>
-                  {{ mlGoal - totalMl }} ml
-                </div>
-              </li>
-            </ul>
+        <div class="row">
+          <div class="col-6">
+            <button
+              :disabled="!today"
+              class="w-100 btn btn-primary shadow-up"
+              @click="showPopup('food')"
+            >
+              add food item
+            </button>
           </div>
-          <button
-            v-if="today"
-            class="w-100 btn btn-primary shadow-up"
-            @click="showPopup('liquids')"
-          >
-            add item
-          </button>
+          <div class="col-6">
+            <button
+              :disabled="!today"
+              class="w-100 btn btn-primary shadow-up"
+              @click="showPopup('drink')"
+            >
+              add drink item
+            </button>
+          </div>
         </div>
       </div>
     </div>
     <popup ref="popup" :title="popupTitle" emit-id="nutrition-edit-open">
       <nutritionEditWindow ref="editWindow" />
+    </popup>
+    <popup ref="delete" title="detlete item?">
+      <div class="row">
+        <div class="col-6">
+          <button
+            class="w-100 btn btn-primary shadow-up"
+            @click="closeDeletePopup"
+          >
+            Cancel
+          </button>
+        </div>
+        <div class="col-6">
+          <button
+            class="w-100 btn btn-primary shadow-up"
+            @click="deleteItem"
+          >
+            delete
+          </button>
+        </div>
+      </div>
     </popup>
   </div>
 </template>
@@ -105,10 +104,11 @@
 export default {
   data() {
     return {
-      solids: [],
-      liquids: [],
+      items: [],
+      objectId: null,
       date: this.$moment().format('YYYYMMDD'),
       popupTitle: 'Add item',
+      deleteIndex: null,
     };
   },
   computed: {
@@ -127,7 +127,7 @@ export default {
     totalKcal() {
       let total = 0;
 
-      this.solids.forEach((item) => {
+      this.items.forEach((item) => {
         total += item.kcal || 0;
       });
 
@@ -136,7 +136,7 @@ export default {
     totalMl() {
       let total = 0;
 
-      this.liquids.forEach((item) => {
+      this.items.forEach((item) => {
         total += item.ml || 0;
       });
 
@@ -152,22 +152,27 @@ export default {
     },
     showPopup(type) {
       if (this.$refs && this.$refs.popup) {
-        this.popupTitle = `Add ${type === 'solids' ? 'solid' : 'liquid'} item`;
+        this.popupTitle = `Add ${type} item`;
         this.$refs.editWindow.setType(type);
         this.$refs.popup.toggle();
       }
     },
+    closeDeletePopup() {
+      this.$refs.delete.close();
+    },
     addItem(item) {
-      if (item.type === 'solids') {
-        this.solids.push(item);
-      }
-      if (item.type === 'liquids') {
-        this.liquids.push(item);
+      this.items.push(item);
+    },
+    prepareDelete(index) {
+      if (this.today) {
+        this.deleteIndex = index;
+        this.$refs.delete.toggle();
       }
     },
-    deleteItem(type, index) {
+    deleteItem() {
       if (this.today) {
-        this[type].splice(index, 1);
+        this.items.splice(this.deleteIndex, 1);
+        this.$refs.delete.close();
       }
     },
   },
@@ -178,13 +183,14 @@ export default {
 .page-nutrition-log {
   .list {
     background: $darker;
-    padding: 1rem;
+    padding: 1rem 2rem 1rem 1rem;
     border-radius: 0.25rem;
     text-align: left;
     flex-grow: 1;
     justify-content: space-between;
     display: flex;
     flex-direction: column;
+    margin-bottom: 1.5rem;
   }
 
   ul {
@@ -196,12 +202,17 @@ export default {
     display: flex;
     justify-content: space-between;
     position: relative;
+    line-height: 1.6;
 
-    &.item::before {
-      position: absolute;
-      left: -1rem;
-      top: 0;
-      content: '-';
+    &.item {
+      color: $secondary;
+
+      &::before {
+        position: absolute;
+        left: -1rem;
+        top: 0;
+        content: '-';
+      }
     }
 
     &.today {
@@ -211,16 +222,29 @@ export default {
       left: 0;
       top: 50%;
       width: 100%;
-      height: 1px;
-      background: $light;
+      height: 2px;
+      background: $primary;
       content: '';
     }
+    }
+
+    .ml, .kcal {
+      min-width: 80px;
+      text-align: right;
+    }
+
+    .ml {
+      color: $tertiary;
+    }
+
+    .kcal {
+      color: $secondary;
     }
   }
 
   hr {
     border-top: 1px solid $light;
-    width: 100%;
+    width: calc(100% + 1rem);
     margin-top: 0;
   }
 }

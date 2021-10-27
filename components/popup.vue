@@ -35,6 +35,9 @@ export default {
         this.$nuxt.$emit(this.emitId);
       }
     },
+    close() {
+      this.show = false;
+    },
     keydown(event) {
       if (event.key === 'Escape') {
         this.show = false;

@@ -1,34 +1,36 @@
 <template>
   <div class="nutrition-edit-window">
-    <b-form-input
-      ref="input"
-      v-model="itemText"
-      placeholder="What you consumed..."
-      class="mb-4"
-      :formatter="$sanitizeText"
-    />
-    <b-form-input
-      v-if="trackKcal && nutritionType === 'solids'"
-      v-model="kcal"
-      placeholder="kcal (optional)"
-      class="mb-4"
-      :formatter="$sanitizeWeight"
-    />
-    <b-form-input
-      v-if="trackMl && nutritionType === 'liquids'"
-      v-model="ml"
-      placeholder="ml (optional, Pint = 568 ml)"
-      class="mb-4"
-      :formatter="$sanitizeWeight"
-    />
-    <div class="d-flex justify-content-between">
-      <button class="btn btn-primary shadow-up" @click="closePopup">
-        Cancel
-      </button>
-      <button class="btn btn-primary shadow-up" @click="publish">
-        Submit
-      </button>
-    </div>
+    <b-form @submit.prevent="publish">
+      <b-form-input
+        ref="input"
+        v-model="itemText"
+        :placeholder="`What you ${nutritionType === 'food' ? 'ate' : 'drank'}*`"
+        class="mb-4"
+        :formatter="$sanitizeText"
+      />
+      <b-form-input
+        v-if="trackMl && nutritionType === 'drink'"
+        v-model="ml"
+        placeholder="ml (Pint = 568 ml)"
+        class="mb-4"
+        :formatter="$sanitizeWeight"
+      />
+      <b-form-input
+        v-if="trackKcal"
+        v-model="kcal"
+        placeholder="kcal"
+        class="mb-4"
+        :formatter="$sanitizeWeight"
+      />
+      <div class="d-flex justify-content-between">
+        <button class="btn btn-primary shadow-up" @click="closePopup">
+          Cancel
+        </button>
+        <button class="btn btn-primary shadow-up" type="submit">
+          Submit
+        </button>
+      </div>
+    </b-form>
   </div>
 </template>
 
@@ -47,7 +49,7 @@ export default {
   data() {
     return {
       selectedDayIndex: null,
-      nutritionType: 'solids',
+      nutritionType: 'food',
       itemText: null,
       kcal: '',
       ml: '',
@@ -93,7 +95,7 @@ export default {
       this.$refs.input.focus();
     },
     closePopup() {
-      this.$parent.toggle();
+      this.$parent.close();
     },
     setType(type) {
       this.nutritionType = type;
@@ -103,14 +105,11 @@ export default {
         const item = {
           type: this.nutritionType,
           text: this.itemText,
+          kcal: parseInt(this.kcal, 10) || 0,
         };
 
-        if (this.nutritionType === 'solids') {
-          item.kcal = parseInt(this.kcal, 10);
-        }
-
-        if (this.nutritionType === 'liquids') {
-          item.ml = parseInt(this.ml, 10);
+        if (this.nutritionType === 'drink') {
+          item.ml = parseInt(this.ml, 10) || 0;
         }
 
         this.$parent.$parent.addItem(item);
