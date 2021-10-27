@@ -11,7 +11,9 @@
     <div v-else>
       <div class="row">
         <div class="col-lg-9">
-          <h1>User Settings</h1>
+          <h1>
+            User Settings
+          </h1>
         </div>
       </div>
     </div>
@@ -28,7 +30,7 @@
       </div>
       <div class="row mb-1">
         <div class="col-12">
-          <h2>Weight</h2>
+          <h2>Weight Tracking</h2>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
           <b-form-group label="Weight unit">
@@ -49,7 +51,7 @@
       </div>
       <div class="row mb-4">
         <div class="col-12">
-          <h2>Nutrition</h2>
+          <h2>Nutrition Log</h2>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
           <b-form-group label="Track kcal">
@@ -72,20 +74,22 @@
           </b-form-group>
         </div>
       </div>
-      <div class="row mb-1">
-        <div v-if="!loading" class="col-lg-3 order-lg-2 offset-lg-6">
+      <div class="row mb-5">
+        <div v-if="!loading" class="col-lg-3">
           <b-button type="submit" variant="primary" class="btn btn-primary w-100 shadow-up mb-4">
-            {{ settingsReady ? 'Save' : 'Save &amp; proceed' }}
+            {{ settingsReady ? 'Save Settings' : 'Save Settings &amp; proceed' }}
           </b-button>
+          <div v-if="!loading && success" class="text-center text-tertiary text-uppercase mb-4">
+            <b>Successfully saved!</b>
+          </div>
         </div>
-        <div v-else class="col-lg-3 order-lg-2 offset-lg-6 position-relative mt-3">
+        <div v-else class="col-lg-3 position-relative mt-3">
           <div class="spinner" />
         </div>
-        <div v-if="!loading && success" class="col-lg-3 order-lg-3 offset-lg-9 text-center text-tertiary text-uppercase mb-4">
-          <b>Successfully saved!</b>
-        </div>
-        <div class="col-lg-3 order-lg-1">
-          <b-button variant="primary" class="btn btn-primary w-100 shadow-up mb-4" @click="logOut">
+      </div>
+      <div class="row">
+        <div v-if="settingsReady" class="col-lg-3">
+          <b-button variant="primary" class="btn btn-primary w-100 shadow-up mb-5" @click="logOut">
             log out
           </b-button>
         </div>
@@ -143,7 +147,19 @@ export default {
   methods: {
     logOut() {
       localStorage.removeItem('sessionToken');
-      window.location.href = '/';
+      this.$store.commit('userLoggedIn', null);
+      this.$store.commit('setUserSettings', {
+        weightUnit: null,
+        weightStart: null,
+        weightGoal: null,
+        trackKcal: null,
+        kcalLimit: null,
+        trackMl: null,
+        mlGoal: null,
+        displayName: null,
+        userSettingsId: null,
+      });
+      this.$router.push('/');
     },
     async saveSettings() {
       if (this.weightUnit && this.weightStart && this.weightGoal) {

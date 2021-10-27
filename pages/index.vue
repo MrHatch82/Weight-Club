@@ -9,7 +9,7 @@
         <b>It is not a weight loss program.</b>
         Its sole purpose is to bring people together in their weight loss endeavour, to prevent falling off the wagon, to have fun and maybe get some tips along the way.
       </p>
-      <transition name="fade">
+      <transition v-if="!userLoggedIn" name="fade">
         <div v-if="loading" key="spinner" class="spinner" />
         <div v-else key="login">
           <p class="text-secondary" :class="{ 'text-danger' : error}" v-html="error || 'Please log in to get started.'" />
@@ -22,6 +22,9 @@
           </b-form>
         </div>
       </transition>
+      <b-button v-else variant="primary" class="btn shadow-up" @click="logOut">
+        Log out
+      </b-button>
     </div>
   </div>
 </template>
@@ -35,6 +38,11 @@ export default {
       loading: false,
       error: null,
     };
+  },
+  computed: {
+    userLoggedIn() {
+      return this.$store.state.loggedInUserId !== null;
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -58,7 +66,22 @@ export default {
         this.error = error;
       }
     },
-
+    logOut() {
+      localStorage.removeItem('sessionToken');
+      this.$store.commit('userLoggedIn', null);
+      this.$store.commit('setUserSettings', {
+        weightUnit: null,
+        weightStart: null,
+        weightGoal: null,
+        trackKcal: null,
+        kcalLimit: null,
+        trackMl: null,
+        mlGoal: null,
+        displayName: null,
+        userSettingsId: null,
+      });
+      this.$router.push('/');
+    },
   },
 };
 </script>

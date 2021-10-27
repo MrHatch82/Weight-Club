@@ -1,6 +1,8 @@
 <template>
-  <div id="topnav" :class="{ show: $route.path !== '/'}">
-    <logo class="logo" />
+  <div id="topnav" :class="{ show: $route.path !== '/' || settingsReady }">
+    <nuxt-link to="/">
+      <logo class="logo" />
+    </nuxt-link>
     <div class="toggle" :class="{ active: menuToggled }" @click="menuToggled = !menuToggled">
       <span class="bar" />
       <span class="bar" />
