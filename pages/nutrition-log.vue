@@ -3,54 +3,59 @@
     <date-picker :day-picker="true" @dateChanged="dateChanged" />
     <div class="row">
       <div class="col-lg-9 d-flex flex-column">
-        <div class="list shadow-down">
-          <ul>
-            <li v-if="!items.length">
-              No items...
-            </li>
-            <li v-for="(item, index) in items" :key="index" class="item" :class="{today: today, 'text-tertiary': item.type === 'drink'}" @click="prepareDelete(index)">
-              <div>{{ item.text }}</div>
-              <div v-if="trackKcal || trackMl" class="d-flex flex-row">
-                <div v-if="item.type ==='drink'" class="pl-2 ml">
-                  {{ item.ml }} ml
-                </div>
-                <div class="pl-2 kcal">
-                  {{ item.kcal }} kcal
-                </div>
+        <div ref="list" class="list shadow-down" :style="`height: ${listHeight}`">
+          <transition name="fade">
+            <div v-if="!loading" key="list" ref="listInner">
+              <ul>
+                <li v-if="!items.length">
+                  No items...
+                </li>
+                <li v-for="(item, index) in items" :key="index" class="item" :class="{today: today, 'text-tertiary': item.type === 'drink'}" @click="prepareDelete(index)">
+                  <div>{{ item.text }}</div>
+                  <div v-if="trackKcal || trackMl" class="d-flex flex-row">
+                    <div v-if="item.type ==='drink'" class="pl-2 ml">
+                      {{ item.ml }} ml
+                    </div>
+                    <div class="pl-2 kcal">
+                      {{ item.kcal }} kcal
+                    </div>
+                  </div>
+                </li>
+              </ul>
+              <div v-if="trackKcal">
+                <hr>
+                <ul>
+                  <li class="nodash">
+                    <div>
+                      Total
+                    </div>
+                    <div class="d-flex flex-row">
+                      <div class="pl-2 ml">
+                        {{ totalMl }} ml
+                      </div>
+                      <div class="pl-2 kcal">
+                        {{ totalKcal }} kcal
+                      </div>
+                    </div>
+                  </li>
+                  <li class="nodash">
+                    <div>
+                      Remaining
+                    </div>
+                    <div class="d-flex flex-row">
+                      <div class="pl-2 ml">
+                        {{ mlGoal - totalMl }} ml
+                      </div>
+                      <div class="pl-2 kcal">
+                        {{ kcalLimit - totalKcal }} kcal
+                      </div>
+                    </div>
+                  </li>
+                </ul>
               </div>
-            </li>
-          </ul>
-          <div v-if="trackKcal">
-            <hr>
-            <ul>
-              <li class="nodash">
-                <div>
-                  Total
-                </div>
-                <div class="d-flex flex-row">
-                  <div class="pl-2 ml">
-                    {{ totalMl }} ml
-                  </div>
-                  <div class="pl-2 kcal">
-                    {{ totalKcal }} kcal
-                  </div>
-                </div>
-              </li>
-              <li class="nodash">
-                <div>
-                  Remaining
-                </div>
-                <div class="d-flex flex-row">
-                  <div class="pl-2 ml">
-                    {{ mlGoal - totalMl }} ml
-                  </div>
-                  <div class="pl-2 kcal">
-                    {{ kcalLimit - totalKcal }} kcal
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
+            </div>
+            <div v-else key="spinner" class="spinner" />
+          </transition>
         </div>
         <div class="row">
           <div class="col-6">
@@ -109,6 +114,8 @@ export default {
       date: this.$moment().format('YYYYMMDD'),
       popupTitle: 'Add item',
       deleteIndex: null,
+      loading: true,
+      listHeight: 'auto',
     };
   },
   computed: {
@@ -146,9 +153,13 @@ export default {
       return this.$moment(this.date).isSame(this.$moment(), 'day');
     },
   },
+  mounted() {
+    this.getItems();
+  },
   methods: {
     dateChanged(newDate) {
       this.date = newDate;
+      this.getItems();
     },
     showPopup(type) {
       if (this.$refs && this.$refs.popup) {
@@ -162,6 +173,10 @@ export default {
     },
     addItem(item) {
       this.items.push(item);
+      this.publishItems();
+      this.$nextTick(() => {
+        this.listHeight = `${this.$refs.listInner.offsetHeight + 16}px`;
+      });
     },
     prepareDelete(index) {
       if (this.today) {
@@ -173,6 +188,56 @@ export default {
       if (this.today) {
         this.items.splice(this.deleteIndex, 1);
         this.$refs.delete.close();
+        this.publishItems();
+        this.$nextTick(() => {
+          this.listHeight = `${this.$refs.listInner.offsetHeight + 16}px`;
+        });
+      }
+    },
+    async getItems() {
+      this.listHeight = `${this.$refs.list.offsetHeight}px`;
+      this.loading = true;
+
+      const Nutrition = this.$parse.Object.extend('Nutrition');
+      const query = new this.$parse.Query(Nutrition);
+      query.equalTo('userId', this.$store.state.loggedInUserId);
+      query.equalTo('date', parseInt(this.date), 10);
+
+      try {
+        const result = await query.first();
+
+        if (result) {
+          this.items = result.get('items');
+          this.objectId = result.id;
+        } else {
+          this.items = [];
+          this.objectId = null;
+        }
+
+        this.loading = false;
+        this.$nextTick(() => {
+          this.listHeight = `${this.$refs.listInner.offsetHeight + 16}px`;
+        });
+      } catch (error) {
+        console.error('Error while fetching Nutrition', error); // eslint-disable-line
+      }
+    },
+    async publishItems() {
+      let nutritionObject = new this.$parse.Object('Nutrition');
+
+      if (this.objectId) {
+        const Nutrition = this.$parse.Object.extend('Nutrition');
+        nutritionObject = await new this.$parse.Query(Nutrition).get(this.objectId);
+      }
+
+      nutritionObject.set('date', parseInt(this.date, 10));
+      nutritionObject.set('items', this.items);
+      nutritionObject.set('userId', this.$store.state.loggedInUserId);
+
+      try {
+        await nutritionObject.save();
+      } catch (error) {
+        console.error('Error while saving nutrition log items: ', error); // eslint-disable-line
       }
     },
   },
@@ -191,6 +256,10 @@ export default {
     display: flex;
     flex-direction: column;
     margin-bottom: 1.5rem;
+    position: relative;
+    min-height: 100px;
+    transition: height 0.2s ease-out;
+    overflow: hidden;
   }
 
   ul {

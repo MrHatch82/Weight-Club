@@ -42,6 +42,13 @@ body {
   &:active {
     transform: scale(0.95);
   }
+
+  &:disabled {
+    box-shadow: none !important;
+    transform: scale(1) !important;
+    color: $secondary !important;
+    opacity: 0.5;
+  }
 }
 
 .spinner {
