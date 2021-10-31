@@ -103,16 +103,14 @@ export default {
     bootstrapCSS: false,
     bootstrapVueCSS: false,
     icons: false,
-    // components: [
-    //   'BContainer',
-    //   'BRow',
-    //   'BCol',
-    //   'BForm',
-    //   'BFormInput',
-    //   'BFormCheckbox',
-    //   'BFormCheckboxGroup',
-    //   'BButton',
-    // ],
+    components: [
+      'BForm',
+      'BFormGroup',
+      'BFormTextarea',
+      'BFormInput',
+      'BFormCheckbox',
+      'BButton',
+    ],
     directives: [],
   },
 
@@ -120,7 +118,7 @@ export default {
   axios: {},
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: { babel: { compact: true }, analyze: true },
+  build: { babel: { compact: true }, analyze: false },
 
   router: {
     middleware: 'authCheck',

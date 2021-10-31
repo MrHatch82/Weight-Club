@@ -20,9 +20,9 @@
                   <b-form class="mb-2" @submit.prevent="login">
                     <b-form-input v-model="name" placeholder="Name" required></b-form-input>
                     <b-form-input v-model="password" type="password" placeholder="Password" required></b-form-input>
-                    <b-checkbox v-model="remember" class="mb-3">
+                    <b-form-checkbox v-model="remember" class="mb-3">
                       Remember me
-                    </b-checkbox>
+                    </b-form-checkbox>
                     <b-button type="submit" variant="primary" class="btn shadow-up">
                       Log in
                     </b-button>

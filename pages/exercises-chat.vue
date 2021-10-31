@@ -43,8 +43,7 @@
           <div class="container">
             <div class="position-relative">
               <b-form @submit.prevent="submit">
-                <b-input v-model="message" class="shadow-down" :placeholder="msgType === 'message' ? 'Enter message...' : 'Describe Activity...'">
-                </b-input>
+                <b-form-input v-model="message" class="shadow-down" :placeholder="msgType === 'message' ? 'Enter message...' : 'Describe Activity...'" />
               </b-form>
             </div>
           </div>
