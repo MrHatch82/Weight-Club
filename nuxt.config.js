@@ -63,7 +63,7 @@ export default {
   plugins: [
     { src: '~/plugins/chart.js', mode: 'client' },
     { src: '~/plugins/parse.js', mode: 'client' },
-    '~/plugins/moment.js',
+    '~/plugins/moment.js', // REPLACE WITH LUXON!!!
     '~/plugins/utilityFunctions.js',
   ],
 
@@ -100,15 +100,27 @@ export default {
   },
 
   bootstrapVue: {
-    bootstrapCSS: false, // Or `css: false`
-    bootstrapVueCSS: false, // Or `bvCSS: false`
+    bootstrapCSS: false,
+    bootstrapVueCSS: false,
+    icons: false,
+    // components: [
+    //   'BContainer',
+    //   'BRow',
+    //   'BCol',
+    //   'BForm',
+    //   'BFormInput',
+    //   'BFormCheckbox',
+    //   'BFormCheckboxGroup',
+    //   'BButton',
+    // ],
+    directives: [],
   },
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {},
+  build: { babel: { compact: true }, analyze: true },
 
   router: {
     middleware: 'authCheck',
