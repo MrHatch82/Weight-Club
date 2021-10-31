@@ -22,6 +22,7 @@ export default {
       { name: 'format-detection', content: 'telephone=no' },
       { name: 'msapplication-TileColor', content: '#444444' },
       { name: 'theme-color', content: '#444444' },
+      { name: 'robots', content: 'noindex' },
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },

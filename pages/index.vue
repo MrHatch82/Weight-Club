@@ -34,7 +34,6 @@
             Log out
           </b-button>
         </div>
-        <small>Closed Beta v0.0.1</small>
       </div>
     </div>
   </div>

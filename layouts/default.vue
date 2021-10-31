@@ -3,6 +3,12 @@
     <topnav ref="topnav" />
     <div v-if="settingsReady" class="gradient-overlay"></div>
     <Nuxt :key="key" />
+    <div class="copyright d-none d-lg-block">
+      FAT FRIENDS {{ $store.state.version }}
+      © {{ $moment().format('YYYY') }} <a href="https://christof-hardt.de" target="_blank">
+        Christof Hardt
+      </a>
+    </div>
   </div>
 </template>
 
@@ -11,6 +17,11 @@ export default {
   data() {
     return {
       key: 0,
+    };
+  },
+  head() {
+    return {
+      title: `FAT FRIENDS ${this.$store.state.version}`,
     };
   },
   computed: {
@@ -147,4 +158,16 @@ export default {
     }
 
   }
+
+.copyright {
+  position: fixed;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  font-size: 12px;
+  opacity: 0.5;
+
+  a, a:hover, a:focus {
+    color: $light;
+  }
+}
 </style>

@@ -1,4 +1,5 @@
 export const state = () => ({
+  version: 'Closed Beta v0.0.1',
   weightUnit: null,
   weightUnitOptions: [
     { value: null, text: 'How to measure your greatness' },
