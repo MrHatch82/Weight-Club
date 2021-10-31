@@ -174,3 +174,41 @@ Parse.Cloud.define('getWeight', async (request) => {
     console.error('Error while fetching Weights', error);
   }
 });
+
+Parse.Cloud.define('signUp', async (request) => {
+  const username = request.params.username;
+  const password = request.params.password;
+  const alphaPass = request.params.alphaPass;
+
+  if (alphaPass === 'Penis123!') {
+    const User = new Parse.User();
+    const query = new Parse.Query(User);
+    query.equalTo('username', username);
+
+    try {
+      const user = await query.first();
+
+      if (user) {
+        console.log('Username taken');
+        return { error: 'Username taken!' };
+      } else {
+        const newUser = new Parse.User();
+        newUser.set('username', username);
+        newUser.set('password', password);
+
+        try {
+          const userResult = await user.signUp();
+          console.log('User signed up', userResult);
+          return { success: 'User signed up' };
+        } catch (error) {
+          console.error('Error while signing up user', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error while fetching user', error);
+    }
+  } else {
+    console.error('Wrong Alpha Pass');
+    return { error: 'Wrong Alpha Pass!' };
+  }
+});

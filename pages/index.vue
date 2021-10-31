@@ -3,37 +3,55 @@
     <logo :show-subtitle="true" class="logo" />
     <div>
       <div ref="loginWrapper" class="position-relative mb-5">
-        <h1 class="p m-0">
-          Fat Friends is a communal weight loss platform.
-        </h1>
-        <p class="mb-5">
-          <b>It is not a weight loss program.</b>
-          Its sole purpose is to bring people together in their weight loss endeavour, to prevent falling off the wagon, to have fun and maybe get some tips along the way.
-        </p>
-        <transition v-if="!userLoggedIn" name="fade">
-          <div v-if="loading" key="spinner" class="spinner" />
-          <div v-else key="login">
-            <p class="text-secondary" :class="{ 'text-danger' : error}" v-html="error || 'Please log in to get started.'" />
-            <b-form class="mb-2" @submit.prevent="login">
-              <b-form-input v-model="name" placeholder="Name"></b-form-input>
-              <b-form-input v-model="password" type="password" placeholder="Password"></b-form-input>
-              <b-checkbox v-model="remember" class="mb-3">
-                Remember me
-              </b-checkbox>
-              <b-button type="submit" variant="primary" class="btn shadow-up">
-                Submit
-              </b-button>
-            </b-form>
+        <transition name="fade">
+          <div v-if="!userLoggedIn" key="login">
+            <h1 class="p m-0">
+              Fat Friends is a communal weight loss platform.
+            </h1>
+            <p class="mb-5">
+              <b>It is not a weight loss program.</b>
+              Its sole purpose is to bring people together in their weight loss endeavour, to prevent falling off the wagon, to have fun and maybe get some tips along the way.
+            </p>
+            <transition v-if="!userLoggedIn" name="fade">
+              <div v-if="loading" key="spinner" class="spinner" />
+              <div v-else key="login">
+                <p class="text-secondary" :class="{ 'text-danger' : error}" v-html="error || 'Please log in or sign up to get started.'" />
+                <div v-if="!signUp">
+                  <b-form class="mb-2" @submit.prevent="login">
+                    <b-form-input v-model="name" placeholder="Name" required></b-form-input>
+                    <b-form-input v-model="password" type="password" placeholder="Password" required></b-form-input>
+                    <b-checkbox v-model="remember" class="mb-3">
+                      Remember me
+                    </b-checkbox>
+                    <b-button type="submit" variant="primary" class="btn shadow-up">
+                      Log in
+                    </b-button>
+                  </b-form>
+                  <p>or <a href="#" class="text-underlined" @click="signUp = true">sign up</a></p>
+                </div>
+                <b-form v-else class="mb-2" @submit.prevent="signUpUser">
+                  <b-form-input v-model="name" placeholder="Name" required></b-form-input>
+                  <b-form-input v-model="password" type="password" placeholder="Password" required></b-form-input>
+                  <b-form-input v-model="alphaPass" type="password" placeholder="Alpha Pass" required></b-form-input>
+                  <b-button type="submit" variant="primary" class="btn shadow-up">
+                    Sign up
+                  </b-button>
+                </b-form>
+                <h3 class="text-primary">
+                  {{ success }}
+                </h3>
+              </div>
+            </transition>
+          </div>
+          <div v-if="displayName" key="logout">
+            <h2 class="text-secondary mb-4">
+              Hello, {{ displayName }}!
+            </h2>
+            <b-button variant="primary" class="btn shadow-up" @click="logOut">
+              Log out
+            </b-button>
           </div>
         </transition>
-        <div v-else>
-          <h2 v-if="displayName" class="text-secondary mb-4">
-            Hello, {{ displayName }}!
-          </h2>
-          <b-button variant="primary" class="btn shadow-up" @click="logOut">
-            Log out
-          </b-button>
-        </div>
       </div>
     </div>
   </div>
@@ -45,9 +63,12 @@ export default {
     return {
       name: '',
       password: '',
+      alphaPass: '',
       loading: false,
       error: null,
+      success: null,
       remember: false,
+      signUp: false,
     };
   },
   computed: {
@@ -80,6 +101,31 @@ export default {
         this.error = error;
       }
     },
+    async signUpUser() {
+      this.remember = false;
+      if (this.alphaPass === 'Penis123!') {
+        this.loading = true;
+
+        const user = new this.$parse.User();
+        user.set('username', this.name);
+        user.set('password', this.password);
+
+        try {
+          const userResult = await user.signUp();
+          this.error = null;
+          this.success = `User ${userResult.get('username')} created successfully!`;
+          this.$parse.User.logOut();
+          this.signUp = false;
+          this.password = '';
+        } catch (error) {
+          this.error = 'Error: ' + error.code + ' ' + error.message;
+        }
+      } else {
+        this.error = 'Wrong Alpha Pass!';
+      }
+
+      this.loading = false;
+    },
     logOut() {
       localStorage.removeItem('sessionToken');
       this.$store.commit('userLoggedIn', null);
@@ -94,7 +140,9 @@ export default {
         displayName: null,
         userSettingsId: null,
       });
-      this.$router.push('/');
+      this.name = '';
+      this.password = '';
+      this.loading = false;
     },
   },
 };

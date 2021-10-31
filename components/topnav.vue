@@ -61,7 +61,7 @@ export default {
   },
   methods: {
     messageReceived() {
-      this.newMessage = this.$route.path !== '/exercises';
+      this.newMessage = this.$route.path !== '/exercises-chat';
     },
   },
 };
