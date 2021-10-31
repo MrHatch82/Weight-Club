@@ -109,6 +109,7 @@ export default {
       'BFormTextarea',
       'BFormInput',
       'BFormCheckbox',
+      'BFormSelect',
       'BButton',
     ],
     directives: [],

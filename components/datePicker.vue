@@ -23,7 +23,7 @@
         {{ currentMonth }}
         <button
           class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
-          :disabled="currentMonth === $moment().format('MMMM') && currentYear === $moment().format('YYYY')"
+          :disabled="currentMonth === $moment().format($mq === 'xs' || $mq === 'sm' ? 'MMM' : 'MMMM') && currentYear === $moment().format('YYYY')"
           @click="dateAdd(1, 'month')"
         >
           <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
