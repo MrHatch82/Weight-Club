@@ -2,11 +2,11 @@
   <div class="weight-edit-window">
     <div class="date shadow-down">
       <!-- <button class="btn btn-primary mr-2 btn-arrow shadow-up" :disabled="prevButtonDisabled" @click="changeDay(-1)">
-        ◀
+        <svg height="14" width="12"><polygon points="12,0 0,7 12,14" /></svg>
       </button> -->
       {{ selectedDay }}
       <!-- <button class="btn btn-primary ml-2 btn-arrow shadow-up" :disabled="nextButtonDisabled" @click="changeDay(1)">
-        ▶
+        <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
       </button> -->
     </div>
     <b-form-input ref="input" v-model="newWeight" placeholder="Enter weight" class="mb-4" :formatter="$sanitizeWeight" />

@@ -3,7 +3,7 @@
     <div v-if="dayPicker" class="col-6 col-lg-3 mb-4">
       <div class="datepicker shadow-down">
         <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract(1, 'day')">
-          ◀
+          <svg height="15" width="12"><polygon points="12,0 0,7 12,14" /></svg>
         </button>
         {{ currentDay }}
         <button
@@ -11,14 +11,14 @@
           :disabled="$moment(selectedDate).isSame($moment(), 'day')"
           @click="dateAdd(1, 'day')"
         >
-          ▶
+          <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
         </button>
       </div>
     </div>
     <div class="col-6 col-lg-3 mb-4">
       <div class="datepicker shadow-down">
         <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract(1, 'month')">
-          ◀
+          <svg height="14" width="12"><polygon points="12,0 0,7 12,14" /></svg>
         </button>
         {{ currentMonth }}
         <button
@@ -26,7 +26,7 @@
           :disabled="currentMonth === $moment().format('MMMM') && currentYear === $moment().format('YYYY')"
           @click="dateAdd(1, 'month')"
         >
-          ▶
+          <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
         </button>
       </div>
     </div>
@@ -36,7 +36,7 @@
           class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up"
           @click="dateSubtract(1, 'year')"
         >
-          ◀
+          <svg height="14" width="12"><polygon points="12,0 0,7 12,14" /></svg>
         </button>
         {{ currentYear }}
         <button
@@ -44,7 +44,7 @@
           :disabled="currentYear === $moment().format('YYYY')"
           @click="dateAdd(1, 'year')"
         >
-          ▶
+          <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
         </button>
       </div>
     </div>
@@ -123,7 +123,7 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 0.3rem 0.75rem 0.525rem;
+      padding: 0;
     }
   }
 </style>

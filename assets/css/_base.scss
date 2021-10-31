@@ -149,3 +149,7 @@ hr {
     transform: rotate(360deg);
   }
 }
+
+button svg {
+  fill: $secondary;
+}
