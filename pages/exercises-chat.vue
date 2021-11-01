@@ -269,6 +269,7 @@ export default {
     async updateStatus() {
       const state = this.$store.state;
       await this.$parse.Cloud.run('setStatus', {
+        date: parseInt(this.$moment().format('YYYYMMDD'), 10),
         userId: state.loggedInUserId,
         userSettings: {
           weightStart: state.weightStart,

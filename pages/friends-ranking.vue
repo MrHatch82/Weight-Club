@@ -80,7 +80,7 @@ export default {
       const friends = [];
 
       for (const object of results) {
-        const lastUpdate = parseInt(this.$moment(object.get('updatedAt')).format('YYYYMM'), 10);
+        const lastUpdate = parseInt((object.get('date') / 100).toFixed());
         const firstOfMonth = parseInt(this.$moment().format('YYYYMM'), 10);
         const statusValid = lastUpdate === firstOfMonth;
 

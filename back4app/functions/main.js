@@ -1,13 +1,14 @@
 Parse.Cloud.define('setStatus', async (request) => {
   const userId = request.params.userId;
   const { userSettings } = request.params;
+  const date = request.params.date;
 
   const weightMonthStart = await Parse.Cloud.run('getWeight', {
     userId,
     order: 'asc',
   });
 
-  const weightMonthEnd = await Parse.Cloud.run('getWeight', {
+  let weightMonthEnd = await Parse.Cloud.run('getWeight', {
     userId,
     order: 'desc',
   });
@@ -36,14 +37,15 @@ Parse.Cloud.define('setStatus', async (request) => {
   if (statusObject) {
     status = statusObject;
   }
+  status.set('date', date);
   status.set('userId', userId);
   status.set('weightLossMonth', weightLossMonth);
   status.set('weightLossTotal', weightLossTotal);
   status.set('weightRemaining', weightRemaining);
   status.set('weightLossPercent', weightLossPercent);
   status.set('weightCurrent', weightMonthEnd);
-  status.set('exercisesLight', exercises ? exercises.light : []);
-  status.set('exercisesHeavy', exercises ? exercises.intense : []);
+  status.set('exercisesLight', exercises ? exercises.light : 0);
+  status.set('exercisesHeavy', exercises ? exercises.intense : 0);
   status.set('exercises', exercises ? exercises.exercises : []);
 
   try {

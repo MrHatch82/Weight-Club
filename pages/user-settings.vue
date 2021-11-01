@@ -205,8 +205,10 @@ export default {
             userSettingsId: userSettingsObject.id,
           });
 
-          this.$parent.$parent.getDisplayNames();
-          this.updateStatus();
+          this.$nextTick(() => {
+            this.$parent.$parent.getDisplayNames();
+            this.updateStatus();
+          });
 
           if (firstVisit) {
             setTimeout(() => {
@@ -220,7 +222,9 @@ export default {
     },
     async updateStatus() {
       const state = this.$store.state;
+      console.log(state.weightStart, state.weightGoal);
       await this.$parse.Cloud.run('setStatus', {
+        date: parseInt(this.$moment().format('YYYYMMDD'), 10),
         userId: state.loggedInUserId,
         userSettings: {
           weightStart: state.weightStart,
