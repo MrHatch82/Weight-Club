@@ -22,7 +22,7 @@
             <div v-if="showDayLine(index, msg)" class="day-break">
               <hr>
               <div class="date">
-                {{ $moment(msg.createdAt).format('ll') }}
+                {{ $dateTime.fromISO(msg.createdAt).toLocaleString($dateTime.TIME_SIMPLE) }}
               </div>
             </div>
             <div v-if="showSpeaker(index, msg)" class="speaker">
@@ -60,7 +60,7 @@
 export default {
   data() {
     return {
-      selectedDate: this.$moment().format('YYYYMM'),
+      selectedDate: this.$dateTime.now().toFormat('yyyyMMdd'),
       message: '',
       msgType: 'message',
       loading: true,

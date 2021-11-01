@@ -64,6 +64,7 @@ export default {
     { src: '~/plugins/chart.js', mode: 'client' },
     { src: '~/plugins/parse.js', mode: 'client' },
     '~/plugins/moment.js', // REPLACE WITH LUXON!!!
+    '~/plugins/luxon.js',
     '~/plugins/utilityFunctions.js',
   ],
 
@@ -111,6 +112,7 @@ export default {
       'BFormCheckbox',
       'BFormSelect',
       'BButton',
+      'BButtonGroup',
     ],
     directives: [],
   },

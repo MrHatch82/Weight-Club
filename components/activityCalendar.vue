@@ -79,7 +79,12 @@ export default {
       }
     },
     isWeekend(date) {
+      // const dayOfWeek = this.$dateTime.local(date.getFullYear(), date.getMonth() + 1, date.getDate()).weekday;
+      // if (dayOfWeek === 6 || dayOfWeek === 7) {
+      //   return true;
+      // }
       const dayOfWeek = this.$moment(date).day();
+
       if (dayOfWeek % 6 === 0) {
         return true;
       }
