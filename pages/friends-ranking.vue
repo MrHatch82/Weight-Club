@@ -85,8 +85,8 @@ export default {
         const statusValid = lastUpdate === firstOfMonth;
 
         const weightLossMonth = statusValid ? object.get('weightLossMonth') : 0;
-        const exercisesLight = object.get('exercisesLight');
-        const exercisesHeavy = object.get('exercisesHeavy');
+        const exercisesLight = statusValid ? object.get('exercisesLight') : [];
+        const exercisesHeavy = statusValid ? object.get('exercisesHeavy') : [];
 
         friends.push({
           userId: object.get('userId'),
