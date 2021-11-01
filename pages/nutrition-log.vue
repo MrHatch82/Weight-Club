@@ -13,16 +13,19 @@
                 <li v-for="(item, index) in items" :key="index" class="item" :class="{today: today, 'text-tertiary': item.type === 'drink'}" @click="prepareDelete(index)">
                   <div>{{ item.text }}</div>
                   <div v-if="trackKcal || trackMl" class="d-flex flex-row">
-                    <div v-if="item.type ==='drink'" class="pl-2 ml">
+                    <div v-if="trackMl && item.type ==='drink'" class="pl-2 ml">
                       {{ item.ml }} ml
                     </div>
-                    <div class="pl-2 kcal">
+                    <div v-if="trackMl && item.type !=='drink'" class="pl-2 ml">
+                      —
+                    </div>
+                    <div v-if="trackKcal" class="pl-2 kcal">
                       {{ item.kcal }} kcal
                     </div>
                   </div>
                 </li>
               </ul>
-              <div v-if="trackKcal">
+              <div v-if="trackKcal || trackMl">
                 <hr>
                 <ul>
                   <li class="nodash">
@@ -30,10 +33,10 @@
                       Total
                     </div>
                     <div class="d-flex flex-row">
-                      <div class="pl-2 ml">
+                      <div v-if="trackMl" class="pl-2 ml">
                         {{ totalMl }} ml
                       </div>
-                      <div class="pl-2 kcal">
+                      <div v-if="trackKcal" class="pl-2 kcal">
                         {{ totalKcal }} kcal
                       </div>
                     </div>
@@ -43,10 +46,10 @@
                       Remaining
                     </div>
                     <div class="d-flex flex-row">
-                      <div class="pl-2 ml">
+                      <div v-if="trackMl" class="pl-2 ml">
                         {{ mlGoal - totalMl }} ml
                       </div>
-                      <div class="pl-2 kcal">
+                      <div v-if="trackKcal" class="pl-2 kcal">
                         {{ kcalLimit - totalKcal }} kcal
                       </div>
                     </div>

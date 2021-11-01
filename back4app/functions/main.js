@@ -42,9 +42,9 @@ Parse.Cloud.define('setStatus', async (request) => {
   status.set('weightRemaining', weightRemaining);
   status.set('weightLossPercent', weightLossPercent);
   status.set('weightCurrent', weightMonthEnd);
-  status.set('exercisesLight', exercises.light);
-  status.set('exercisesHeavy', exercises.intense);
-  status.set('exercises', exercises.exercises);
+  status.set('exercisesLight', exercises ? exercises.light : []);
+  status.set('exercisesHeavy', exercises ? exercises.intense : []);
+  status.set('exercises', exercises ? exercises.exercises : []);
 
   try {
     return await status.save();

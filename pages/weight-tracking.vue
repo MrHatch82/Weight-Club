@@ -139,14 +139,15 @@ export default {
     },
     weightLossMonth() {
       if (!this.firstWeight || !this.lastWeight || this.loading) {
-        return '-';
+        return '0';
       }
       return this.firstWeight - this.lastWeight;
     },
     weightLossRemaining() {
-      if (!this.lastWeight || this.loading) {
-        return '-';
+      if (this.loading || !this.lastWeight) {
+        return this.$displayWeight(this.$store.state.weightStart - this.$store.state.weightGoal, this.$store);
       }
+
       return this.lastWeight - this.$displayWeight(this.$store.state.weightGoal, this.$store);
     },
     weightLossPercent() {
@@ -166,19 +167,19 @@ export default {
     facts() {
       return [
         {
-          variable: `${this.$round(this.weightLossTotal) || '-'} ${this.$store.state.weightUnit}`,
+          variable: `${this.$round(this.weightLossTotal) || '0'} ${this.$store.state.weightUnit}`,
           text: 'total weight loss',
         },
         {
-          variable: `${this.$round(this.weightLossMonth) || '-'} ${this.$store.state.weightUnit}`,
+          variable: `${this.$round(this.weightLossMonth) || '0'} ${this.$store.state.weightUnit}`,
           text: 'lost this month',
         },
         {
-          variable: `${this.$round(this.weightLossRemaining) || '-'} ${this.$store.state.weightUnit}`,
+          variable: `${this.$round(this.weightLossRemaining)} ${this.$store.state.weightUnit}`,
           text: 'still remaining',
         },
         {
-          variable: `${this.$round(this.weightLossPercent) || '-'} %`,
+          variable: `${this.$round(this.weightLossPercent) || '0'} %`,
           text: 'of goal reached',
         },
       ];
