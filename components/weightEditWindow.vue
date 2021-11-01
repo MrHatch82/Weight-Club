@@ -9,26 +9,28 @@
         <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
       </button> -->
     </div>
-    <b-form-input ref="input" v-model="newWeight" placeholder="Enter weight" class="mb-4" :formatter="$sanitizeWeight" />
-    <b-form-textarea
-      v-model="newNote"
-      rows="2"
-      max-rows="2"
-      placeholder="Enter note (optional)"
-      class="note mb-4"
-      :class="{ 'text-center': !newNote }"
-      no-resize
-      :formatter="$sanitizeText"
-    >
-    </b-form-textarea>
-    <div class="d-flex justify-content-between">
-      <button class="btn btn-primary shadow-up" @click="closePopup">
-        Cancel
-      </button>
-      <button class="btn btn-primary shadow-up" @click="publishWeight">
-        Submit
-      </button>
-    </div>
+    <b-form @submit.prevent="publishWeight">
+      <b-form-input ref="input" v-model="newWeight" placeholder="Enter weight" class="mb-4" :formatter="$sanitizeWeight" />
+      <b-form-textarea
+        v-model="newNote"
+        rows="2"
+        max-rows="2"
+        placeholder="Enter note (optional)"
+        class="note mb-4"
+        :class="{ 'text-center': !newNote }"
+        no-resize
+        :formatter="$sanitizeText"
+      >
+      </b-form-textarea>
+      <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-primary shadow-up" @click="closePopup">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary shadow-up">
+          Submit
+        </button>
+      </div>
+    </b-form>
   </div>
 </template>
 
@@ -100,7 +102,7 @@ export default {
       this.$refs.input.focus();
     },
     closePopup() {
-      this.$parent.toggle();
+      this.$parent.close();
     },
     async publishWeight() {
       let weightObject = new this.$parse.Object('Weights');
