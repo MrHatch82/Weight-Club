@@ -89,6 +89,11 @@ export default {
       if (e) {
         const day = this.monthWithFallback[e.target.dataset.index];
 
+        if (!day) {
+          this.$refs.tooltip.trigger();
+          return;
+        }
+
         if (day.exerciseLight && day.exerciseHeavy) {
           this.tooltip = '<span class="text-primary">Heavy Exercise</span><br>& Light Exercise';
         }
