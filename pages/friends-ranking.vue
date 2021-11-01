@@ -85,10 +85,11 @@ export default {
         const statusValid = lastUpdate === firstOfMonth;
 
         const weightLossMonth = statusValid ? object.get('weightLossMonth') : 0;
-        const exercisesLight = object.get('exercisesLight');
-        const exercisesHeavy = object.get('exercisesHeavy');
+        const exercisesLight = statusValid ? object.get('exercisesLight') : [];
+        const exercisesHeavy = statusValid ? object.get('exercisesHeavy') : [];
 
         friends.push({
+          statusValid,
           userId: object.get('userId'),
           weightLossTotal: object.get('weightLossTotal'),
           weightLossMonth,
@@ -131,20 +132,20 @@ export default {
         const friend = this.friends[friendIndex];
         this.tooltip = friend.points ? '' : '<span class="text-white">There\'s No point</span>';
 
-        if (friend.weightLossMonth) {
+        if (friend.weightLossMonth && friend.statusValid) {
           const sum = friend.weightLossMonth * 100;
           this.tooltip += `<span class="text-tertiary">${friend.weightLossMonth} kilo${friend.weightLossMonth > 1 ? 's' : ''} lost x 100</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
 
-        if (friend.exercisesHeavy) {
+        if (friend.exercisesHeavy && friend.statusValid) {
           const sum = friend.exercisesHeavy * 50;
           this.tooltip += `<span class="text-tertiary">${friend.exercisesHeavy} Heavy exercise${friend.exercisesintense > 1 ? 's' : ''} x 50</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
-        if (friend.exercisesLight) {
+        if (friend.exercisesLight && friend.statusValid) {
           const sum = friend.exercisesLight * 20;
           this.tooltip += `<span class="text-tertiary">${friend.exercisesLight} Light exercise${friend.exercisesLight > 1 ? 's' : ''} x 20</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
-        if (friend.points) {
+        if (friend.points && friend.statusValid) {
           this.tooltip += `<br><span class="text-primary">Total</span>&nbsp;&nbsp;&nbsp;${friend.points < 100 ? '&nbsp;&nbsp;' : ''}${friend.points} Pts.`;
         }
       }
