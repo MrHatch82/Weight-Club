@@ -21,7 +21,7 @@
               <div class="col-6 col-lg-3">
                 <div class="blurp shadow-down text-center">
                   <div class="big text-secondary">
-                    {{ $displayWeight(friend.weightLossTotal, $store) }} {{ $store.state.weightUnit }}
+                    {{ $displayWeight(friend.weightLossTotal, $store) }}
                   </div>
                   total weight loss
                 </div>
@@ -29,7 +29,7 @@
               <div class="col-6 col-lg-3">
                 <div class="blurp shadow-down text-center">
                   <div class="big text-secondary">
-                    {{ $displayWeight(friend.weightLossMonth, $store) }} {{ $store.state.weightUnit }}
+                    {{ $displayWeight(friend.weightLossMonth, $store) }}
                   </div>
                   lost this month
                 </div>
@@ -38,7 +38,7 @@
               <div class="col-6 col-lg-3">
                 <div class="blurp shadow-down text-center">
                   <div class="big text-secondary">
-                    {{ $displayWeight(friend.weightRemaining, $store) }} {{ $store.state.weightUnit }}
+                    {{ $displayWeight(friend.weightRemaining, $store) }}
                   </div>
                   still remaining
                 </div>

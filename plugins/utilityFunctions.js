@@ -14,6 +14,15 @@ Vue.prototype.$sanitizeWeight = function (value) {
   }
 };
 
+Vue.prototype.$sanitizeInt = function (value) {
+  if (value) {
+    const newWeight = value;
+    newWeight.replace(/[^0-9]/g, '');
+
+    return newWeight;
+  }
+};
+
 Vue.prototype.$sanitizeText = function (value) {
   let val = value;
   if (value.length > 65) {
@@ -28,25 +37,69 @@ Vue.prototype.$displayWeight = function (val, store) {
     return null;
   }
   if (store.state.weightUnit === 'kg') {
-    return $round(val);
+    return `${$round(val)} kg`;
   }
-  return $round($kgToStone(val));
+
+  let lb = $round($kgToStoneLb(val));
+  lb = lb !== 0 ? `${lb} lb` : '';
+
+  let stone = $kgToStoneInt(val);
+  stone = stone !== 0 ? `${stone} stone` : '';
+
+  if (!stone && !lb) {
+    return '0 lb';
+  }
+
+  if (stone && lb) {
+    stone += ', ';
+  }
+
+  return `${stone}${lb}`;
 };
 
 const $kgToStone = function (val) {
   if (typeof val === 'string') {
     return val;
   }
+
+  if (val === null) {
+    return null;
+  }
+
   return val / 6.35029318;
 };
 
 Vue.prototype.$kgToStone = $kgToStone;
 
+const $kgToStoneInt = function (val) {
+  if (typeof val === 'string') {
+    return val;
+  }
+
+  if (val >= 0) {
+    return Math.floor(val / 6.35029318);
+  }
+
+  return Math.ceil(val / 6.35029318);
+};
+
+Vue.prototype.$kgToStoneInt = $kgToStoneInt;
+
+const $kgToStoneLb = function (val) {
+  if (typeof val === 'string') {
+    return val;
+  }
+  return ((val / 6.35029318) % 1) * 14;
+};
+
+Vue.prototype.$kgToStoneLb = $kgToStoneLb;
+
 Vue.prototype.$stoneToKg = function (val) {
   if (typeof val === 'string') {
     return val;
   }
-  return val * 6.35029318;
+  const stoneTotal = parseInt(val.stone) + parseFloat(val.lb) / 14;
+  return stoneTotal * 6.35029318;
 };
 
 const $round = function (val) {

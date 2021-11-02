@@ -10,7 +10,29 @@
       </button> -->
     </div>
     <b-form @submit.prevent="publishWeight">
-      <b-form-input ref="input" v-model="newWeight" placeholder="Enter weight" class="mb-4" :formatter="$sanitizeWeight" />
+      <b-form-input
+        v-if="weightUnit === 'kg'"
+        ref="input"
+        v-model="newWeight"
+        placeholder="Enter weight"
+        class="mb-4"
+        :formatter="$sanitizeWeight"
+      />
+      <b-form-input
+        v-if="weightUnit === 'stone'"
+        ref="input"
+        v-model="newWeightStone.stone"
+        placeholder="Stone"
+        class="mb-4"
+        :formatter="$sanitizeInt"
+      />
+      <b-form-input
+        v-if="weightUnit === 'stone'"
+        v-model="newWeightStone.lb"
+        placeholder="lb"
+        class="mb-4"
+        :formatter="$sanitizeWeight"
+      />
       <b-form-textarea
         v-model="newNote"
         rows="2"
@@ -50,6 +72,10 @@ export default {
     return {
       selectedDayIndex: null,
       newWeight: null,
+      newWeightStone: {
+        stone: null,
+        lb: null,
+      },
       newNote: null,
     };
   },
@@ -72,6 +98,9 @@ export default {
       }
       return false;
     },
+    weightUnit() {
+      return this.$store.state.weightUnit;
+    },
   },
   mounted() {
     this.$nuxt.$on('weight-edit-open', this.resetWeightEdit);
@@ -92,14 +121,22 @@ export default {
       }
 
       this.selectedDayIndex = newDayIndex;
-      this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.$round(this.weights[this.selectedDayIndex].weight)}` : '';
+      this.populateWeightInput();
       this.newNote = this.weights[this.selectedDayIndex].note ? `${this.weights[this.selectedDayIndex].note}` : null;
     },
     resetWeightEdit() {
       this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
-      this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.$round(this.weights[this.selectedDayIndex].weight)}` : '';
+      this.populateWeightInput();
       this.newNote = this.weights[this.selectedDayIndex].note ? `${this.weights[this.selectedDayIndex].note}` : null;
       this.$refs.input.focus();
+    },
+    populateWeightInput() {
+      if (this.$store.state.weightUnit === 'kg') {
+        this.newWeight = this.weights[this.selectedDayIndex].weight ? `${this.$round(this.weights[this.selectedDayIndex].weight)}` : '';
+      } else {
+        this.newWeightStone.stone = this.weights[this.selectedDayIndex].weightStone ? `${this.weights[this.selectedDayIndex].weightStone.stone}` : '';
+        this.newWeightStone.lb = this.weights[this.selectedDayIndex].weightStone ? `${this.$round(this.weights[this.selectedDayIndex].weightStone.lb)}` : '';
+      }
     },
     closePopup() {
       this.$parent.close();
@@ -114,7 +151,8 @@ export default {
 
       let newWeight = parseFloat(this.newWeight);
       if (this.$store.state.weightUnit === 'stone') {
-        newWeight = this.$stoneToKg(newWeight);
+        console.log(this.newWeightStone, this.$stoneToKg(this.newWeightStone));
+        newWeight = this.$stoneToKg(this.newWeightStone);
       }
 
       weightObject.set('userId', this.$store.state.loggedInUserId);

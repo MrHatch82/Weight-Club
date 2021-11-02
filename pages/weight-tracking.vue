@@ -133,30 +133,30 @@ export default {
     },
     weightLossTotal() {
       if (!this.lastWeight || this.loading) {
-        return '-';
+        return 0;
       }
-      return this.$displayWeight(this.$store.state.weightStart, this.$store) - this.lastWeight;
+      return this.$displayWeight(this.$store.state.weightStart - this.lastWeight, this.$store);
     },
     weightLossMonth() {
       if (!this.firstWeight || !this.lastWeight || this.loading) {
-        return '0';
+        return 0;
       }
-      return this.firstWeight - this.lastWeight;
+      return this.$displayWeight(this.firstWeight - this.lastWeight, this.$store);
     },
     weightLossRemaining() {
       if (this.loading || !this.lastWeight) {
         return this.$displayWeight(this.$store.state.weightStart - this.$store.state.weightGoal, this.$store);
       }
 
-      return this.lastWeight - this.$displayWeight(this.$store.state.weightGoal, this.$store);
+      return this.$displayWeight(this.lastWeight - this.$store.state.weightGoal, this.$store);
     },
     weightLossPercent() {
-      if (this.weightLossTotal === '-' || this.loading) {
-        return '-';
+      if (this.weightLossTotal === 0 || this.loading) {
+        return 0;
       }
-      const range = this.$displayWeight(this.$store.state.weightStart - this.$store.state.weightGoal, this.$store);
+      const range = this.$store.state.weightStart - this.$store.state.weightGoal;
 
-      return (100 / range * this.weightLossTotal);
+      return (100 / range * (this.$store.state.weightStart - this.lastWeight));
     },
     monthPercent() {
       if (this.weightLossTotal === '-') {
@@ -167,15 +167,15 @@ export default {
     facts() {
       return [
         {
-          variable: `${this.$round(this.weightLossTotal) || '0'} ${this.$store.state.weightUnit}`,
+          variable: this.weightLossTotal || this.$displayWeight(0, this.$store),
           text: 'total weight loss',
         },
         {
-          variable: `${this.$round(this.weightLossMonth) || '0'} ${this.$store.state.weightUnit}`,
+          variable: this.weightLossMonth || this.$displayWeight(0, this.$store),
           text: 'lost this month',
         },
         {
-          variable: `${this.$round(this.weightLossRemaining)} ${this.$store.state.weightUnit}`,
+          variable: this.weightLossRemaining || this.$displayWeight(0, this.$store),
           text: 'still remaining',
         },
         {
@@ -193,14 +193,13 @@ export default {
   methods: {
     createOptionsCallbacks() {
       const year = this.$moment(this.selectedDate).format('YY');
-      const unit = this.$store.state.weightUnit;
-      const $round = this.$round;
+      const $displayWeight = this.$displayWeight;
+      const $store = this.$store;
       const weights = this.weights;
 
       this.options.tooltips.callbacks = {
         title(tooltipItem, data) {
-          let label = $round(tooltipItem[0].yLabel);
-          label += ` ${unit}`;
+          const label = $displayWeight(weights[tooltipItem[0].index].weight, $store);
           return label;
         },
         label(tooltipItem, data) {
@@ -252,12 +251,14 @@ export default {
 
       this.daysInMonth.forEach((day) => {
         let kg = null;
+        let weightStone = null;
         let objectId = null;
         let note = null;
 
         weights.forEach((weight) => {
           if (this.$moment(day).format('YYYYMMDD') === `${weight.date}`) {
             kg = weight.weight;
+            weightStone = weight.weightStone;
             objectId = weight.objectId;
             note = weight.note;
 
@@ -276,10 +277,11 @@ export default {
             }
           }
         });
-        data.push(kg);
+        data.push(this.$store.state.weightUnit === 'kg' ? kg : this.$kgToStone(kg));
 
         weightsOrdered.push({
           weight: kg,
+          weightStone,
           note,
           objectId,
         });
@@ -290,6 +292,9 @@ export default {
 
       this.maxWeigt = maxWeight;
       this.minWeight = minWeight;
+
+      maxWeight = this.$store.state.weightUnit === 'kg' ? maxWeight : this.$kgToStone(maxWeight);
+      minWeight = this.$store.state.weightUnit === 'kg' ? minWeight : this.$kgToStone(minWeight);
 
       const paddingBot = this.$store.state.weightUnit === 'kg' ? 5 : 0.8;
       const paddingTop = this.$store.state.weightUnit === 'kg' ? 1 : 0.16;
@@ -337,7 +342,11 @@ export default {
           weights.push({
             userId,
             date,
-            weight: this.$displayWeight(weight, this.$store),
+            weight,
+            weightStone: {
+              stone: this.$kgToStoneInt(weight),
+              lb: this.$kgToStoneLb(weight),
+            },
             note: note ? this.$he.decode(note) : '',
             objectId: object.id,
           });

@@ -40,12 +40,58 @@
         <div class="col-6 d-md-none"></div>
         <div class="col-6 col-md-4 col-lg-3">
           <b-form-group label="Starting Weight">
-            <b-form-input v-model="weightStart" placeholder="Where you're at" class="mb-3" :formatter="$sanitizeWeight" required />
+            <b-form-input
+              v-if="weightUnit === 'kg'"
+              v-model="weightStart"
+              placeholder="Where you're at"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
+            <b-form-input
+              v-if="weightUnit === 'stone'"
+              v-model="weightStartStone.stone"
+              placeholder="stone"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
+            <b-form-input
+              v-if="weightUnit === 'stone'"
+              v-model="weightStartStone.lb"
+              placeholder="lb"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
           </b-form-group>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
           <b-form-group label="Weight goal">
-            <b-form-input v-model="weightGoal" placeholder="Where you want to end up" class="mb-3" :formatter="$sanitizeWeight" required />
+            <b-form-input
+              v-if="weightUnit === 'kg'"
+              v-model="weightGoal"
+              placeholder="Where you want to end up"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
+            <b-form-input
+              v-if="weightUnit === 'stone'"
+              v-model="weightGoalStone.stone"
+              placeholder="stone"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
+            <b-form-input
+              v-if="weightUnit === 'stone'"
+              v-model="weightGoalStone.lb"
+              placeholder="lb"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
           </b-form-group>
         </div>
       </div>
@@ -104,8 +150,16 @@ export default {
     return {
       weightUnit: this.$store.state.weightUnit,
       lastWeightUnit: this.$store.state.weightUnit,
-      weightStart: this.$store.state.weightUnit === 'kg' ? this.$store.state.weightStart : this.$kgToStone(this.$store.state.weightStart),
-      weightGoal: this.$store.state.weightUnit === 'kg' ? this.$store.state.weightGoal : this.$kgToStone(this.$store.state.weightGoal),
+      weightStart: this.$store.state.weightStart,
+      weightStartStone: {
+        stone: this.$kgToStoneInt(this.$store.state.weightStart),
+        lb: this.$kgToStoneLb(this.$store.state.weightStart),
+      },
+      weightGoal: this.$store.state.weightGoal,
+      weightGoalStone: {
+        stone: this.$kgToStoneInt(this.$store.state.weightGoal),
+        lb: this.$kgToStoneLb(this.$store.state.weightGoal),
+      },
       displayName: this.$store.state.displayName,
       weightUnitOptions: this.$store.state.weightUnitOptions,
       loading: false,
@@ -124,20 +178,6 @@ export default {
   computed: {
     storedWeightUnit() {
       return this.$store.state.weightUnit;
-    },
-  },
-  watch: {
-    weightUnit() {
-      if (this.weightUnit !== null && this.weightUnit !== this.lastWeightUnit) {
-        if (this.weightStart) {
-          this.weightStart = this.weightUnit === 'kg' ? this.$stoneToKg(this.weightStart) : this.$kgToStone(this.weightStart);
-        }
-        if (this.weightGoal) {
-          this.weightGoal = this.weightUnit === 'kg' ? this.$stoneToKg(this.weightGoal) : this.$kgToStone(this.weightGoal);
-        }
-
-        this.lastWeightUnit = this.weightUnit;
-      }
     },
   },
   mounted() {
@@ -179,8 +219,9 @@ export default {
         let weightStart = parseFloat(this.weightStart);
         let weightGoal = parseFloat(this.weightGoal);
         if (this.weightUnit === 'stone') {
-          weightStart = this.$stoneToKg(weightStart);
-          weightGoal = this.$stoneToKg(weightGoal);
+          weightStart = this.$stoneToKg(this.weightStartStone, 10);
+          weightGoal = this.$stoneToKg(this.weightGoalStone);
+          console.log(weightStart, weightGoal);
         }
 
         userSettingsObject.set('userId', this.$store.state.loggedInUserId);
