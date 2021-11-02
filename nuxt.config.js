@@ -111,6 +111,7 @@ export default {
       'BFormCheckbox',
       'BFormSelect',
       'BButton',
+      'BButtonGroup',
     ],
     directives: [],
   },
