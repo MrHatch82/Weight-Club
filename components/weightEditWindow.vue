@@ -151,7 +151,6 @@ export default {
 
       let newWeight = parseFloat(this.newWeight);
       if (this.$store.state.weightUnit === 'stone') {
-        console.log(this.newWeightStone, this.$stoneToKg(this.newWeightStone));
         newWeight = this.$stoneToKg(this.newWeightStone);
       }
 

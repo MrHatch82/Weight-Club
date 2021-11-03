@@ -55,6 +55,14 @@ export default {
       const user = await this.$parse.User.become(token);
       this.$store.commit('userLoggedIn', user.id);
       this.$nuxt.$emit('userLoggedIn');
+
+      if (this.$route.path === '/' && this.$store.state.userSettingsId) {
+        setTimeout(() => {
+          this.$router.push({
+            path: '/friends-ranking',
+          });
+        }, 1500);
+      }
     },
     async getDisplayNames() {
       const Users = this.$parse.Object.extend('UserSettings');

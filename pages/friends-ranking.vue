@@ -133,8 +133,8 @@ export default {
         this.tooltip = friend.points ? '' : '<span class="text-white">There\'s No point</span>';
 
         if (friend.weightLossMonth && friend.statusValid) {
-          const sum = friend.weightLossMonth * 100;
-          this.tooltip += `<span class="text-tertiary">${friend.weightLossMonth} kilo${friend.weightLossMonth > 1 ? 's' : ''} lost x 100</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
+          const sum = this.$round(friend.weightLossMonth * 100);
+          this.tooltip += `<span class="text-tertiary">${this.$displayWeight(friend.weightLossMonth, this.$store)} lost x 100</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
 
         if (friend.exercisesHeavy && friend.statusValid) {

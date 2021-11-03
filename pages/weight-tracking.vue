@@ -135,20 +135,20 @@ export default {
       if (!this.lastWeight || this.loading) {
         return 0;
       }
-      return this.$displayWeight(this.$store.state.weightStart - this.lastWeight, this.$store);
+      return this.$store.state.weightStart - this.lastWeight;
     },
     weightLossMonth() {
       if (!this.firstWeight || !this.lastWeight || this.loading) {
         return 0;
       }
-      return this.$displayWeight(this.firstWeight - this.lastWeight, this.$store);
+      return this.firstWeight - this.lastWeight;
     },
     weightLossRemaining() {
       if (this.loading || !this.lastWeight) {
-        return this.$displayWeight(this.$store.state.weightStart - this.$store.state.weightGoal, this.$store);
+        return this.$store.state.weightStart - this.$store.state.weightGoal;
       }
 
-      return this.$displayWeight(this.lastWeight - this.$store.state.weightGoal, this.$store);
+      return this.lastWeight - this.$store.state.weightGoal;
     },
     weightLossPercent() {
       if (this.weightLossTotal === 0 || this.loading) {
@@ -159,7 +159,7 @@ export default {
       return (100 / range * (this.$store.state.weightStart - this.lastWeight));
     },
     monthPercent() {
-      if (this.weightLossTotal === '-') {
+      if (this.weightLossTotal === 0) {
         return 0;
       }
       return 100 / this.weightLossTotal * this.weightLossMonth;
@@ -167,15 +167,15 @@ export default {
     facts() {
       return [
         {
-          variable: this.weightLossTotal || this.$displayWeight(0, this.$store),
+          variable: this.$displayWeight(this.weightLossTotal || 0, this.$store),
           text: 'total weight loss',
         },
         {
-          variable: this.weightLossMonth || this.$displayWeight(0, this.$store),
+          variable: this.$displayWeight(this.weightLossMonth || 0, this.$store),
           text: 'lost this month',
         },
         {
-          variable: this.weightLossRemaining || this.$displayWeight(0, this.$store),
+          variable: this.$displayWeight(this.weightLossRemaining || 0, this.$store),
           text: 'still remaining',
         },
         {
