@@ -5,7 +5,7 @@
     <Nuxt :key="key" />
     <div class="copyright d-none d-lg-block">
       FAT FRIENDS {{ $store.state.version }}
-      © {{ $moment().format('YYYY') }} <a href="https://christof-hardt.de" target="_blank">
+      © {{ $dateTime.now().toFormat('yyyy') }} <a href="https://christof-hardt.de" target="_blank">
         Christof Hardt
       </a>
     </div>

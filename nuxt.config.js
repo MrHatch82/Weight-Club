@@ -63,7 +63,7 @@ export default {
   plugins: [
     { src: '~/plugins/chart.js', mode: 'client' },
     { src: '~/plugins/parse.js', mode: 'client' },
-    '~/plugins/moment.js', // REPLACE WITH LUXON!!!
+    '~/plugins/luxon.js',
     '~/plugins/utilityFunctions.js',
   ],
 

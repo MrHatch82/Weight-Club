@@ -58,12 +58,12 @@ export default {
   computed: {
     selectedDay() {
       if (this.days && this.selectedDayIndex !== null && this.days[this.selectedDayIndex]) {
-        return this.days[this.selectedDayIndex].date.format('dddd, DD.MM.');
+        return this.days[this.selectedDayIndex].date.toFormat('cccc, dd.MM.');
       }
       return '';
     },
     nextButtonDisabled() {
-      if (this.selectedDayIndex && this.days[this.selectedDayIndex].date.diff(this.$moment(), 'days') === 0) {
+      if (this.selectedDayIndex && this.days[this.selectedDayIndex].date.diff(this.$dateTime.now(), 'days') === 0) {
         return true;
       }
       return false;

@@ -22,7 +22,7 @@
             <div v-if="showDayLine(index, msg)" class="day-break">
               <hr>
               <div class="date">
-                {{ $moment(msg.createdAt).format('ll') }}
+                {{ $dateTime.fromJSDate(msg.createdAt).toFormat('MMM d, yyyy') }}
               </div>
             </div>
             <div v-if="showSpeaker(index, msg)" class="speaker">
@@ -60,7 +60,7 @@
 export default {
   data() {
     return {
-      selectedDate: this.$moment().format('YYYYMM'),
+      selectedDate: this.$dateTime.now().toFormat('yyyyMMdd'),
       message: '',
       msgType: 'message',
       loading: true,
@@ -79,14 +79,15 @@ export default {
       return this.$store.state.messages;
     },
     daysInMonth() {
+      const first = this.$dateTime.fromISO(this.selectedDate).startOf('month');
       const monthArray = new Array(
-        this.$moment(this.selectedDate).daysInMonth()).fill(null).map((x, i) => {
+        parseInt(this.$dateTime.fromISO(this.selectedDate).endOf('month').toFormat('d'))).fill(null).map((x, i) => {
         let exerciseLight = false;
         let exerciseHeavy = false;
-        const date = this.$moment(this.selectedDate).startOf('month').add(i, 'days');
+        const date = first.plus({ days: i }).toJSDate();
 
         this.exercises.forEach((activity) => {
-          if (`${activity.date}` === date.format('YYYYMMDD')) {
+          if (`${activity.date}` === this.$dateTime.fromJSDate(date).toFormat('yyyyMMdd')) {
             if (activity.exerciseLight) {
               exerciseLight = true;
             }
@@ -122,15 +123,15 @@ export default {
   },
   methods: {
     dateChanged(newDate) {
-      this.selectedDate = this.$moment(newDate).format('YYYYMM');
+      this.selectedDate = this.$dateTime.fromISO(newDate).toFormat('yyyyMM');
       this.getMessages(true);
     },
     showDayLine(index, msg) {
       const prevMsg = index > 0 ? this.messages[index - 1] : {};
 
       if (Object.keys(prevMsg)) {
-        const date = this.$moment(prevMsg.createdAt).format('ll');
-        const prevDate = this.$moment(msg.createdAt).format('ll');
+        const date = this.$dateTime.fromJSDate(prevMsg.createdAt).toFormat('d');
+        const prevDate = this.$dateTime.fromJSDate(msg.createdAt).toFormat('d');
         if (prevDate !== date) {
           return true;
         }
@@ -146,9 +147,9 @@ export default {
       }
 
       if (prevMsg.createdAt) {
-        const momentPrev = this.$moment(prevMsg.createdAt);
-        const moment = this.$moment(msg.createdAt);
-        const diffMinutes = moment.diff(momentPrev, 'minutes');
+        const datePrev = this.$dateTime.fromJSDate(prevMsg.createdAt);
+        const date = this.$dateTime.fromJSDate(msg.createdAt);
+        const diffMinutes = date.diff(datePrev, 'minutes').toFormat('m');
 
         if (diffMinutes >= 5) {
           return true;
@@ -158,7 +159,7 @@ export default {
       return false;
     },
     getTime(date) {
-      return this.$moment(date).format('LT');
+      return this.$dateTime.fromJSDate(date).toLocaleString(this.$dateTime.TIME_SIMPLE);
     },
     submit() {
       if (this.message.length) {
@@ -180,8 +181,8 @@ export default {
         const query2 = new this.$parse.Query(Messages);
 
         if (exercisesOnly) {
-          const startOfMonth = this.$moment(`${this.selectedDate}01`).startOf('day').toDate();
-          const endOfMonth = this.$moment(`${this.selectedDate}${this.$moment(this.selectedDate).daysInMonth()}`).endOf('day').toDate();
+          const startOfMonth = this.$dateTime.fromISO(this.selectedDate).startOf('month').startOf('day').toJSDate();
+          const endOfMonth = this.$dateTime.fromISO(this.selectedDate).endOf('month').endOf('day').toJSDate();
           query.greaterThanOrEqualTo('createdAt', startOfMonth);
           query.lessThanOrEqualTo('createdAt', endOfMonth);
           query.equalTo('exerciseLight', true);
@@ -231,7 +232,7 @@ export default {
       const newMessage = message;
       const exerciseLight = msgType === 'exerciseLight';
       const exerciseHeavy = msgType === 'exerciseHeavy';
-      const date = parseInt(this.$moment().format('YYYYMMDD'), 10);
+      const date = parseInt(this.$dateTime.now().toFormat('yyyyMMdd'), 10);
 
       messageObject.set('userId', this.$store.state.loggedInUserId);
       messageObject.set('message', newMessage);
@@ -269,7 +270,7 @@ export default {
     async updateStatus() {
       const state = this.$store.state;
       await this.$parse.Cloud.run('setStatus', {
-        date: parseInt(this.$moment().format('YYYYMMDD'), 10),
+        date: parseInt(this.$dateTime.now().toFormat('yyyyMMdd'), 10),
         userId: state.loggedInUserId,
         userSettings: {
           weightStart: state.weightStart,

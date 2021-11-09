@@ -82,12 +82,12 @@ export default {
   computed: {
     selectedDay() {
       if (this.days && this.selectedDayIndex !== null && this.days[this.selectedDayIndex]) {
-        return this.days[this.selectedDayIndex].format('dddd, DD.MM.');
+        return this.days[this.selectedDayIndex].toFormat('cccc, dd.MM.');
       }
       return '';
     },
     nextButtonDisabled() {
-      if (this.selectedDayIndex && this.days[this.selectedDayIndex].diff(this.$moment(), 'days') === 0) {
+      if (this.selectedDayIndex && this.days[this.selectedDayIndex].diff(this.$$dateTime.now(), 'days') === 0) {
         return true;
       }
       return false;
@@ -125,7 +125,7 @@ export default {
       this.newNote = this.weights[this.selectedDayIndex].note ? `${this.weights[this.selectedDayIndex].note}` : null;
     },
     resetWeightEdit() {
-      this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
+      this.selectedDayIndex = parseInt(this.$dateTime.now().toFormat('d'), 10) - 1;
       this.populateWeightInput();
       this.newNote = this.weights[this.selectedDayIndex].note ? `${this.weights[this.selectedDayIndex].note}` : null;
       this.$refs.input.focus();
@@ -155,7 +155,7 @@ export default {
       }
 
       weightObject.set('userId', this.$store.state.loggedInUserId);
-      weightObject.set('date', parseInt(this.days[this.selectedDayIndex].format('YYYYMMDD'), 10));
+      weightObject.set('date', parseInt(this.days[this.selectedDayIndex].toFormat('yyyyMMdd'), 10));
       weightObject.set('weight', newWeight);
       weightObject.set('note', this.newNote
         ? this.$he.encode(this.newNote, {
@@ -174,7 +174,7 @@ export default {
     async updateStatus() {
       const state = this.$store.state;
       await this.$parse.Cloud.run('setStatus', {
-        date: parseInt(this.$moment().format('YYYYMMDD'), 10),
+        date: parseInt(this.$dateTime.now().toFormat('yyyyMMdd'), 10),
         userId: state.loggedInUserId,
         userSettings: {
           weightStart: state.weightStart,

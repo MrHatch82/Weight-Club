@@ -22,7 +22,6 @@
 </template>
 
 <script>
-import Moment from 'moment';
 export default {
   props: {
     month: {
@@ -43,12 +42,11 @@ export default {
       if (this.month.length) {
         return this.month;
       }
+      const first = this.$dateTime.fromISO(this.selectedDate).startOf('month');
       return new Array(
-        Moment().daysInMonth()).fill(null).map((x, i) => {
-        const date = Moment().startOf('month').add(i, 'days');
-
+        parseInt(this.$dateTime.fromISO(this.selectedDate).endOf('month').toFormat('d'))).fill(null).map((x, i) => {
         return {
-          date,
+          date: first.plus({ days: i }).toJSDate(),
           exerciseLight: false,
           exerciseHeavy: false,
         };
@@ -79,8 +77,8 @@ export default {
       }
     },
     isWeekend(date) {
-      const dayOfWeek = this.$moment(date).day();
-      if (dayOfWeek % 6 === 0) {
+      const dayOfWeek = this.$dateTime.fromJSDate(date).weekday;
+      if (dayOfWeek === 6 || dayOfWeek === 7) {
         return true;
       }
       return false;

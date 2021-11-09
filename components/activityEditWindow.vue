@@ -1,33 +1,35 @@
 <template>
   <div class="activity-edit-window">
-    <b-button-group>
-      <button class="btn shadow-up" :class="activityType === 'exerciseLight' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseLight'">
-        light exercise
-      </button>
-      <button class="btn shadow-up" :class="activityType === 'exerciseHeavy' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseHeavy'">
-        heavy exercise
-      </button>
-    </b-button-group>
-    <b-form-textarea
-      ref="input"
-      v-model="activityText"
-      rows="2"
-      max-rows="2"
-      placeholder="Describe exercise..."
-      class="note mb-4"
-      :class="{ 'text-center': !activityText }"
-      no-resize
-      :formatter="$sanitizeText"
-    >
-    </b-form-textarea>
-    <div class="d-flex justify-content-between">
-      <button type="button" class="btn btn-primary shadow-up" @click="closePopup">
-        Cancel
-      </button>
-      <button class="btn btn-primary shadow-up" @click="publish">
-        Submit
-      </button>
-    </div>
+    <b-form @submit.prevent="publish">
+      <b-button-group>
+        <button class="btn shadow-up" :class="activityType === 'exerciseLight' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseLight'">
+          light exercise
+        </button>
+        <button class="btn shadow-up" :class="activityType === 'exerciseHeavy' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseHeavy'">
+          heavy exercise
+        </button>
+      </b-button-group>
+      <b-form-textarea
+        ref="input"
+        v-model="activityText"
+        rows="2"
+        max-rows="2"
+        placeholder="Describe exercise..."
+        class="note mb-4"
+        :class="{ 'text-center': !activityText }"
+        no-resize
+        :formatter="$sanitizeText"
+      >
+      </b-form-textarea>
+      <div class="d-flex justify-content-between">
+        <button type="button" class="btn btn-primary shadow-up" @click="closePopup">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary shadow-up">
+          Submit
+        </button>
+      </div>
+    </b-form>
   </div>
 </template>
 
@@ -53,12 +55,12 @@ export default {
   computed: {
     selectedDay() {
       if (this.days && this.selectedDayIndex !== null && this.days[this.selectedDayIndex]) {
-        return this.days[this.selectedDayIndex].date.format('dddd, DD.MM.');
+        return this.days[this.selectedDayIndex].date.toFormat('cccc, dd.MM.');
       }
       return '';
     },
     nextButtonDisabled() {
-      if (this.selectedDayIndex && this.days[this.selectedDayIndex].date.diff(this.$moment(), 'days') === 0) {
+      if (this.selectedDayIndex && this.days[this.selectedDayIndex].date.diff(this.$dateTime.now(), 'days') === 0) {
         return true;
       }
       return false;
@@ -72,11 +74,22 @@ export default {
   },
   mounted() {
     this.$nuxt.$on('activity-edit-open', this.reset);
+
+    this.$nextTick(() => {
+      this.$refs.input.$el.addEventListener('keypress', this.keyHandler);
+    });
   },
   beforeDestroy() {
     this.$nuxt.$off('activity-edit-open');
+    this.$refs.input.$el.removeEventListener('keypress', this.keyHandler);
   },
   methods: {
+    keyHandler(event) {
+      if (event.which === 13) {
+        event.target.form.dispatchEvent(new Event('submit', { cancelable: true }));
+        event.preventDefault();
+      }
+    },
     changeDay(val) {
       let newDayIndex = this.selectedDayIndex + val;
 
@@ -91,7 +104,7 @@ export default {
       this.selectedDayIndex = newDayIndex;
     },
     reset() {
-      this.selectedDayIndex = parseInt(this.$moment().format('D'), 10) - 1;
+      this.selectedDayIndex = this.$dateTime.now().day - 1;
       this.activityText = '';
       this.activityType = 'exerciseLight';
       this.$refs.input.focus();

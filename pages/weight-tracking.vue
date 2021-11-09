@@ -49,7 +49,7 @@
 export default {
   data() {
     return {
-      selectedDate: this.$moment().format('YYYYMMDD'),
+      selectedDate: this.$dateTime.now().toFormat('yyyyMMdd'),
       chart: {
         labels: null,
         datasets: [
@@ -119,14 +119,9 @@ export default {
     };
   },
   computed: {
-    currentMonth() {
-      return this.$moment(this.selectedDate).format('MMMM');
-    },
-    currentYear() {
-      return this.$moment(this.selectedDate).format('YYYY');
-    },
     daysInMonth() {
-      return new Array(this.$moment(this.selectedDate).daysInMonth()).fill(null).map((x, i) => this.$moment(this.selectedDate).startOf('month').add(i, 'days'));
+      const first = this.$dateTime.fromISO(this.selectedDate).startOf('month');
+      return new Array(parseInt(first.endOf('month').toFormat('dd'))).fill(null).map((x, i) => first.plus({ days: i }));
     },
     dataReady() {
       return this.chart.labels !== null && this.chart.datasets[0].data !== null;
@@ -192,7 +187,7 @@ export default {
   },
   methods: {
     createOptionsCallbacks() {
-      const year = this.$moment(this.selectedDate).format('YY');
+      const year = this.$dateTime.fromISO(this.selectedDate).toFormat('yy');
       const $displayWeight = this.$displayWeight;
       const $store = this.$store;
       const weights = this.weights;
@@ -220,7 +215,7 @@ export default {
     },
     showPopup() {
       if (this.$refs && this.$refs.popup) {
-        const today = this.$moment().format('YYYYMMDD');
+        const today = this.$dateTime.now().toFormat('yyyyMMdd');
         if (this.selectedDate !== today) {
           this.selectedDate = today;
           this.$refs.datePicker.dateSet(today);
@@ -232,7 +227,7 @@ export default {
     createLabels() {
       const labels = [];
       this.daysInMonth.forEach((day) => {
-        labels.push(day.format('DD.MM.'));
+        labels.push(day.toFormat('dd.MM.'));
       });
       this.chart.labels = labels;
     },
@@ -256,7 +251,7 @@ export default {
         let note = null;
 
         weights.forEach((weight) => {
-          if (this.$moment(day).format('YYYYMMDD') === `${weight.date}`) {
+          if (this.$dateTime.fromISO(day).toFormat('yyyyMMdd') === `${weight.date}`) {
             kg = weight.weight;
             weightStone = weight.weightStone;
             objectId = weight.objectId;
@@ -324,8 +319,8 @@ export default {
       const Weights = this.$parse.Object.extend('Weights');
       const query = new this.$parse.Query(Weights);
       query.equalTo('userId', this.$store.state.loggedInUserId);
-      query.greaterThanOrEqualTo('date', parseInt(this.$moment(this.selectedDate).startOf('month').format('YYYYMMDD')), 10);
-      query.lessThanOrEqualTo('date', parseInt(this.$moment(this.selectedDate).endOf('month').format('YYYYMMDD')), 10);
+      query.greaterThanOrEqualTo('date', parseInt(this.$dateTime.fromISO(this.selectedDate).startOf('month').toFormat('yyyyMMdd')), 10);
+      query.lessThanOrEqualTo('date', parseInt(this.$dateTime.fromISO(this.selectedDate).endOf('month').toFormat('yyyyMMdd')), 10);
       query.ascending('date');
 
       try {

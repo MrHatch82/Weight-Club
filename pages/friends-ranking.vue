@@ -81,7 +81,7 @@ export default {
 
       for (const object of results) {
         const lastUpdate = parseInt((object.get('date') / 100).toFixed());
-        const firstOfMonth = parseInt(this.$moment().format('YYYYMM'), 10);
+        const firstOfMonth = parseInt(this.$dateTime.now().toFormat('yyyyMM'), 10);
         const statusValid = lastUpdate === firstOfMonth;
 
         const weightLossMonth = statusValid ? object.get('weightLossMonth') : 0;
