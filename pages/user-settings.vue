@@ -264,7 +264,7 @@ export default {
     async updateStatus() {
       const state = this.$store.state;
       await this.$parse.Cloud.run('setStatus', {
-        date: parseInt(this.$moment().format('YYYYMMDD'), 10),
+        date: parseInt(this.$dateTime.now().toFormat('yyyyMMdd'), 10),
         userId: state.loggedInUserId,
         userSettings: {
           weightStart: state.weightStart,
@@ -278,7 +278,7 @@ export default {
       const weightObject = new this.$parse.Object('Weights');
 
       weightObject.set('userId', this.$store.state.loggedInUserId);
-      weightObject.set('date', parseInt(this.$moment().format('YYYYMMDD'), 10));
+      weightObject.set('date', parseInt(this.$dateTime.now().toFormat('yyyyMMdd'), 10));
       weightObject.set('weight', parseFloat(this.$store.state.weightStart));
       weightObject.set('note', this.$he.encode('Started using FAT FRIENDS', {
         encodeEverything: true,

@@ -2,14 +2,14 @@
   <div class="date-picker row">
     <div v-if="dayPicker" class="col-6 col-lg-3 mb-4">
       <div class="datepicker shadow-down">
-        <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract(1, 'day')">
+        <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract({ days: 1 })">
           <svg height="15" width="12"><polygon points="12,0 0,7 12,14" /></svg>
         </button>
         {{ currentDay }}
         <button
           class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
-          :disabled="$moment(selectedDate).isSame($moment(), 'day')"
-          @click="dateAdd(1, 'day')"
+          :disabled="$dateTime.fromISO(selectedDate) >= $dateTime.now().startOf('day')"
+          @click="dateAdd({ days: 1 })"
         >
           <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
         </button>
@@ -17,14 +17,14 @@
     </div>
     <div class="col-6 col-lg-3 mb-4">
       <div class="datepicker shadow-down">
-        <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract(1, 'month')">
+        <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract({months: 1})">
           <svg height="14" width="12"><polygon points="12,0 0,7 12,14" /></svg>
         </button>
         {{ currentMonth }}
         <button
           class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
-          :disabled="currentMonth === $moment().format($mq === 'xs' || $mq === 'sm' ? 'MMM' : 'MMMM') && currentYear === $moment().format('YYYY')"
-          @click="dateAdd(1, 'month')"
+          :disabled="currentMonth === $dateTime.now().toFormat($mq === 'xs' || $mq === 'sm' ? 'MMM' : 'MMMM') && currentYear === $dateTime.now().toFormat('yyyy')"
+          @click="dateAdd({ months: 1 })"
         >
           <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
         </button>
@@ -34,15 +34,15 @@
       <div class="datepicker shadow-down">
         <button
           class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up"
-          @click="dateSubtract(1, 'year')"
+          @click="dateSubtract({ years: 1 })"
         >
           <svg height="14" width="12"><polygon points="12,0 0,7 12,14" /></svg>
         </button>
         {{ currentYear }}
         <button
           class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
-          :disabled="currentYear === $moment().format('YYYY')"
-          @click="dateAdd(1, 'year')"
+          :disabled="currentYear === $dateTime.now().toFormat('yyyy')"
+          @click="dateAdd({ years: 1 })"
         >
           <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
         </button>
@@ -62,39 +62,40 @@ export default {
   },
   data() {
     return {
-      selectedDate: this.$moment().format('YYYYMMDD'),
+      selectedDate: this.$dateTime.now().toFormat('yyyyMMdd'),
     };
   },
   computed: {
     currentDay() {
       if (this.$mq === 'xs' || this.$mq === 'sm') {
-        return `${this.$moment(this.selectedDate).format('D')}.`;
+        return `${this.$dateTime.fromISO(this.selectedDate).toFormat('d')}.`;
       }
-      return `${this.$moment(this.selectedDate).format('dddd')}, ${this.$moment(this.selectedDate).format('D')}.`;
+      return `${this.$dateTime.fromISO(this.selectedDate).toFormat('cccc')}, ${this.$dateTime.fromISO(this.selectedDate).toFormat('d')}.`;
     },
     currentMonth() {
       if (this.$mq === 'xs' || this.$mq === 'sm') {
-        return this.$moment(this.selectedDate).format('MMM');
+        return this.$dateTime.fromISO(this.selectedDate).toFormat('MMM');
       }
-      return this.$moment(this.selectedDate).format('MMMM');
+      return this.$dateTime.fromISO(this.selectedDate).toFormat('MMMM');
     },
     currentYear() {
-      return this.$moment(this.selectedDate).format('YYYY');
+      return this.$dateTime.fromISO(this.selectedDate).toFormat('yyyy');
     },
     daysInMonth() {
-      return new Array(this.$moment(this.selectedDate).daysInMonth()).fill(null).map((x, i) => this.$moment(this.selectedDate).startOf('month').add(i, 'days'));
+      const first = this.$dateTime.fromISO(this.selectedDate).startOf('month');
+      return new Array(parseInt(first.endOf('month').toFormat('dd'))).fill(null).map((x, i) => first.plus({ days: i }));
     },
   },
   methods: {
-    dateAdd(number, unit) {
-      this.selectedDate = this.$moment(this.selectedDate).add(number, unit).format('YYYYMMDD');
-      if (this.$moment(this.selectedDate).isAfter()) {
-        this.selectedDate = this.$moment().format('YYYYMMDD');
+    dateAdd(val) {
+      this.selectedDate = this.$dateTime.fromISO(this.selectedDate).plus(val).toFormat('yyyyMMdd');
+      if (this.$dateTime.fromISO(this.selectedDate) > this.$dateTime.now()) {
+        this.selectedDate = this.$dateTime.now().toFormat('yyyyMMdd');
       }
       this.$emit('dateChanged', this.selectedDate);
     },
-    dateSubtract(number, unit) {
-      this.selectedDate = this.$moment(this.selectedDate).subtract(number, unit).format('YYYYMMDD');
+    dateSubtract(val) {
+      this.selectedDate = this.$dateTime.fromISO(this.selectedDate).minus(val).toFormat('yyyyMMdd');
       this.$emit('dateChanged', this.selectedDate);
     },
     dateSet(newDate) {

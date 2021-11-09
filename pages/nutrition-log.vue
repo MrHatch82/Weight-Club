@@ -114,7 +114,7 @@ export default {
     return {
       items: [],
       objectId: null,
-      date: this.$moment().format('YYYYMMDD'),
+      date: this.$dateTime.now().toFormat('yyyyMMdd'),
       popupTitle: 'Add item',
       deleteIndex: null,
       loading: true,
@@ -153,7 +153,7 @@ export default {
       return total;
     },
     today() {
-      return this.$moment(this.date).isSame(this.$moment(), 'day');
+      return this.$dateTime.fromISO(this.date).equals(this.$dateTime.now().startOf('day'));
     },
   },
   mounted() {
