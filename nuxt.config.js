@@ -120,7 +120,15 @@ export default {
   axios: {},
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: { babel: { compact: true }, analyze: false },
+  build: {
+    babel: { compact: true },
+    analyze: false,
+    extend(config, { isDev, isClient }) {
+      config.externals = {
+        moment: 'moment',
+      };
+    },
+  },
 
   router: {
     middleware: 'authCheck',
