@@ -21,7 +21,7 @@
     >
     </b-form-textarea>
     <div class="d-flex justify-content-between">
-      <button class="btn btn-primary shadow-up" @click="closePopup">
+      <button type="button" class="btn btn-primary shadow-up" @click="closePopup">
         Cancel
       </button>
       <button class="btn btn-primary shadow-up" @click="publish">

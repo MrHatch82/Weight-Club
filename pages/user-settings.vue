@@ -40,12 +40,58 @@
         <div class="col-6 d-md-none"></div>
         <div class="col-6 col-md-4 col-lg-3">
           <b-form-group label="Starting Weight">
-            <b-form-input v-model="weightStart" placeholder="Where you're at" class="mb-3" :formatter="$sanitizeWeight" required />
+            <b-form-input
+              v-if="weightUnit === 'kg'"
+              v-model="weightStart"
+              placeholder="Where you're at"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
+            <b-form-input
+              v-if="weightUnit === 'stone'"
+              v-model="weightStartStone.stone"
+              placeholder="stone"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
+            <b-form-input
+              v-if="weightUnit === 'stone'"
+              v-model="weightStartStone.lb"
+              placeholder="lb"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
           </b-form-group>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
           <b-form-group label="Weight goal">
-            <b-form-input v-model="weightGoal" placeholder="Where you want to end up" class="mb-3" :formatter="$sanitizeWeight" required />
+            <b-form-input
+              v-if="weightUnit === 'kg'"
+              v-model="weightGoal"
+              placeholder="Where you want to end up"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
+            <b-form-input
+              v-if="weightUnit === 'stone'"
+              v-model="weightGoalStone.stone"
+              placeholder="stone"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
+            <b-form-input
+              v-if="weightUnit === 'stone'"
+              v-model="weightGoalStone.lb"
+              placeholder="lb"
+              class="mb-3"
+              :formatter="$sanitizeWeight"
+              required
+            />
           </b-form-group>
         </div>
       </div>
@@ -60,7 +106,7 @@
         </div>
         <div v-if="trackKcal" class="col-6 col-md-4 col-lg-3">
           <b-form-group label="kcal limit">
-            <b-form-input v-model="kcalLimit" placeholder="Intended daily intake" class="mb-3" :formatter="$sanitizeWeight" required />
+            <b-form-input v-model="kcalLimit" placeholder="Daily maximum" class="mb-3" :formatter="$sanitizeWeight" required />
           </b-form-group>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
@@ -70,7 +116,7 @@
         </div>
         <div v-if="trackMl" class="col-6 col-md-4 col-lg-3">
           <b-form-group label="ml goal">
-            <b-form-input v-model="mlGoal" placeholder="Daily target" class="mb-3" :formatter="$sanitizeWeight" required />
+            <b-form-input v-model="mlGoal" placeholder="Daily fluid intake target" class="mb-3" :formatter="$sanitizeWeight" required />
           </b-form-group>
         </div>
       </div>
@@ -102,18 +148,26 @@
 export default {
   data() {
     return {
-      weightUnit: this.$store.state.weightUnit,
+      weightUnit: this.$store.state.weightUnit || 'kg',
       lastWeightUnit: this.$store.state.weightUnit,
-      weightStart: this.$store.state.weightUnit === 'kg' ? this.$store.state.weightStart : this.$kgToStone(this.$store.state.weightStart),
-      weightGoal: this.$store.state.weightUnit === 'kg' ? this.$store.state.weightGoal : this.$kgToStone(this.$store.state.weightGoal),
+      weightStart: this.$store.state.weightStart,
+      weightStartStone: {
+        stone: this.$kgToStoneInt(this.$store.state.weightStart) || '',
+        lb: this.$kgToStoneLb(this.$store.state.weightStart) || '',
+      },
+      weightGoal: this.$store.state.weightGoal,
+      weightGoalStone: {
+        stone: this.$kgToStoneInt(this.$store.state.weightGoal) || '',
+        lb: this.$kgToStoneLb(this.$store.state.weightGoal) || '',
+      },
       displayName: this.$store.state.displayName,
       weightUnitOptions: this.$store.state.weightUnitOptions,
       loading: false,
       success: false,
       settingsReady: false,
-      trackKcal: this.$store.state.trackKcal,
+      trackKcal: this.$store.state.trackKcal ?? true,
       kcalLimit: this.$store.state.kcalLimit,
-      trackMl: this.$store.state.trackMl,
+      trackMl: this.$store.state.trackMl ?? true,
       mlGoal: this.$store.state.mlGoal,
       boolOptions: [
         { value: true, text: 'Yes' },
@@ -124,20 +178,6 @@ export default {
   computed: {
     storedWeightUnit() {
       return this.$store.state.weightUnit;
-    },
-  },
-  watch: {
-    weightUnit() {
-      if (this.weightUnit !== null && this.weightUnit !== this.lastWeightUnit) {
-        if (this.weightStart) {
-          this.weightStart = this.weightUnit === 'kg' ? this.$stoneToKg(this.weightStart) : this.$kgToStone(this.weightStart);
-        }
-        if (this.weightGoal) {
-          this.weightGoal = this.weightUnit === 'kg' ? this.$stoneToKg(this.weightGoal) : this.$kgToStone(this.weightGoal);
-        }
-
-        this.lastWeightUnit = this.weightUnit;
-      }
     },
   },
   mounted() {
@@ -162,7 +202,7 @@ export default {
       this.$router.push('/');
     },
     async saveSettings() {
-      if (this.weightUnit && this.weightStart && this.weightGoal) {
+      if (this.weightUnit && (this.weightStart || this.weightStartStone.stone) && (this.weightGoal || this.weightGoalStone.stone)) {
         this.loading = true;
         this.success = false;
 
@@ -179,8 +219,8 @@ export default {
         let weightStart = parseFloat(this.weightStart);
         let weightGoal = parseFloat(this.weightGoal);
         if (this.weightUnit === 'stone') {
-          weightStart = this.$stoneToKg(weightStart);
-          weightGoal = this.$stoneToKg(weightGoal);
+          weightStart = this.$stoneToKg(this.weightStartStone, 10);
+          weightGoal = this.$stoneToKg(this.weightGoalStone);
         }
 
         userSettingsObject.set('userId', this.$store.state.loggedInUserId);
@@ -205,22 +245,26 @@ export default {
             userSettingsId: userSettingsObject.id,
           });
 
-          this.$parent.$parent.getDisplayNames();
-          this.updateStatus();
-
-          if (firstVisit) {
-            setTimeout(() => {
-              this.$router.push('/');
-            }, 1000);
-          }
+          this.$nextTick(() => {
+            this.$parent.$parent.getDisplayNames();
+            if (firstVisit) {
+              this.publishWeight();
+              setTimeout(() => {
+                this.$router.push('/');
+              }, 1000);
+            } else {
+              this.updateStatus();
+            }
+          });
         } catch (error) {
-          console.error('Error while saving Weight: ', error);
+          console.error('Error while saving Weight: ', error); // eslint-disable-line
         }
       }
     },
     async updateStatus() {
       const state = this.$store.state;
       await this.$parse.Cloud.run('setStatus', {
+        date: parseInt(this.$moment().format('YYYYMMDD'), 10),
         userId: state.loggedInUserId,
         userSettings: {
           weightStart: state.weightStart,
@@ -229,6 +273,22 @@ export default {
       });
       this.loading = false;
       this.success = true;
+    },
+    async publishWeight() {
+      const weightObject = new this.$parse.Object('Weights');
+
+      weightObject.set('userId', this.$store.state.loggedInUserId);
+      weightObject.set('date', parseInt(this.$moment().format('YYYYMMDD'), 10));
+      weightObject.set('weight', parseFloat(this.$store.state.weightStart));
+      weightObject.set('note', this.$he.encode('Started using FAT FRIENDS', {
+        encodeEverything: true,
+      }));
+      try {
+        await weightObject.save();
+        this.updateStatus();
+      } catch (error) {
+        console.error('Error while saving Weight: ', error); // eslint-disable-line
+      }
     },
   },
 };

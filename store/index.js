@@ -1,8 +1,7 @@
 export const state = () => ({
-  version: 'Closed Alpha v0.0.1',
+  version: 'Closed Alpha v0.0.3',
   weightUnit: null,
   weightUnitOptions: [
-    { value: null, text: 'How to measure your greatness' },
     { value: 'kg', text: 'kg' },
     { value: 'stone', text: 'Stone' },
   ],

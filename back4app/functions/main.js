@@ -1,13 +1,14 @@
 Parse.Cloud.define('setStatus', async (request) => {
   const userId = request.params.userId;
   const { userSettings } = request.params;
+  const date = request.params.date;
 
   const weightMonthStart = await Parse.Cloud.run('getWeight', {
     userId,
     order: 'asc',
   });
 
-  const weightMonthEnd = await Parse.Cloud.run('getWeight', {
+  let weightMonthEnd = await Parse.Cloud.run('getWeight', {
     userId,
     order: 'desc',
   });
@@ -36,14 +37,15 @@ Parse.Cloud.define('setStatus', async (request) => {
   if (statusObject) {
     status = statusObject;
   }
+  status.set('date', date);
   status.set('userId', userId);
   status.set('weightLossMonth', weightLossMonth);
   status.set('weightLossTotal', weightLossTotal);
   status.set('weightRemaining', weightRemaining);
   status.set('weightLossPercent', weightLossPercent);
   status.set('weightCurrent', weightMonthEnd);
-  status.set('exercisesLight', exercises ? exercises.light : []);
-  status.set('exercisesHeavy', exercises ? exercises.intense : []);
+  status.set('exercisesLight', exercises ? exercises.light : 0);
+  status.set('exercisesHeavy', exercises ? exercises.heavy : 0);
   status.set('exercises', exercises ? exercises.exercises : []);
 
   try {
@@ -71,23 +73,32 @@ Parse.Cloud.define('getExercises', async (request) => {
   const userId = request.params.userId;
 
   const date = new Date();
-  const firstDay = new Date(date.getFullYear(), date.getMonth(), 0);
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const year = `${lastDay.getFullYear()}`;
+  const month =
+    lastDay.getMonth() + 1 < 10
+      ? `0${lastDay.getMonth() + 1}`
+      : `${lastDay.getMonth() + 1}`;
+  const day =
+    lastDay.getDate() < 10 ? `0${lastDay.getDate()}` : `${lastDay.getDate()}`;
+  const firstDayInt = parseInt(`${year}${month}01`, 10);
+  const lastDayInt = parseInt(`${year}${month}${day}`, 10);
 
   const Messages = Parse.Object.extend('Messages');
 
   const queryLight = new Parse.Query(Messages);
   queryLight.equalTo('userId', userId);
-  queryLight.greaterThanOrEqualTo('createdAt', firstDay);
-  queryLight.lessThanOrEqualTo('createdAt', date);
+  queryLight.greaterThanOrEqualTo('date', firstDayInt);
+  queryLight.lessThanOrEqualTo('date', lastDayInt);
   queryLight.equalTo('exerciseLight', true);
 
-  const queryIntense = new Parse.Query(Messages);
-  queryIntense.equalTo('userId', userId);
-  queryIntense.greaterThanOrEqualTo('createdAt', firstDay);
-  queryIntense.lessThanOrEqualTo('createdAt', date);
-  queryIntense.equalTo('exerciseHeavy', true);
+  const queryHeavy = new Parse.Query(Messages);
+  queryHeavy.equalTo('userId', userId);
+  queryHeavy.greaterThanOrEqualTo('date', firstDayInt);
+  queryHeavy.lessThanOrEqualTo('date', lastDayInt);
+  queryHeavy.equalTo('exerciseHeavy', true);
 
-  const queryMain = Parse.Query.or(queryLight, queryIntense);
+  const queryMain = Parse.Query.or(queryLight, queryHeavy);
 
   try {
     const results = await queryMain.find();
@@ -131,11 +142,11 @@ Parse.Cloud.define('getExercises', async (request) => {
 
     return {
       light: exercisesLight.length,
-      intense: exercisesHeavy.length,
+      heavy: exercisesHeavy.length,
       exercises: days,
     };
   } catch (error) {
-    console.error('Error while fetching Weights', error);
+    console.error('Error while fetching Exercises', error);
   }
 });
 

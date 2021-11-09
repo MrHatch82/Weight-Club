@@ -59,6 +59,9 @@ export default {
       }, 200);
     });
   },
+  beforeDestroy() {
+    this.$nuxt.$off('routeChanged');
+  },
   methods: {
     messageReceived() {
       this.newMessage = this.$route.path !== '/exercises-chat';

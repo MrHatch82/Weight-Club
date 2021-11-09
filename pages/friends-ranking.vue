@@ -21,7 +21,7 @@
               <div class="col-6 col-lg-3">
                 <div class="blurp shadow-down text-center">
                   <div class="big text-secondary">
-                    {{ $displayWeight(friend.weightLossTotal, $store) }} {{ $store.state.weightUnit }}
+                    {{ $displayWeight(friend.weightLossTotal, $store) }}
                   </div>
                   total weight loss
                 </div>
@@ -29,7 +29,7 @@
               <div class="col-6 col-lg-3">
                 <div class="blurp shadow-down text-center">
                   <div class="big text-secondary">
-                    {{ $displayWeight(friend.weightLossMonth, $store) }} {{ $store.state.weightUnit }}
+                    {{ $displayWeight(friend.weightLossMonth, $store) }}
                   </div>
                   lost this month
                 </div>
@@ -38,7 +38,7 @@
               <div class="col-6 col-lg-3">
                 <div class="blurp shadow-down text-center">
                   <div class="big text-secondary">
-                    {{ $displayWeight(friend.weightRemaining, $store) }} {{ $store.state.weightUnit }}
+                    {{ $displayWeight(friend.weightRemaining, $store) }}
                   </div>
                   still remaining
                 </div>
@@ -80,7 +80,7 @@ export default {
       const friends = [];
 
       for (const object of results) {
-        const lastUpdate = parseInt(this.$moment(object.get('updatedAt')).format('YYYYMM'), 10);
+        const lastUpdate = parseInt((object.get('date') / 100).toFixed());
         const firstOfMonth = parseInt(this.$moment().format('YYYYMM'), 10);
         const statusValid = lastUpdate === firstOfMonth;
 
@@ -133,8 +133,8 @@ export default {
         this.tooltip = friend.points ? '' : '<span class="text-white">There\'s No point</span>';
 
         if (friend.weightLossMonth && friend.statusValid) {
-          const sum = friend.weightLossMonth * 100;
-          this.tooltip += `<span class="text-tertiary">${friend.weightLossMonth} kilo${friend.weightLossMonth > 1 ? 's' : ''} lost x 100</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
+          const sum = this.$round(friend.weightLossMonth * 100);
+          this.tooltip += `<span class="text-tertiary">${this.$displayWeight(friend.weightLossMonth, this.$store)} lost x ${this.$store.state.weightUnit === 'kg' ? '100' : '45.45'}</span>&nbsp;&nbsp;&nbsp;${sum < 100 ? '&nbsp;&nbsp;' : ''}${sum} Pts.<br>`;
         }
 
         if (friend.exercisesHeavy && friend.statusValid) {

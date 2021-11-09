@@ -96,6 +96,12 @@ export default {
         }
         this.$store.commit('userLoggedIn', user.id);
         this.$nuxt.$emit('userLoggedIn');
+
+        setTimeout(() => {
+          this.$router.push({
+            path: '/friends-ranking',
+          });
+        }, 1500);
       } catch (error) {
         this.loading = false;
         this.error = error;
