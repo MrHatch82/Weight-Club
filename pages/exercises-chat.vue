@@ -6,7 +6,7 @@
       <div v-else key="chat">
         <div class="date-picker-fixed">
           <div class="container">
-            <date-picker @dateChanged="dateChanged">
+            <date-picker ref="datePicker" @dateChanged="dateChanged">
               <div class="col-lg-4 offset-lg-2 mb-4">
                 <button class="w-100 btn btn-primary shadow-up" @click="showPopup">
                   add activity
@@ -123,7 +123,8 @@ export default {
   },
   methods: {
     resetDate() {
-      this.selectedDate = this.$dateTime.now().toFormat('yyyyMM');
+      this.$refs.datePicker.dateSet(this.$dateTime.now().toFormat('yyyyMMdd'));
+      this.selectedDate = this.$dateTime.now().toFormat('yyyyMMdd');
       this.getMessages(true);
     },
     dateChanged(newDate) {
