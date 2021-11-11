@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { DateTime } from 'luxon';
 
 Vue.prototype.$sanitizeWeight = function (value) {
   if (value) {
@@ -109,3 +110,20 @@ const $round = function (val) {
 Vue.prototype.$round = $round;
 
 Vue.prototype.$he = require('he');
+
+Vue.prototype.$isTodayOrNDaysBefore = (dateString, n = 0) => {
+  const days = [];
+  let result = false;
+
+  for (let index = 0; index <= n; index++) {
+    days.push(DateTime.now().startOf('day').minus({ days: index }));
+  }
+
+  days.forEach((day) => {
+    if (DateTime.fromISO(dateString).startOf('day').equals(day)) {
+      result = true;
+    }
+  });
+
+  return result;
+};

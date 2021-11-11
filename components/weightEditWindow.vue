@@ -1,13 +1,13 @@
 <template>
   <div class="weight-edit-window">
     <div class="date shadow-down">
-      <!-- <button class="btn btn-primary mr-2 btn-arrow shadow-up" :disabled="prevButtonDisabled" @click="changeDay(-1)">
+      <button class="btn btn-primary mr-2 btn-arrow shadow-up" :disabled="!$isTodayOrNDaysBefore(days[selectedDayIndex], 1)" @click="changeDay(-1)">
         <svg height="14" width="12"><polygon points="12,0 0,7 12,14" /></svg>
-      </button> -->
+      </button>
       {{ selectedDay }}
-      <!-- <button class="btn btn-primary ml-2 btn-arrow shadow-up" :disabled="nextButtonDisabled" @click="changeDay(1)">
+      <button class="btn btn-primary ml-2 btn-arrow shadow-up" :disabled="$isTodayOrNDaysBefore(days[selectedDayIndex])" @click="changeDay(1)">
         <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
-      </button> -->
+      </button>
     </div>
     <b-form @submit.prevent="publishWeight">
       <b-form-input
@@ -85,18 +85,6 @@ export default {
         return this.days[this.selectedDayIndex].toFormat('cccc, dd.MM.');
       }
       return '';
-    },
-    nextButtonDisabled() {
-      if (this.selectedDayIndex && this.days[this.selectedDayIndex].diff(this.$$dateTime.now(), 'days') === 0) {
-        return true;
-      }
-      return false;
-    },
-    prevButtonDisabled() {
-      if (this.selectedDayIndex === 0) {
-        return true;
-      }
-      return false;
     },
     weightUnit() {
       return this.$store.state.weightUnit;
@@ -191,7 +179,7 @@ export default {
   .date {
     height: 38px;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     font-weight: 600;
     margin-bottom: 1.5rem;

@@ -30,10 +30,10 @@
             </div>
             <div class="bubble shadow-down" :class="{ activity: msg.exerciseLight || msg.exerciseHeavy }">
               <h2 v-if="msg.exerciseLight">
-                Light Exercise
+                Light Exercise - {{ $dateTime.fromISO(msg.date).toFormat('dd.MM.') }}
               </h2>
               <h2 v-if="msg.exerciseHeavy" class="text-primary">
-                Heavy exercise
+                Heavy exercise ({{ $dateTime.fromISO(msg.date).toFormat('dd.MM.') }})
               </h2>
               {{ msg.message }}
             </div>
@@ -60,7 +60,7 @@
 export default {
   data() {
     return {
-      selectedDate: this.$dateTime.now().toFormat('yyyyMMdd'),
+      selectedDate: this.$dateTime.now().toFormat('yyyyMM'),
       message: '',
       msgType: 'message',
       loading: true,
@@ -226,13 +226,16 @@ export default {
         this.loading = false;
       }
     },
-    async publishMessage(message, msgType) {
+    async publishMessage(message, msgType, day = null) {
       const messageObject = new this.$parse.Object('Messages');
 
       const newMessage = message;
       const exerciseLight = msgType === 'exerciseLight';
       const exerciseHeavy = msgType === 'exerciseHeavy';
-      const date = parseInt(this.$dateTime.now().toFormat('yyyyMMdd'), 10);
+
+      const date = day
+        ? parseInt(this.$dateTime.fromISO(`${this.selectedDate}${day < 10 ? '0' : ''}${day}`).toFormat('yyyyMMdd'), 10)
+        : parseInt(this.$dateTime.now().toFormat('yyyyMMdd'), 10);
 
       messageObject.set('userId', this.$store.state.loggedInUserId);
       messageObject.set('message', newMessage);

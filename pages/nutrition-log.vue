@@ -10,7 +10,7 @@
                 <li v-if="!items.length">
                   No items...
                 </li>
-                <li v-for="(item, index) in items" :key="index" class="item" :class="{today: today, 'text-tertiary': item.type === 'drink'}" @click="prepareDelete(index)">
+                <li v-for="(item, index) in items" :key="index" class="item" :class="{today: $isTodayOrNDaysBefore(date, 2), 'text-tertiary': item.type === 'drink'}" @click="prepareDelete(index)">
                   <div>{{ item.text }}</div>
                   <div v-if="trackKcal || trackMl" class="d-flex flex-row">
                     <div v-if="trackMl && item.type ==='drink'" class="pl-2 ml">
@@ -63,7 +63,7 @@
         <div class="row">
           <div class="col-6">
             <button
-              :disabled="!today"
+              :disabled="!$isTodayOrNDaysBefore(date, 2)"
               class="w-100 btn btn-primary shadow-up"
               @click="showPopup('food')"
             >
@@ -72,7 +72,7 @@
           </div>
           <div class="col-6">
             <button
-              :disabled="!today"
+              :disabled="!$isTodayOrNDaysBefore(date, 2)"
               class="w-100 btn btn-primary shadow-up"
               @click="showPopup('drink')"
             >
@@ -152,9 +152,6 @@ export default {
 
       return total;
     },
-    today() {
-      return this.$dateTime.fromISO(this.date).equals(this.$dateTime.now().startOf('day'));
-    },
   },
   mounted() {
     this.getItems();
@@ -182,13 +179,13 @@ export default {
       });
     },
     prepareDelete(index) {
-      if (this.today) {
+      if (this.$isTodayOrNDaysBefore(this.date, 2)) {
         this.deleteIndex = index;
         this.$refs.delete.toggle();
       }
     },
     deleteItem() {
-      if (this.today) {
+      if (this.$isTodayOrNDaysBefore(this.date, 2)) {
         this.items.splice(this.deleteIndex, 1);
         this.$refs.delete.close();
         this.publishItems();

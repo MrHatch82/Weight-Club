@@ -130,6 +130,8 @@ export default {
     },
   },
 
+  modern: process.env.NODE_ENV === 'production',
+
   router: {
     middleware: 'authCheck',
   },

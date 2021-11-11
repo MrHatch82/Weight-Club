@@ -1,5 +1,14 @@
 <template>
   <div class="activity-edit-window">
+    <div class="date shadow-down">
+      <button class="btn btn-primary mr-2 btn-arrow shadow-up" :disabled="!$isTodayOrNDaysBefore(dateString, 1)" @click="changeDay(-1)">
+        <svg height="14" width="12"><polygon points="12,0 0,7 12,14" /></svg>
+      </button>
+      {{ selectedDay }}
+      <button class="btn btn-primary ml-2 btn-arrow shadow-up" :disabled="$isTodayOrNDaysBefore(dateString)" @click="changeDay(1)">
+        <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
+      </button>
+    </div>
     <b-form @submit.prevent="publish">
       <b-button-group>
         <button class="btn shadow-up" :class="activityType === 'exerciseLight' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseLight'">
@@ -55,21 +64,17 @@ export default {
   computed: {
     selectedDay() {
       if (this.days && this.selectedDayIndex !== null && this.days[this.selectedDayIndex]) {
-        return this.days[this.selectedDayIndex].date.toFormat('cccc, dd.MM.');
+        const date = this.$dateTime.fromJSDate(this.days[this.selectedDayIndex].date);
+        return date.toFormat('cccc, dd.MM.');
       }
       return '';
     },
-    nextButtonDisabled() {
-      if (this.selectedDayIndex && this.days[this.selectedDayIndex].date.diff(this.$dateTime.now(), 'days') === 0) {
-        return true;
+    dateString() {
+      if (this.days && this.selectedDayIndex !== null && this.days[this.selectedDayIndex]) {
+        const date = this.$dateTime.fromJSDate(this.days[this.selectedDayIndex].date);
+        return date.toFormat('yyyyMMdd');
       }
-      return false;
-    },
-    prevButtonDisabled() {
-      if (this.selectedDayIndex === 0) {
-        return true;
-      }
-      return false;
+      return '19700101';
     },
   },
   mounted() {
@@ -114,7 +119,7 @@ export default {
     },
     publish() {
       if (this.activityText) {
-        this.$parent.$parent.publishMessage(this.activityText, this.activityType);
+        this.$parent.$parent.publishMessage(this.activityText, this.activityType, this.selectedDayIndex + 1);
       }
     },
   },
@@ -123,6 +128,17 @@ export default {
 
 <style lang="scss">
 .activity-edit-window {
+  .date {
+    height: 38px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    background: $darker;
+    color: $tertiary;
+    border-radius: 0.3rem;
+  }
 
   input {
     text-align: center;
