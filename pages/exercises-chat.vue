@@ -122,6 +122,10 @@ export default {
     window.removeEventListener('resize', this.getMoWidth);
   },
   methods: {
+    resetDate() {
+      this.selectedDate = this.$dateTime.now().toFormat('yyyyMM');
+      this.getMessages(true);
+    },
     dateChanged(newDate) {
       this.selectedDate = this.$dateTime.fromISO(newDate).toFormat('yyyyMM');
       this.getMessages(true);

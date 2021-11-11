@@ -110,6 +110,7 @@ export default {
     },
     reset() {
       this.selectedDayIndex = this.$dateTime.now().day - 1;
+      this.$parent.$parent.resetDate();
       this.activityText = '';
       this.activityType = 'exerciseLight';
       this.$refs.input.focus();
