@@ -33,7 +33,7 @@
                 Light Exercise - {{ $dateTime.fromISO(msg.date).toFormat('dd.MM.') }}
               </h2>
               <h2 v-if="msg.exerciseHeavy" class="text-primary">
-                Heavy exercise ({{ $dateTime.fromISO(msg.date).toFormat('dd.MM.') }})
+                Heavy exercise - {{ $dateTime.fromISO(msg.date).toFormat('dd.MM.') }}
               </h2>
               {{ msg.message }}
             </div>
@@ -124,7 +124,7 @@ export default {
   methods: {
     resetDate() {
       this.$refs.datePicker.dateSet(this.$dateTime.now().toFormat('yyyyMMdd'));
-      this.selectedDate = this.$dateTime.now().toFormat('yyyyMMdd');
+      this.selectedDate = this.$dateTime.now().toFormat('yyyyMM');
       this.getMessages(true);
     },
     dateChanged(newDate) {
@@ -239,8 +239,10 @@ export default {
       const exerciseHeavy = msgType === 'exerciseHeavy';
 
       const date = day
-        ? parseInt(this.$dateTime.fromISO(`${this.selectedDate}${day < 10 ? '0' : ''}${day}`).toFormat('yyyyMMdd'), 10)
+        ? parseInt(`${this.selectedDate}${day < 10 ? '0' : ''}${day}`, 10)
         : parseInt(this.$dateTime.now().toFormat('yyyyMMdd'), 10);
+
+      console.log(date, `${this.selectedDate}${day < 10 ? '0' : ''}${day}`);
 
       messageObject.set('userId', this.$store.state.loggedInUserId);
       messageObject.set('message', newMessage);
