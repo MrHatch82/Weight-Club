@@ -50,7 +50,30 @@ export default {
       this.getDisplayNames();
     });
   },
+  mounted() {
+    window.addEventListener('keydown', this.keyDownHandler);
+  },
+  beforeDestroy() {
+    this.$nuxt.$off('userLoggedIn');
+    window.removeEventListener('keydown', this.keyDownHandler);
+  },
   methods: {
+    keyDownHandler(event) {
+      if (!this.$store.state.popupOpen && document.activeElement.nodeName !== 'INPUT') {
+        if (event.key === '1') {
+          this.$router.push({ path: '/friends-ranking' });
+        }
+        if (event.key === '2') {
+          this.$router.push({ path: '/weight-tracking' });
+        }
+        if (event.key === '3') {
+          this.$router.push({ path: '/exercises-chat' });
+        }
+        if (event.key === '4') {
+          this.$router.push({ path: '/nutrition-log' });
+        }
+      }
+    },
     async loginWithSessionToken(token) {
       const user = await this.$parse.User.become(token);
       this.$store.commit('userLoggedIn', user.id);
@@ -101,6 +124,7 @@ export default {
           exerciseLight: msg.get('exerciseLight'),
           exerciseHeavy: msg.get('exerciseHeavy'),
           message: msg.get('message'),
+          date: msg.get('date'),
         };
 
         this.$refs.topnav.messageReceived();

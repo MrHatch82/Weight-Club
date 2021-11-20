@@ -11,10 +11,10 @@
     </div>
     <b-form @submit.prevent="publish">
       <b-button-group>
-        <button class="btn shadow-up" :class="activityType === 'exerciseLight' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseLight'">
+        <button type="button" class="btn shadow-up" :class="activityType === 'exerciseLight' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseLight'">
           light exercise
         </button>
-        <button class="btn shadow-up" :class="activityType === 'exerciseHeavy' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseHeavy'">
+        <button type="button" class="btn shadow-up" :class="activityType === 'exerciseHeavy' ? 'btn-primary' : 'btn-inactive'" @click="activityType = 'exerciseHeavy'">
           heavy exercise
         </button>
       </b-button-group>

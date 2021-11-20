@@ -30,6 +30,7 @@ export default {
   methods: {
     toggle() {
       this.show = !this.show;
+      this.$store.commit('setPopupOpen', this.show);
 
       if (this.show && this.emitId) {
         this.$nuxt.$emit(this.emitId);
@@ -37,10 +38,12 @@ export default {
     },
     close() {
       this.show = false;
+      this.$store.commit('setPopupOpen', false);
     },
     keydown(event) {
       if (event.key === 'Escape') {
         this.show = false;
+        this.$store.commit('setPopupOpen', false);
       }
     },
   },

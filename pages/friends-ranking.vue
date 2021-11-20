@@ -1,60 +1,67 @@
 <template>
   <div class="page page-ranking container">
-    <transition name="fade">
-      <div v-if="friends.length" key="content" class="row">
-        <div v-for="(friend, index) in friends" :key="friend.displayName" class="col-12">
-          <div class="status-card">
-            <div class="row">
-              <div class="col-12">
-                <div class="blurp tt-none text-tertiary bigger bg-transparent p-0 text-left bg-transparent mb-2 d-flex justify-content-between">
-                  <div class="tt-none">
-                    <span class="text-primary">
-                      {{ index + 1 }}.
-                    </span>
-                    {{ displayNames[friend.userId] }}
-                  </div>
-                  <div ref="points" class="points text-secondary" @mousemove="triggerTooltip($event, index)" @mouseleave="triggerTooltip(null)">
-                    {{ friend.points }} Pts.
-                  </div>
-                </div>
-              </div>
-              <div class="col-6 col-lg-3">
-                <div class="blurp shadow-down text-center">
-                  <div class="big text-secondary">
-                    {{ $displayWeight(friend.weightLossTotal, $store) }}
-                  </div>
-                  total weight loss
-                </div>
-              </div>
-              <div class="col-6 col-lg-3">
-                <div class="blurp shadow-down text-center">
-                  <div class="big text-secondary">
-                    {{ $displayWeight(friend.weightLossMonth, $store) }}
-                  </div>
-                  lost this month
-                </div>
-              </div>
+    <date-picker ref="datePicker" @dateChanged="dateChanged" />
 
-              <div class="col-6 col-lg-3">
-                <div class="blurp shadow-down text-center">
-                  <div class="big text-secondary">
-                    {{ $displayWeight(friend.weightRemaining, $store) }}
+    <transition name="fade">
+      <div v-if="!$fetchState.pending" key="content" class="row">
+        <div v-if="friends.length">
+          <div v-for="(friend, index) in friends" :key="friend.displayName" class="col-12">
+            <div class="status-card">
+              <div class="row">
+                <div class="col-12">
+                  <div class="blurp tt-none text-tertiary bigger bg-transparent p-0 text-left bg-transparent mb-2 d-flex justify-content-between">
+                    <div class="tt-none">
+                      <span class="text-primary">
+                        {{ index + 1 }}.
+                      </span>
+                      {{ displayNames[friend.userId] }}
+                    </div>
+                    <div ref="points" class="points text-secondary" @mousemove="triggerTooltip($event, index)" @mouseleave="triggerTooltip(null)">
+                      {{ friend.points }} Pts.
+                    </div>
                   </div>
-                  still remaining
+                </div>
+                <div class="col-6 col-lg-3">
+                  <div class="blurp shadow-down text-center">
+                    <div class="big text-secondary">
+                      {{ $displayWeight(friend.weightLossTotal, $store) }}
+                    </div>
+                    total weight loss
+                  </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                  <div class="blurp shadow-down text-center">
+                    <div class="big text-secondary">
+                      {{ $displayWeight(friend.weightLossMonth, $store) }}
+                    </div>
+                    lost this month
+                  </div>
+                </div>
+
+                <div class="col-6 col-lg-3">
+                  <div class="blurp shadow-down text-center">
+                    <div class="big text-secondary">
+                      {{ $displayWeight(friend.weightRemaining, $store) }}
+                    </div>
+                    still remaining
+                  </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                  <div class="blurp shadow-down text-center">
+                    <div class="big text-secondary">
+                      {{ $round(friend.weightLossPercent) }} %
+                    </div>
+                    of goal reached
+                  </div>
                 </div>
               </div>
-              <div class="col-6 col-lg-3">
-                <div class="blurp shadow-down text-center">
-                  <div class="big text-secondary">
-                    {{ $round(friend.weightLossPercent) }} %
-                  </div>
-                  of goal reached
-                </div>
-              </div>
+              <status-bar class="mb-3" :percent="friend.weightLossPercent" :month-percent="getMonthPercent(friend)" />
+              <activity-calendar :month="friend.exercises" />
             </div>
-            <status-bar class="mb-3" :percent="friend.weightLossPercent" :month-percent="getMonthPercent(friend)" />
-            <activity-calendar :month="friend.exercises" />
           </div>
+        </div>
+        <div v-else class="col-12">
+          <h1>Sorry, no data found for this month.</h1>
         </div>
       </div>
       <div v-else key="spinner" class="spinner"></div>
@@ -69,11 +76,15 @@ export default {
     return {
       friends: [],
       tooltip: 'POINTS!',
+      date: this.$dateTime.now().startOf('month').toFormat('yyyyMMdd'),
     };
   },
   async fetch() {
     const Status = this.$parse.Object.extend('Status');
     const query = new this.$parse.Query(Status);
+    query.greaterThanOrEqualTo('date', parseInt(this.$dateTime.fromISO(this.date).startOf('month').toFormat('yyyyMMdd')), 10);
+    query.lessThanOrEqualTo('date', parseInt(this.$dateTime.fromISO(this.date).endOf('month').toFormat('yyyyMMdd')), 10);
+
     query.descending('weightLossMonth');
     try {
       const results = await query.find();
@@ -117,6 +128,10 @@ export default {
     },
   },
   methods: {
+    dateChanged(date) {
+      this.date = `${date.slice(0, 6)}01`;
+      this.$fetch();
+    },
     getMonthPercent(friend) {
       return 100 / friend.weightLossTotal * friend.weightLossMonth;
     },
@@ -159,9 +174,6 @@ export default {
 
 <style lang='scss'>
 .page-ranking {
-  @include media-breakpoint-up(md) {
-    margin-top: -0.75rem;
-  }
 
   .status-card {
     margin-bottom: 2rem;

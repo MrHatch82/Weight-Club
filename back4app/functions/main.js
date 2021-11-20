@@ -58,9 +58,25 @@ Parse.Cloud.define('setStatus', async (request) => {
 
 Parse.Cloud.define('getStatus', async (request) => {
   const userId = request.params.userId;
+
+  const date = new Date();
+  const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const year = `${lastDay.getFullYear()}`;
+  const month =
+    lastDay.getMonth() + 1 < 10
+      ? `0${lastDay.getMonth() + 1}`
+      : `${lastDay.getMonth() + 1}`;
+  const day =
+    lastDay.getDate() < 10 ? `0${lastDay.getDate()}` : `${lastDay.getDate()}`;
+  const firstDayInt = parseInt(`${year}${month}01`, 10);
+  const lastDayInt = parseInt(`${year}${month}${day}`, 10);
+
   const Status = Parse.Object.extend('Status');
   const query = new Parse.Query(Status);
   query.equalTo('userId', userId);
+  query.greaterThanOrEqualTo('date', firstDayInt);
+  query.lessThanOrEqualTo('date', lastDayInt);
+
   try {
     const object = await query.first();
     return object || null;
@@ -114,6 +130,8 @@ Parse.Cloud.define('getExercises', async (request) => {
         date: new Date(firstDay.getTime()),
         exerciseLight,
         exerciseHeavy,
+        messageLight: null,
+        messageHeavy: null,
       });
       firstDay.setDate(firstDay.getDate() + 1);
     }
@@ -128,6 +146,7 @@ Parse.Cloud.define('getExercises', async (request) => {
         if (!exercisesLight.includes(dateString)) {
           exercisesLight.push(dateString);
           days[dayIndex].exerciseLight = true;
+          days[dayIndex].messageLight = object.get('message');
         }
       }
       if (object.get('exerciseHeavy')) {
@@ -136,6 +155,7 @@ Parse.Cloud.define('getExercises', async (request) => {
         if (!exercisesHeavy.includes(dateString)) {
           exercisesHeavy.push(dateString);
           days[dayIndex].exerciseHeavy = true;
+          days[dayIndex].messageHeavy = object.get('message');
         }
       }
     }

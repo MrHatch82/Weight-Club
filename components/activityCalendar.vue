@@ -17,7 +17,7 @@
         </transition>
       </div>
     </div>
-    <tooltip ref="tooltip" :tooltip="tooltip" />
+    <tooltip ref="tooltip" :tooltip="tooltip" class="activity-tooltip text-left" />
   </div>
 </template>
 
@@ -93,13 +93,29 @@ export default {
         }
 
         if (day.exerciseLight && day.exerciseHeavy) {
-          this.tooltip = '<span class="text-primary">Heavy Exercise</span><br>& Light Exercise';
+          let tooltip = '<span class="text-primary">Heavy Exercise</span>';
+          if (day.messageHeavy) {
+            tooltip += `<br><span class="text-white">${day.messageHeavy}</span>`;
+          }
+          tooltip += '<br><br>Light Exercise';
+          if (day.messageLight) {
+            tooltip += `<br><span class="text-white">${day.messageLight}</span>`;
+          }
+          this.tooltip = tooltip;
         }
         if (day.exerciseLight && !day.exerciseHeavy) {
-          this.tooltip = 'Light Exercise';
+          let tooltip = 'Light Exercise';
+          if (day.messageLight) {
+            tooltip += `<br><span class="text-white">${day.messageLight}</span>`;
+          }
+          this.tooltip = tooltip;
         }
         if (!day.exerciseLight && day.exerciseHeavy) {
-          this.tooltip = 'Heavy Exercise';
+          let tooltip = '<span class="text-primary">Heavy Exercise</span>';
+          if (day.messageHeavy) {
+            tooltip += `<br><span class="text-white">${day.messageHeavy}</span>`;
+          }
+          this.tooltip = tooltip;
         }
         if (!day.exerciseLight && !day.exerciseHeavy) {
           this.tooltip = '<span class="text-white">No Exercise</span>';
@@ -185,6 +201,10 @@ export default {
           content: '';
         }
       }
+    }
+
+    .activity-tooltip {
+      max-width: 250px;
     }
   }
 </style>

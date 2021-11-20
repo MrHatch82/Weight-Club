@@ -43,7 +43,28 @@
           <div class="container">
             <div class="position-relative">
               <b-form @submit.prevent="submit">
-                <b-form-input v-model="message" class="shadow-down" :placeholder="msgType === 'message' ? 'Enter message...' : 'Describe Activity...'" />
+                <b-form-input
+                  ref="input"
+                  v-model="message"
+                  class="shadow-down"
+                  placeholder="Enter message..."
+                  @keyup="keyupHandler"
+                  @click="keyupHandler"
+                >
+                </b-form-input>
+                <button type="button" class="emoji-toggle d-none d-lg-block" :class="{ active: emojiPickerShow }" @click="toggleEmojiPicker">
+                  🙂
+                </button>
+                <div class="emoji-container" :class="{ show: emojiPickerShow }">
+                  <v-emoji-picker
+                    :dark="true"
+                    emoji-size="24"
+                    emojis-by-row="9"
+                    :emoji-with-border="false"
+                    :show-search="false"
+                    @select="selectEmoji"
+                  />
+                </div>
               </b-form>
             </div>
           </div>
@@ -57,7 +78,12 @@
 </template>
 
 <script>
+import { VEmojiPicker } from 'v-emoji-picker';
+
 export default {
+  components: {
+    VEmojiPicker,
+  },
   data() {
     return {
       selectedDate: this.$dateTime.now().toFormat('yyyyMM'),
@@ -65,6 +91,8 @@ export default {
       msgType: 'message',
       loading: true,
       exercises: [],
+      emojiPickerShow: false,
+      inputCursorPosition: 0,
     };
   },
 
@@ -83,16 +111,20 @@ export default {
       const monthArray = new Array(
         parseInt(this.$dateTime.fromISO(this.selectedDate).endOf('month').toFormat('d'))).fill(null).map((x, i) => {
         let exerciseLight = false;
+        let messageLight = null;
         let exerciseHeavy = false;
+        let messageHeavy = null;
         const date = first.plus({ days: i }).toJSDate();
 
         this.exercises.forEach((activity) => {
           if (`${activity.date}` === this.$dateTime.fromJSDate(date).toFormat('yyyyMMdd')) {
             if (activity.exerciseLight) {
               exerciseLight = true;
+              messageLight = activity.message || null;
             }
             if (activity.exerciseHeavy) {
               exerciseHeavy = true;
+              messageHeavy = activity.message || null;
             }
           }
         });
@@ -100,7 +132,9 @@ export default {
         return {
           date,
           exerciseLight,
+          messageLight,
           exerciseHeavy,
+          messageHeavy,
         };
       },
       );
@@ -169,6 +203,7 @@ export default {
     submit() {
       if (this.message.length) {
         this.publishMessage(this.message);
+        this.inputCursorPosition = 0;
         this.message = '';
       }
     },
@@ -242,8 +277,6 @@ export default {
         ? parseInt(`${this.selectedDate}${day < 10 ? '0' : ''}${day}`, 10)
         : parseInt(this.$dateTime.now().toFormat('yyyyMMdd'), 10);
 
-      console.log(date, `${this.selectedDate}${day < 10 ? '0' : ''}${day}`);
-
       messageObject.set('userId', this.$store.state.loggedInUserId);
       messageObject.set('message', newMessage);
       messageObject.set('exerciseLight', exerciseLight);
@@ -292,6 +325,42 @@ export default {
       if (this.$refs && this.$refs.popup) {
         this.$refs.popup.toggle();
       }
+    },
+    toggleEmojiPicker() {
+      if (!this.emojiPickerShow) {
+        this.emojiPickerShow = true;
+
+        setTimeout(() => {
+          window.addEventListener('click', this.clickHandler);
+        }, 20);
+      }
+    },
+    clickHandler(event) {
+      this.belongsToEmojiPicker(event.target);
+    },
+    belongsToEmojiPicker(element) {
+      if (element.classList && element.classList.contains('emoji-container')) { return true; }
+
+      if (element.tagName === 'BODY' && this.emojiPickerShow) {
+        window.removeEventListener('click', this.clickHandler);
+        this.emojiPickerShow = false;
+        return false;
+      }
+
+      return element.parentNode && this.belongsToEmojiPicker(element.parentNode);
+    },
+    selectEmoji(emoji) {
+      this.message = [this.message.slice(0, this.inputCursorPosition), emoji.data, this.message.slice(this.inputCursorPosition)].join('');
+      this.inputCursorPosition += 2;
+      this.$refs.input.focus();
+      this.$nextTick(() => {
+        this.$refs.input.setSelectionRange(this.inputCursorPosition, this.inputCursorPosition);
+      });
+      window.removeEventListener('click', this.clickHandler);
+      this.emojiPickerShow = false;
+    },
+    keyupHandler(event) {
+      this.inputCursorPosition = event.target.selectionStart || 0;
     },
   },
 };
@@ -445,6 +514,61 @@ export default {
       text-transform: uppercase;
       color: $tertiary;
       letter-spacing: 1px;
+    }
+  }
+
+  .emoji-toggle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    background: none;
+    border: none;
+    box-shadow: none;
+    filter: grayscale(1);
+    opacity: 0.5;
+    transition: filter 0.2s, opacity 0.2s;
+
+    &:hover,
+    &.active {
+      filter: grayscale(0);
+      opacity: 1;
+    }
+  }
+
+  .emoji-container {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 4px);
+    display: none;
+
+    &.show {
+      display: block;
+    }
+  }
+
+  #EmojiPicker {
+    border-radius: 0.4rem;
+    background: $darker;
+
+    #Categories {
+      background: $darker;
+
+      .category{
+        &:hover {
+          background: $dark;
+        }
+
+        &.active {
+          border-bottom: 3px solid $tertiary;
+          background: none;
+        }
+      }
+    }
+
+    .emoji:hover {
+      background: $primary !important;
+      border-radius: 0.25rem;
     }
   }
 }

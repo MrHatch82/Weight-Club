@@ -3,6 +3,26 @@
     <date-picker :day-picker="true" @dateChanged="dateChanged" />
     <div class="row">
       <div class="col-lg-9 d-flex flex-column">
+        <div class="row">
+          <div class="col-6">
+            <button
+              :disabled="!$isTodayOrNDaysBefore(date, 2)"
+              class="w-100 btn btn-primary shadow-up mb-4"
+              @click="showPopup('food')"
+            >
+              add food item
+            </button>
+          </div>
+          <div class="col-6">
+            <button
+              :disabled="!$isTodayOrNDaysBefore(date, 2)"
+              class="w-100 btn btn-primary shadow-up mb-4"
+              @click="showPopup('drink')"
+            >
+              add drink item
+            </button>
+          </div>
+        </div>
         <div ref="list" class="list shadow-down" :style="`height: ${listHeight}`">
           <transition name="fade">
             <div v-if="!loading" key="list" ref="listInner">
@@ -59,26 +79,6 @@
             </div>
             <div v-else key="spinner" class="spinner" />
           </transition>
-        </div>
-        <div class="row">
-          <div class="col-6">
-            <button
-              :disabled="!$isTodayOrNDaysBefore(date, 2)"
-              class="w-100 btn btn-primary shadow-up"
-              @click="showPopup('food')"
-            >
-              add food item
-            </button>
-          </div>
-          <div class="col-6">
-            <button
-              :disabled="!$isTodayOrNDaysBefore(date, 2)"
-              class="w-100 btn btn-primary shadow-up"
-              @click="showPopup('drink')"
-            >
-              add drink item
-            </button>
-          </div>
         </div>
       </div>
     </div>

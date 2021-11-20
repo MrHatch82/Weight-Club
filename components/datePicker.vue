@@ -1,20 +1,5 @@
 <template>
   <div class="date-picker row">
-    <div v-if="dayPicker" class="col-6 col-lg-3 mb-4">
-      <div class="datepicker shadow-down">
-        <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract({ days: 1 })">
-          <svg height="15" width="12"><polygon points="12,0 0,7 12,14" /></svg>
-        </button>
-        {{ currentDay }}
-        <button
-          class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
-          :disabled="$dateTime.fromISO(selectedDate) >= $dateTime.now().startOf('day')"
-          @click="dateAdd({ days: 1 })"
-        >
-          <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
-        </button>
-      </div>
-    </div>
     <div class="col-6 col-lg-3 mb-4">
       <div class="datepicker shadow-down">
         <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract({months: 1})">
@@ -43,6 +28,21 @@
           class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
           :disabled="currentYear === $dateTime.now().toFormat('yyyy')"
           @click="dateAdd({ years: 1 })"
+        >
+          <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
+        </button>
+      </div>
+    </div>
+    <div v-if="dayPicker" class="col-6 col-lg-3 mb-4">
+      <div class="datepicker shadow-down">
+        <button class="btn btn-primary btn-sm mr-2 btn-arrow shadow-up" @click="dateSubtract({ days: 1 })">
+          <svg height="15" width="12"><polygon points="12,0 0,7 12,14" /></svg>
+        </button>
+        {{ currentDay }}
+        <button
+          class="btn btn-primary btn-sm ml-2 btn-arrow shadow-up"
+          :disabled="$dateTime.fromISO(selectedDate) >= $dateTime.now().startOf('day')"
+          @click="dateAdd({ days: 1 })"
         >
           <svg height="14" width="12"><polygon points="0,0 12,7 0,14" /></svg>
         </button>

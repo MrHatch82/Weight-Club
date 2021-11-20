@@ -17,6 +17,7 @@ export const state = () => ({
   sessionToken: null,
   displayNames: {},
   messages: [],
+  popupOpen: false,
 });
 
 export const mutations = {
@@ -45,5 +46,8 @@ export const mutations = {
   },
   appendMessages(state, message) {
     state.messages.push(message);
+  },
+  setPopupOpen(state, popupOpen) {
+    state.popupOpen = popupOpen;
   },
 };
